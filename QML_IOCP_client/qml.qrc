@@ -1,0 +1,37 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>MainForm.ui.qml</file>
+        <file>MyButton.qml</file>
+        <file>Friend.qml</file>
+        <file>FriendModel.qml</file>
+        <file>Head.qml</file>
+        <file>MyText.qml</file>
+        <file>Me.qml</file>
+        <file>ChatWindow.qml</file>
+        <file>InputArea.qml</file>
+        <file>MessageArea.qml</file>
+        <file>ChatHeader.qml</file>
+        <file>MainWindowHeader.qml</file>
+        <file>ChatFooter.qml</file>
+        <file>VirtualWindow.qml</file>
+        <file>OnlineLED.qml</file>
+        <file>ChatMessagePop.qml</file>
+        <file>ChatMessageListModel.qml</file>
+        <file>ChatMessageListItem.qml</file>
+        <file>SettingWindow.qml</file>
+        <file>MessageBox.qml</file>
+        <file>ChatMainWindow.qml</file>
+    </qresource>
+    <qresource prefix="/src">
+        <file>src/userIcon.png</file>
+        <file>src/OpacityMask.png</file>
+        <file>src/line.png</file>
+        <file>src/naill.png</file>
+        <file>src/gray-naill.png</file>
+        <file>src/setting.png</file>
+    </qresource>
+    <qresource prefix="/js">
+        <file>generic.js</file>
+    </qresource>
+</RCC>

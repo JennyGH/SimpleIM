@@ -30,6 +30,7 @@ Rectangle{
             //如果mainwindow继承自QWidget,用setPos
             movetarget.setX(movetarget.x+delta.x)
             movetarget.setY(movetarget.y+delta.y)
+//            console.log(mouseX,mouseY);
         }
     }
     MyText{

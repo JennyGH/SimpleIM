@@ -9,20 +9,21 @@ import "../js/generic.js" as GEN
 Window {
     id:fatherWindow
     visible: true
-    height: 600
-    width:300
+    height: mainform.height + 30//630
+    width:mainform.width + 30//330
     property bool conn: false
     property string myName : "Me"
     property var friendListArray: new Array
     flags: Qt.FramelessWindowHint | Qt.Window
+    color: Qt.rgba(0,0,0,0)
 
     //    flags:Qt.WindowModal | Qt.WindowMaximizeButtonHint
 
-    minimumWidth: 300
-    minimumHeight: 400
+    minimumWidth: width
+    minimumHeight: height
 
-    maximumHeight: 720
-    maximumWidth: 600
+    maximumHeight: height + 120
+    maximumWidth: width + 300
 
     onVisibleChanged: {
         if(!fatherWindow.visible){
@@ -64,13 +65,12 @@ Window {
         id:mainform
         property color font_color: "#444"
         property var chatwindows
-        //        color: "#000"
-        anchors.fill: parent
-        border.color: "#e2e2e2"
-
-        //        Client{
-        //            id : client
-        //        }
+        height: 600
+        width: 300
+        anchors {
+            centerIn: parent
+        }
+        border.color: "#88888888"
 
         MainWindowHeader {
             id:header
@@ -86,22 +86,6 @@ Window {
                     right:header.closebtn.left
                     rightMargin: 1
                 }
-
-                //                MyButton{
-                //                    id:reconn
-                //                    height: 30
-                //                    width: 40
-                //                    title : "重连"
-                //                    font_size: 11
-                //                    anchors {
-                //                        verticalCenter: parent.verticalCenter
-                //                    }
-                //                    enter_color: "#bbb"
-                //                    onClick: {
-                //                        client.reconnect();
-                //                    }
-                //                }
-
                 MyButton{
                     id:setting
                     title : ""
@@ -154,6 +138,10 @@ Window {
         MessageBox{
             id:tishi
             state : "hide"
+            width: mainform.width - mainform.border.width*2
+            anchors{
+                horizontalCenter: mainform.horizontalCenter
+            }
         }
 
         Me{
@@ -222,6 +210,17 @@ Window {
             }
         }
     }
+
+    DropShadow {
+        anchors.fill: mainform
+        horizontalOffset: 0
+        verticalOffset: 0
+        radius: 16.0
+        samples: 32
+        color: "#80000000"
+        source: mainform
+    }
+
     Component.onCompleted: {
 
         GEN.windowArray = [];

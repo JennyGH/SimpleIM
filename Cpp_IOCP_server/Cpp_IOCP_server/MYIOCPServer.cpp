@@ -124,6 +124,7 @@ DWORD WINAPI   CMYIOCPServer::ServerWorkThread(LPVOID CompletionPortID)
 				else
 					cerr << "GetQueuedCompletionStatus Error: " << GetLastError() << endl;
 			}
+			closesocket(PerHandleData->socket);
 			showClients(m_clients);	//显示当前在线人数
 			continue;
 			//这里不能返回，返回子线程就结束了

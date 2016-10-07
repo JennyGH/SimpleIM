@@ -110,6 +110,7 @@ function clearWindow(){
 
 function send(userid,name,msg){
     if(msg.trim() === "" || msg === "\n") return;
+    msg = msg.replace(/(\n)+|(\r\n)+/g, "");
     if(client.sendmessage(msg,userid,2)){
         chatmessagelistmodel.append({"name": name , "message": msg , "me" : true});
     }

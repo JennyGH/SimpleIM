@@ -2,6 +2,7 @@ import QtQuick 2.4
 import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
+import QtGraphicalEffects 1.0
 import "../js/generic.js" as GEN
 
 Window{
@@ -18,6 +19,7 @@ Window{
     flags: Qt.FramelessWindowHint | Qt.Window
     minimumHeight: 400
     minimumWidth: 600
+    color: Qt.rgba(0,0,0,0)
 
     onVisibleChanged: {
         if(!visible){
@@ -27,86 +29,111 @@ Window{
 
     Rectangle{
         id:_chatwindowbakg
-        anchors.fill: parent
+//        anchors.fill: parent
+        height: parent.height - 30
+        width: parent.width - 30
+        anchors {
+            centerIn: parent
+        }
+
         border.color: "#aaa"
-        MainWindowHeader{
-            id:_chatwindowtitle
-            movetarget : chatwindow
-            marginRight: 1
+
+        ChatHeader {
+            id:chatwindowheader
+            height : 50
+            width: parent.width - parent.border.width*2
+            clientname:chatwindow.name
             anchors {
+                top:_chatwindowbakg.top
                 topMargin: _chatwindowbakg.border.width
-            }
-            onMove: {
-                if(movetarget.ismax){
-                    _chatwindowtitle.movetarget.showNormal();
-                    ismax = false;
-                }
+                horizontalCenter: _chatwindowbakg.horizontalCenter
             }
 
-            Row{
-                spacing : 1
+            MainWindowHeader{
+                id:_chatwindowtitle
+                movetarget : chatwindow
+                marginRight: 1
                 anchors {
-                    top : _chatwindowtitle.top
-                    right:_chatwindowtitle.closebtn.left
-                    rightMargin: 1
+                    //                    topMargin: _chatwindowbakg.border.width
+                    fill: parent
                 }
-                MyButton{
-                    id:min
-                    height: 30
-                    width:40
-                    anchors {
-                        verticalCenter: parent.verticalCenter
-                    }
-                    title : "—"
-                    font_size: 11
-                    enter_color: "#bbb"
-                    onClick: {
-                        _chatwindowtitle.movetarget.showMinimized();
+                title:""
+                onMove: {
+                    if(movetarget.ismax){
+                        _chatwindowtitle.movetarget.showNormal();
+                        ismax = false;
                     }
                 }
-                MyButton{
-                    id:max
-                    height: 30
-                    width:40
+
+                Row{
+                    spacing : 1
                     anchors {
-                        verticalCenter: parent.verticalCenter
+                        top : _chatwindowtitle.top
+                        right:_chatwindowtitle.closebtn.left
+                        rightMargin: 1
                     }
-                    title : "□"
-                    font_size: 20
-                    enter_color: "#bbb"
-                    onClick: {
-                        if(!_chatwindowtitle.movetarget.ismax){
-                            _chatwindowtitle.movetarget.showMaximized();
-                            _chatwindowtitle.movetarget.ismax = true;
-                        }else{
-                            _chatwindowtitle.movetarget.showNormal();
-                            _chatwindowtitle.movetarget.ismax = false;
+                    MyButton{
+                        id:min
+                        height: 30
+                        width:40
+                        anchors {
+                            verticalCenter: parent.verticalCenter
+                        }
+                        title : "—"
+                        font_size: 11
+                        enter_color: "#bbb"
+                        onClick: {
+                            _chatwindowtitle.movetarget.showMinimized();
+                        }
+                    }
+                    MyButton{
+                        id:max
+                        height: 30
+                        width:40
+                        anchors {
+                            verticalCenter: parent.verticalCenter
+                        }
+                        title : "□"
+                        font_size: 20
+                        enter_color: "#bbb"
+                        onClick: {
+                            if(!_chatwindowtitle.movetarget.ismax){
+                                _chatwindowtitle.movetarget.showMaximized();
+                                _chatwindowtitle.movetarget.ismax = true;
+                            }else{
+                                _chatwindowtitle.movetarget.showNormal();
+                                _chatwindowtitle.movetarget.ismax = false;
+                            }
                         }
                     }
                 }
             }
+
         }
 
         Column{
-//            anchors.fill: parent
-            height: chatwindow.height - _chatwindowtitle.height - _chatwindowbakg.border.width*2
-            width: chatwindow.width - _chatwindowbakg.border.width*2
+            //            anchors.fill: parent
+            height: _chatwindowbakg.height - chatwindowheader.height - _chatwindowbakg.border.width*2
+            width: _chatwindowbakg.width - _chatwindowbakg.border.width*2
             anchors {
-                top : _chatwindowtitle.bottom
-                horizontalCenter: _chatwindowtitle.horizontalCenter
-            }
-
-            ChatHeader {
-                id:chatwindowheader
-                height : 50
-                clientname:chatwindow.name
+                top : chatwindowheader.bottom
+                horizontalCenter: chatwindowheader.horizontalCenter
             }
             MessageArea {
                 id:msgArea
                 border.color: _chatwindowbakg.border.color
-                height: chatwindow.height - _chatwindowtitle.height - sendarea.height - chatwindowheader.height - 12
+                height: _chatwindowbakg.height - chatwindowheader.height - sendarea.height - 2
+                width: _chatwindowbakg.width
+                anchors {
+                    horizontalCenter: parent.horizontalCenter
+                }
                 ScrollView {
-                    anchors.fill: parent
+                    width: parent.width - msgArea.border.width*2
+                    height: parent.height - parent.border.width*2
+                    anchors {
+                        centerIn: parent
+                    }
+
                     ListView {
                         id:chatmessahelist
                         anchors.fill: parent
@@ -117,31 +144,85 @@ Window{
             }
             Rectangle{
                 id:sendarea
-                height: inputarea.height + footer.height
+                height: 100 + footer.height
                 color: footer.color
                 width: parent.width
                 property int spacing: 5
-                InputArea{
+                MouseArea{
+                    id:toolbar
+                    width: parent.width
+                    height: sendarea.spacing
+                    anchors {
+                        top : parent.top
+                        horizontalCenter: parent.horizontalCenter
+                    }
+                    property point clickPos: "0,0"
+                    property int movecount: 0
+                    property int ychangecount: 0
+                    property int average:0
+                    onPressed: {
+                        clickPos = Qt.point(mouse.x,mouse.y);
+                        movecount = 0;
+                        ychangecount = 0;
+                    }
+                    onPositionChanged: {
+                        //鼠标偏移量
+                        var delta = Qt.point(mouse.x-clickPos.x, mouse.y-clickPos.y);
+                        ychangecount += Math.abs(delta.y);
+                        movecount++;
+                        average = ychangecount / movecount;
+                        if(Math.abs(delta.y) > average){
+                            delta.y = (delta.y < 0 ? -average : average);
+                        }
+                        //如果mainwindow继承自QWidget,用setPos
+                        if((sendarea.height - delta.y) > _chatwindowbakg.height * 0.4)
+                            sendarea.height = _chatwindowbakg.height * 0.4;
+                        else if((sendarea.height - delta.y) < 100)
+                            sendarea.height = 100;
+                        else
+                            sendarea.height = sendarea.height - delta.y;
+                    }
+                }
+
+                InputArea {
                     id:inputarea
-                    height : 100
+                    height : undefined
                     border_color: "#e2e2e2"
                     border_width : 2
                     width: parent.width - sendarea.spacing*2
                     anchors {
-                        top : sendarea.top
-                        topMargin: sendarea.spacing
+                        top : toolbar.bottom
+                        //                        topMargin: sendarea.spacing
                         horizontalCenter: parent.horizontalCenter
+                        bottom: footer.top
+                        bottomMargin: inputarea.border_width
+                    }
+                    onCtrl_Enter: {
+                        GEN.send(userid,"我",chatwindow.getContent());
+                        chatwindow.setContent("");
                     }
                 }
                 ChatFooter{
                     id:footer
+                    height:40
                     anchors {
-                        top : inputarea.bottom
-                        topMargin: sendarea.spacing
+                        bottom : parent.bottom
                     }
                 }
             }
         }
+
+
+    }
+
+    DropShadow {
+        anchors.fill: _chatwindowbakg
+        horizontalOffset: 0
+        verticalOffset: 0
+        radius: 16.0
+        samples: 32
+        color: "#80000000"
+        source: _chatwindowbakg
     }
 
     function getContent(){

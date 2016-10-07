@@ -8,6 +8,10 @@ Rectangle {
     height: messagepop.height + client_name.height
     width: parent.width
 
+    anchors {
+        horizontalCenter: parent.horizontalCenter
+    }
+
     Item{
 //        spacing: 10
         anchors {

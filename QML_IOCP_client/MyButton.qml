@@ -16,6 +16,7 @@ Rectangle{
     property int border_width: 1
     property string title : "Default"
     property int font_size: 15
+    property int contentwidth: btn_title.contentWidth + 20
     state : "out"
     border.color: border_color
     border.width: border_width

@@ -23,8 +23,8 @@ Rectangle{
         MyButton{
             id:send
             height: 30
-            width : 60
-            title : "发送"
+            width : contentwidth
+            title : "发送(Ctrl+Enter)"
             border_color : "#aaa"
             enter_color: "#bbb"
             onClick: {
@@ -38,8 +38,8 @@ Rectangle{
         MyButton{
             id:close
             height: 30
-            width : 60
-            title : "关闭"
+            width : contentwidth
+            title : "关闭(Esc)"
             border_color : "#aaa"
             enter_color: "#bbb"
             onClick: {

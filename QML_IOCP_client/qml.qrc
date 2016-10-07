@@ -22,6 +22,7 @@
         <file>SettingWindow.qml</file>
         <file>MessageBox.qml</file>
         <file>ChatMainWindow.qml</file>
+        <file>ResizeBar.qml</file>
     </qresource>
     <qresource prefix="/src">
         <file>src/userIcon.png</file>

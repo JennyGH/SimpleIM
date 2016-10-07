@@ -8,16 +8,24 @@ import "../js/generic.js" as GEN
 
 Window{
     id:_loginwindow
-    height: 250
-    width: 350
+    height: 280
+    width: 380
+
+    minimumHeight: 280
+    minimumWidth: 380
     visible: true
     flags: Qt.FramelessWindowHint | Qt.Window
     property string userID
     property string psw
+    color: Qt.rgba(0,0,0,0)
+
+    onVisibleChanged: {
+    }
 
     Component.onCompleted: {
 //        client.ip = "119.29.178.76"
         txtID.forceActiveFocus();
+//        animBig.start();
     }
 
     Connections {
@@ -62,12 +70,25 @@ Window{
     }
 
 
+    ResizeBar {
+        id:reize
+//        target: _loginwindow
+        barwidth: 30    //鼠标有效区域的宽度
+        enabled: false  //设为true后可调整窗口大小
+    }
+
     Rectangle{
         id:_loginwindowbakg
         color : "#f5f5f5"
-        border.color: "#e2e2e2"
+        border.color: "#88888888"
         border.width: 1
-        anchors.fill: parent
+//        anchors.fill: parent
+        height: parent.height - 30
+        width: parent.width - 30
+//        scale:0
+        anchors {
+            centerIn: parent
+        }
 
         MainWindowHeader{
             id:_loginwindowheader
@@ -138,6 +159,10 @@ Window{
             id:_logintips
             state : "hide"
             topObject : _loginwindowheader
+            width: _loginwindowbakg.width - _loginwindowbakg.border.width*2
+            anchors{
+                horizontalCenter: _loginwindowbakg.horizontalCenter
+            }
         }
 
         Item{
@@ -240,15 +265,19 @@ Window{
                 MyButton{
                     id:btnlogin
                     height: 40
-                    width: _loginwindow.width * 0.9
-                    title:"登录"
-                    enter_color: "#3399ff"
+                    width: _loginwindowbakg.width * 0.9
+                    title:"<b>登录</b>"
+                    font_size: 16
+                    exit_color: "#3399ff"
+                    enter_color: Qt.lighter("#3399ff",1.2)
                     enter_font_color: "#fff"
-                    border_color: "#e2e2e2"
+                    exit_font_color: "#fff"
+                    border_color: "#fff"
                     anchors {
                         horizontalCenter: parent.horizontalCenter
                     }
                     onClick: {
+                        _loginwindowbakg.state = "hide"
                         _loginwindow.userID = txtID.text;
                         _loginwindow.psw = txtpsw.text;
                         if(userID.trim() == ""){
@@ -267,8 +296,32 @@ Window{
                     }
                 }
             }
-
         }
+
+
+        Component.onCompleted: {
+        }
+    }
+    PropertyAnimation {
+        id: animBig
+        target: _loginwindowbakg
+        duration: 500
+        easing.type: Easing.InOutBounce
+        property: 'scale'
+        from: 0
+        to: 1
+//            loops:Animation.Infinite
+//        running: true
+    }
+
+    DropShadow {
+        anchors.fill: _loginwindowbakg
+        horizontalOffset: 0
+        verticalOffset: 0
+        radius: 16.0
+        samples: 32
+        color: "#80000000"
+        source: _loginwindowbakg
     }
 }
 

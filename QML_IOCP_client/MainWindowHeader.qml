@@ -5,9 +5,15 @@ Rectangle{
     height: 40
     width: parent.width
     property var movetarget: fatherWindow
-    property var closebtn: close
+    property var closebtn: _row//(min.enabled ? min : (max.enabled ? max : close))
     property string title: "无标题"
-    property int marginRight: 8
+    property int marginRight: 0
+    property int marginTop: 0
+    property bool minable: true
+    property bool maxable: false
+    property int btnraduis: 0
+    property int btnHeight: 30
+    property int btnWidth: 40
     signal closeClick();
     signal move();
     z: 10
@@ -45,22 +51,77 @@ Rectangle{
         font_size: 18
     }
 
-    MyButton {
-        id:close
-        height: 30
-        width: 40
-        enter_color: "#e81123"
-        title : "×"
-        font_size : 20
-        enter_font_color : "#fff"
-        anchors {
-            top : parent.top
+    Row{
+        id:_row
+        spacing: 1
+
+        anchors{
             right:parent.right
             rightMargin: marginRight
+            top:parent.top
+            topMargin: marginTop
         }
-        onClick: {
-            closeClick();
-            movetarget.close();
+
+        MyButton{
+            id:min
+            height: btnHeight
+            width: btnWidth
+            title : "—"
+            font_size: 11
+            enabled: minable
+            visible: minable
+            radius:btnraduis
+            anchors {
+                verticalCenter: parent.verticalCenter
+            }
+            enter_color: "#bbb"
+            onClick: {
+                movetarget.showMinimized();
+            }
+        }
+
+        MyButton{
+            id:max
+            height: btnHeight
+            width: btnWidth
+            anchors {
+                verticalCenter: parent.verticalCenter
+            }
+            enabled: maxable
+            visible: maxable
+            radius:btnraduis
+            title : "□"
+            font_size: 20
+            enter_color: "#bbb"
+            onClick: {
+                if(!movetarget.ismax){
+                    movetarget.showMaximized();
+                    movetarget.ismax = true;
+                }else{
+                    movetarget.showNormal();
+                    movetarget.ismax = false;
+                }
+            }
+        }
+
+        MyButton {
+            id:close
+            height: btnHeight
+            width: btnWidth
+            enter_color: "#e81123"
+            title : "×"
+            font_size : 20
+            enter_font_color : "#fff"
+            radius:btnraduis
+            anchors {
+//                top : parent.top
+//                right:parent.right
+//                rightMargin: marginRight
+            }
+            onClick: {
+                closeClick();
+                movetarget.close();
+            }
         }
     }
 

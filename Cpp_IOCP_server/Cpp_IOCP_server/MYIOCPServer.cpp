@@ -4,16 +4,31 @@
 HANDLE  CMYIOCPServer::m_completionPort = NULL;
 HANDLE CMYIOCPServer::m_hMutex = NULL;
 CMYIOCPServer* CMYIOCPServer::m_pInstance = NULL;
+
+#if SQLenable
+CMYSQL* CMYIOCPServer::m_sql = NULL;
+#endif
+
 char CMYIOCPServer::m_byteMsg[MessMaxLen] = { 0 };
 CWorkQueue CMYIOCPServer::m_CWorkQueue;
 
 
 CMYIOCPServer* CMYIOCPServer::GetInstance()
 {
+
 	if (NULL == m_pInstance)
 	{
 		m_pInstance = new CMYIOCPServer();
 	}
+
+#if SQLenable
+
+		m_sql = CMYSQL::GetInstance();
+
+		m_sql->InitSQL("localhost","root","","JennyChat",3306,"utf8");
+
+#endif
+
 	m_CWorkQueue.Create(10);
 	return m_pInstance;
 }
@@ -22,38 +37,13 @@ void CMYIOCPServer::formatMessage(char * str, MessagePakag & mp)
 	//----对方：recver
 	//----自己：sender
 	string temp = str;
-	string typehead = "[type:]",
-		fidhead = "[fid:]",
-		messagehead = "[message:]",
-		username = "[user:]",
-		psw = "[psw:]",
-		myidhead = "[myid:]";
-	int type_pos = temp.find(typehead);
-	mp.m_type = temp.substr(type_pos + typehead.length(), 1);
-	stringstream ss;
-	ss << mp.m_type;
-	int value;
-	ss >> value;
-	switch (value)
-	{
-	case 1:
-	{
-		int recverID_pos = temp.find(username),
-			psw_pos = temp.find(psw);
-		mp.recverID = temp.substr(recverID_pos + username.length(), psw_pos - (recverID_pos + username.length()));
-		mp.m_message = temp.substr(psw_pos + psw.length());
-		break;
-	}
-	case 2:
-	{
-		int myid_pos = temp.find(fidhead),
-			message_pos = temp.find(messagehead),
-			fid_pos = temp.find(myidhead);
-		mp.senderID = temp.substr(myid_pos + fidhead.length(), message_pos - (myid_pos + fidhead.length()));
-		mp.m_message = temp.substr(message_pos + messagehead.length(), fid_pos - (message_pos + messagehead.length()));
-		mp.recverID = temp.substr(fid_pos + myidhead.length());
-		break;
-	}
+	Json::Reader reader;
+	Json::Value value;
+	if (reader.parse(temp, value)) {
+		mp.m_type = value["type"].asString();
+		mp.m_message = value["message"].asString();
+		mp.recverID = value["myid"].asString();
+		mp.senderID = value["fid"].asString();
 	}
 }
 /**************************
@@ -146,6 +136,7 @@ DWORD WINAPI   CMYIOCPServer::ServerWorkThread(LPVOID CompletionPortID)
 		//得到客户端SOCKET信息
 		SOCKET sClientSocket;
 		MessagePakag *msg = new MessagePakag;
+		cout << "m_byteMsg:" << m_byteMsg << endl;
 		formatMessage(m_byteMsg, *msg);
 		stringstream ss;
 		ss << msg->m_type;
@@ -161,10 +152,7 @@ DWORD WINAPI   CMYIOCPServer::ServerWorkThread(LPVOID CompletionPortID)
 			*  消息2：密码错误
 			*/
 			//客户端转发消息为2
-			//if (login(msg->recverID, msg->m_message, PerHandleData->socket) == 0) {
-			//	cout << "用户 " << msg->recverID << " 登入：" << endl;
-			//	PerHandleData->username = msg->recverID;	//保存客户ID
-			//}
+			//查找新朋友为3
 			switch (login(msg->recverID, msg->m_message, PerHandleData->socket)) {
 			case 0: {
 				char* sysmsg = "0";
@@ -176,16 +164,18 @@ DWORD WINAPI   CMYIOCPServer::ServerWorkThread(LPVOID CompletionPortID)
 			}
 			case 1: {
 				char* sysmsg = "{\"type\":1,\"message\":1}";
+				cout << "帐号不存在" << endl;
 				//SendMessage(PerHandleData->socket, sysmsg);	//	发送登录失败的系统消息
 				send(PerHandleData->socket, sysmsg, strlen(sysmsg), 0);
-				closesocket(PerHandleData->socket);
+				//closesocket(PerHandleData->socket);
 				break;
 			}
 			case 2: {
 				char* sysmsg = "{\"type\":1,\"message\":2}";
+				cout << "密码错误" << endl;
 				//SendMessage(PerHandleData->socket, sysmsg);	//	发送登录失败的系统消息
 				send(PerHandleData->socket, sysmsg, strlen(sysmsg), 0);
-				closesocket(PerHandleData->socket);
+				//closesocket(PerHandleData->socket);
 				break;
 			}
 			default:break;
@@ -200,6 +190,50 @@ DWORD WINAPI   CMYIOCPServer::ServerWorkThread(LPVOID CompletionPortID)
 			string temp = "{\"type\":2,\"friend\":\"" + msg->recverID + "\",\"message\":\"" + msg->m_message + "\"}";
 			//SendMessage(sClientSocket, (char*)temp.c_str());	//	转发给指客户端
 			send(sClientSocket, (char*)temp.c_str(), temp.length(), 0);
+			break;
+		}
+		case 3: //查找新朋友
+		{
+			string result = m_sql->Search("JennyChat", "account", "id,username", "id='" + msg->senderID + "'", "");
+			if (result == "") {
+				result = m_sql->Search("JennyChat", "account", "id,username", "username='" + msg->senderID + "'", "");
+			}else{
+				Json::Reader reader;
+				Json::Value value;
+				if (reader.parse(result, value)) {
+					if (value["SqlMsgType"] != 0) {
+						result = m_sql->Search("JennyChat", "account", "id,username", "username='" + msg->senderID + "'", "");
+						if (result != "") {
+							if (reader.parse(result, value)) {
+								if (value["SqlMsgType"] != 0) {
+									result = "";
+								}
+							}
+						}
+					}
+				}
+			}
+			string returnmsg = "{\"type\":3,\"message\":" + (result == "" ? "\"\"" : result) + "}";
+			cout << "returnmsg:" << returnmsg << endl;
+			send(PerHandleData->socket, (char*)returnmsg.c_str(), returnmsg.length(), 0);	//发送搜索结果JSON格式数据
+			break;
+		}
+		case 4:	//返回好友列表
+		{
+			cout << "返回好友列表" << endl;
+			string result = m_sql->Search("JennyChat", "friendlist", "fid,fname", "accountid=(select id from account where id='" + msg->recverID + "')", "");
+			if (result != "") {
+				Json::Reader reader;
+				Json::Value value;
+				if (reader.parse(result, value)) {
+					if (value["SqlMsgType"] != 0) {
+						result = "";
+					}
+				}
+			}
+			string returnmsg = "{\"type\":4,\"message\":" + (result == "" ? "\"\"" : result) + "}";
+			cout << "returnmsg:" << returnmsg << endl;
+			send(PerHandleData->socket, (char*)returnmsg.c_str(), returnmsg.length(), 0);	//发送搜索结果JSON格式数据
 			break;
 		}
 		default: //未知消息
@@ -256,14 +290,25 @@ void CMYIOCPServer::HandleMessage()
 
 unsigned int CMYIOCPServer::login(string id, string psw, SOCKET s)
 {
-	//-----链接数据库验证用户信息------
-	//			[待实现]
-	//-------------------------------
-	//	如果账号不存在
-	//	return 1;
-	//	如果密码错误
-	//if (psw != "123456")
-	//	return 2;
+#if SQLenable
+		//-----链接数据库验证用户信息------
+		string result = m_sql->Search("JennyChat", "account", "pswd", "id=" + id, "");
+		//-------------------------------
+		//如果账号不存在
+		if (result == "") {
+			return 1;
+		}
+
+		//如果密码错误
+		Json::Reader reader;
+		Json::Value root;
+		if (reader.parse(result, root))  // reader将Json字符串解析到root，root将包含Json里所有子元素   
+		{
+			if (root["Result"][0][0] != psw) {
+				return 2;
+			}
+		}
+#endif
 	//	如果正确
 	m_clients[id] = s;	//将新用户存入哈希表
 	return 0;

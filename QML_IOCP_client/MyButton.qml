@@ -71,7 +71,7 @@ Rectangle{
     ]
     transitions: Transition {
         ParallelAnimation {
-            ColorAnimation { property: "color"; duration: 200 ;}
+            ColorAnimation { property: "color"; duration: 200; easing.type: Easing.InOutSine}
         }
     }
 }

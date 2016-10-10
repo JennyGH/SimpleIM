@@ -1,5 +1,7 @@
 #include "client.h"
 
+Client* Client::m_client = NULL;
+
 Client::Client(QObject *parent) : QObject(parent)
 {
     sk = NULL;
@@ -82,10 +84,7 @@ bool Client::sendmessage(QString msg,QString fid,unsigned int type = 2)
     string temp;
     switch (type) {
     case 1:
-        msgpakage->m_message = msg.toLocal8Bit().toStdString();
-        msgpakage->myID = m_id;
         msgpakage->m_type = LOGIN_MSG;
-        temp = "[type:]" + msgpakage->m_type + "[user:]" + msgpakage->myID + "[psw:]" + msgpakage->m_message;
         break;
     case 2:
         if(fid.isEmpty() || fid.isNull()){
@@ -93,15 +92,32 @@ bool Client::sendmessage(QString msg,QString fid,unsigned int type = 2)
             return false;
         }
         debug ("发送给 " + fid.toLocal8Bit().toStdString());
-        msgpakage->friend_id = fid.toLocal8Bit().toStdString();
-        msgpakage->m_message = msg.toLocal8Bit().toStdString();
-        msgpakage->myID = m_id;
         msgpakage->m_type = CHAT_MSG;
-        temp = "[type:]" + msgpakage->m_type + "[fid:]" + msgpakage->friend_id + "[message:]" + msgpakage->m_message + "[myid:]" + msgpakage->myID;
+        break;
+    case 3:
+        if(fid.isEmpty() || fid.isNull()){
+            debug("关键字不能为空...");
+            return false;
+        }
+        debug ("查找 " + fid.toLocal8Bit().toStdString());
+        msgpakage->m_type = SEARCH_MSG;
+        break;
+    case 4:
+        msgpakage->m_type = UPDATE_LIST;
         break;
     default:
+        msgpakage->m_type = "0";
         break;
     }
+    msgpakage->friend_id = fid.toLocal8Bit().toStdString();
+    msgpakage->myID = m_id;
+    msgpakage->m_message = msg.toLocal8Bit().toStdString();
+
+    temp = "{\"type\":" + msgpakage->m_type + "," +
+            "\"myid\":" + "\"" + msgpakage->myID + "\"," +
+            "\"fid\":" + "\"" + msgpakage->friend_id + "\"," +
+            "\"message\":" + "\"" + msgpakage->m_message + "\"" +
+            "}";
     if ((p_ret = send(sk, temp.c_str(), temp.length(), 0)) == SOCKET_ERROR) {
         debug("发送失败");
         closesocket(sk);
@@ -131,6 +147,7 @@ bool Client::saveSetting(QString vip, QString vport)
 
 bool Client::login(QString id, QString psw)
 {
+    cout << "login" << endl;
     if(id.isEmpty() || id.isNull() || psw.isEmpty() || psw.isNull()){
         debug ("用户名与密码不能为空...");
         return false;
@@ -141,6 +158,12 @@ bool Client::login(QString id, QString psw)
     //否则
     //debug("连接服务器失败，请检查网络设置...");
     //return false
+}
+
+bool Client::searchNewFriend(QString idOrName)
+{
+    // type:3 查找新好友
+    return sendmessage("",idOrName,3);
 }
 
 unsigned int Client::keepMessage(QString userid, QString msg)
@@ -208,20 +231,40 @@ QString Client::getMessage()
 DWORD WINAPI Client::recvThread(Client *clt)
 {
     int ret;
-    memset(clt->buff,0,BUFFSIZE);
+    memset(m_client->buff,0,BUFFSIZE);
     while(1){
-        ret = recv(clt->sk,clt->buff,sizeof(clt->buff),0);
+        ret = recv(m_client->sk,m_client->buff,sizeof(m_client->buff),0);
         if (ret == SOCKET_ERROR) {
             debug("接收失败...");
-            closesocket(clt->sk);
-            clt->sk = NULL;
+            closesocket(m_client->sk);
             WSACleanup();
-            return false;
+            m_client->sk = NULL;
+            m_client->threadhld = NULL;
+            emit m_client->loseConnect();
+            break;
         }
         //成功接收数据后
-        clt->buff[ret] = '\0';//由于接收的数据末尾不带结束符\0，要手动加上。
-        emit clt->recvmessage();
+        m_client->buff[ret] = '\0';//由于接收的数据末尾不带结束符\0，要手动加上。
+        cout << "emit:" << m_client->buff << ",current thread:" << GetCurrentThreadId() << ",client:" << m_client << endl;
+        emit m_client->recvmessage();
     }
+    return 0;
+}
+
+Client *Client::GetInstance()
+{
+    debug("GetInstance");
+    if(m_client == NULL){
+        m_client = new Client();
+    }
+    return m_client;
+}
+
+Client::~Client()
+{
+    debug("~Client");
+    delete m_client;
+    m_client = NULL;
 }
 
 int Client::port() const

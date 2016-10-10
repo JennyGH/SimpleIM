@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 //    qmlRegisterType<Client>("Client",1,0,"Client");
     QQmlApplicationEngine engine;
-    engine.rootContext()->setContextProperty("client", new Client);
+    engine.rootContext()->setContextProperty("client", Client::GetInstance());
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     return app.exec();

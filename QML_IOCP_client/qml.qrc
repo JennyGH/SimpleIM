@@ -23,6 +23,9 @@
         <file>MessageBox.qml</file>
         <file>ChatMainWindow.qml</file>
         <file>ResizeBar.qml</file>
+        <file>SearchFriend.qml</file>
+        <file>SearchResultModel.qml</file>
+        <file>SearchResultItem.qml</file>
     </qresource>
     <qresource prefix="/src">
         <file>src/userIcon.png</file>

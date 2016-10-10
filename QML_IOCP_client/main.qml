@@ -1,4 +1,4 @@
-import QtQuick 2.4
+import QtQuick 2.5
 import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
@@ -6,7 +6,7 @@ import QtGraphicalEffects 1.0
 import "../js/generic.js" as GEN
 //import Client 1.0
 
-Window{
+Window {
     id:_loginwindow
     height: 280
     width: 380
@@ -33,6 +33,7 @@ Window{
         onRecvmessage: {
             var returnmsg = client.getMessage();
             var obj = GEN.formatMessage(returnmsg);
+            console.log(returnmsg)
             if(parseInt(returnmsg) === 0){
                 try{
                     var chatmainwindow = GEN.createWindow("ChatMainWindow",null);
@@ -53,9 +54,11 @@ Window{
                     switch(parseInt(obj.message)){
                     case 1:
                         GEN.showMessageBox(_logintips,"用户名不存在...");
+                        txtID.forceActiveFocus();
                         break;
                     case 2:
                         GEN.showMessageBox(_logintips,"密码错误...");
+                        txtpsw.forceActiveFocus();
                         break;
                     default:
                         break;
@@ -65,6 +68,7 @@ Window{
                     break;
                 }
             }
+
         }
 
     }
@@ -98,58 +102,35 @@ Window{
             anchors {
                 topMargin: marginRight
             }
-            Row{
-                spacing : 1
+            MyButton{
+                id:setting
+                title : ""
                 anchors {
-                    top : _loginwindowheader.top
-                    right:_loginwindowheader.closebtn.left
+                    right: _loginwindowheader.closebtn.left
                     rightMargin: 1
                 }
-
-                MyButton{
-                    id:setting
-                    title : ""
-                    anchors {
-                        verticalCenter: parent.verticalCenter
-                    }
-                    Image{
+                Image{
 //                        anchors.fill: parent
-                        source : "qrc:/src/src/setting.png"
-                        height: parent.height * 0.5
-                        width: height
-                        sourceSize.height: height
-                        sourceSize.width: width
-                        anchors.centerIn: parent
-                    }
-
-                    height: 30
-                    width: 40
-                    enter_color: "#bbb"
-                    onClick: {
-                        var newsettingwindow = GEN.createWindow("SettingWindow",_loginwindow);
-                        if(newsettingwindow){
-                            newsettingwindow.setTxtIp(client.ip);
-                            newsettingwindow.setTxtPort(client.port);
-                            newsettingwindow._tishi = _logintips;
-                            GEN.showWindow(newsettingwindow);
-                        }else{
-                            console.error(newsettingwindow + " 未创建...");
-                        }
-                    }
+                    source : "qrc:/src/src/setting.png"
+                    height: parent.height * 0.5
+                    width: height
+                    sourceSize.height: height
+                    sourceSize.width: width
+                    anchors.centerIn: parent
                 }
 
-                MyButton{
-                    id:min
-                    height: 30
-                    width: 40
-                    title : "—"
-                    font_size: 11
-                    anchors {
-                        verticalCenter: parent.verticalCenter
-                    }
-                    enter_color: "#bbb"
-                    onClick: {
-                        _loginwindow.showMinimized();
+                height: 30
+                width: 40
+                enter_color: "#bbb"
+                onClick: {
+                    var newsettingwindow = GEN.createWindow("SettingWindow",_loginwindow);
+                    if(newsettingwindow){
+                        newsettingwindow.setTxtIp(client.ip);
+                        newsettingwindow.setTxtPort(client.port);
+                        newsettingwindow._tishi = _logintips;
+                        GEN.showWindow(newsettingwindow);
+                    }else{
+                        console.error(newsettingwindow + " 未创建...");
                     }
                 }
             }
@@ -200,8 +181,12 @@ Window{
                         anchors {
                             verticalCenter: parent.verticalCenter
                         }
+                        validator: RegExpValidator {
+                            regExp:/[1-9][0-9]{1,10}/
+                        }
+
                         onTextChanged: {
-                            GEN.limitNumber(txtID);
+//                            GEN.limitNumber(txtID);
 //                            console.log(parseInt(txtID.text));
                         }
 
@@ -243,6 +228,15 @@ Window{
                         height: 30
                         anchors {
                             verticalCenter: parent.verticalCenter
+                        }
+                        validator:  RegExpValidator {
+                            regExp:/[0-9a-zA-z\.\*]{1,16}/  //只允许输入0-9,a-z,A-Z,*,.
+                        }
+
+                        echoMode : TextInput.Password
+
+                        style:TextFieldStyle{
+                            passwordCharacter: "*"
                         }
 
                         Keys.enabled: true
@@ -322,6 +316,9 @@ Window{
         samples: 32
         color: "#80000000"
         source: _loginwindowbakg
+    }
+    function showTips(msg){
+        GEN.showMessageBox(_logintips,msg);
     }
 }
 

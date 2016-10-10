@@ -14,6 +14,7 @@ Window {
     property bool conn: false
     property string myName : "Me"
     property var friendListArray: new Array
+    property SearchFriend searchwindow: null
     flags: Qt.FramelessWindowHint | Qt.Window
     color: Qt.rgba(0,0,0,0)
 
@@ -31,11 +32,21 @@ Window {
         }
     }
 
+    Component.onCompleted: {
+
+        GEN.windowArray = [];
+
+        client.sendmessage("","",4);    //消息4：更新好友列表
+
+//        console.log("show mainform")
+    }
+
     Connections{
         target: client
         onRecvmessage: {
             var returnmsg = client.getMessage();
             var obj = GEN.formatMessage(returnmsg);
+//            console.log(returnmsg);
             switch(parseInt(obj.type)){
             case 2:
                 var currentwindow = GEN.isExistWindow(obj.friend);
@@ -55,9 +66,24 @@ Window {
                     client.keepMessage(obj.friend,obj.message);
                 }
                 break;
+            case 4:
+                //返回好友列表信息
+//                friendmodel.clear();
+                if(parseInt(obj.message.SqlMsgType) == 0){
+                    var result = obj.message.Result;
+                    for(var i=0;i<result.length;i++){
+                        addFriend(result[i][0],result[i][1],true,"");
+                    }
+                }break;
             default:
                 break;
             }
+        }
+        onLoseConnect:{
+            var newloginwindow = GEN.createWindow("main",null);
+            fatherWindow.close();
+//            fatherWindow.destroy();
+            newloginwindow.showTips("与服务器断开连接，请重新登陆...");
         }
     }
 
@@ -78,60 +104,6 @@ Window {
             marginRight:mainform.border.width
             anchors {
                 topMargin:header.marginRight
-            }
-            Row{
-                spacing : 1
-                anchors {
-                    top : header.top
-                    right:header.closebtn.left
-                    rightMargin: 1
-                }
-                MyButton{
-                    id:setting
-                    title : ""
-                    anchors {
-                        verticalCenter: parent.verticalCenter
-                    }
-                    Image{
-                        //                        anchors.fill: parent
-                        source : "qrc:/src/src/setting.png"
-                        height: parent.height * 0.5
-                        width: height
-                        sourceSize.height: height
-                        sourceSize.width: width
-                        anchors.centerIn: parent
-                    }
-
-                    height: 30
-                    width: 40
-                    enter_color: "#bbb"
-                    onClick: {
-                        var newsettingwindow = GEN.createWindow("SettingWindow",mainform);
-                        if(newsettingwindow){
-                            newsettingwindow.setTxtIp(client.ip);
-                            newsettingwindow.setTxtPort(client.port);
-                            newsettingwindow._tishi = tishi;
-                            GEN.showWindow(newsettingwindow);
-                        }else{
-                            console.error(newsettingwindow + " 未创建...");
-                        }
-                    }
-                }
-
-                MyButton{
-                    id:min
-                    height: 30
-                    width: 40
-                    title : "—"
-                    font_size: 11
-                    anchors {
-                        verticalCenter: parent.verticalCenter
-                    }
-                    enter_color: "#bbb"
-                    onClick: {
-                        fatherWindow.showMinimized();
-                    }
-                }
             }
         }
 
@@ -154,8 +126,9 @@ Window {
                 horizontalCenter: parent.horizontalCenter
             }
         }
+
         ScrollView {
-            height: mainform.height - me.height - header.height - tishi.height - mainform.border.width*2
+            height: mainform.height - me.height - header.height - tishi.height - mainformfooter.height - mainform.border.width*2
             width: mainform.width - mainform.border.width * 2
             horizontalScrollBarPolicy:Qt.ScrollBarAlwaysOff
             verticalScrollBarPolicy:Qt.ScrollBarAsNeeded
@@ -175,13 +148,13 @@ Window {
                 model: FriendModel{
                     id:friendmodel
                     onCountChanged: {
-                        if(oldcount < count){
-                            friendListArray.push(ID);
-                        }else if(oldcount < count){
-                            console.log("删除某人");
-//                            friendListArray.splice(,1);
-                        }
-                        oldcount = count;
+//                        if(oldcount < count){
+//                            friendListArray.push(ID);
+//                        }else if(oldcount < count){
+//                            console.log("删除某人");
+////                            friendListArray.splice(,1);
+//                        }
+//                        oldcount = count;
                     }
                 }
                 delegate: Friend{
@@ -209,6 +182,90 @@ Window {
                 }
             }
         }
+
+        Rectangle{
+            id:mainformfooter
+            height: 40
+            width: parent.width - parent.border.width*2
+            color : Qt.rgba(0,0,0,0)
+//            gradient: Gradient {
+//                GradientStop { position: 0.0; color: "#fff" }
+//                GradientStop { position: 1.0; color: "#eee" }
+//            }
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+                bottom:parent.bottom
+                bottomMargin: parent.border.width
+            }
+
+            Row{
+
+                spacing: 5
+
+                anchors {
+                    left: parent.left
+                    verticalCenter: parent.verticalCenter
+                    leftMargin: spacing
+                }
+
+                MyButton{
+                    id:setting
+                    title : ""
+                    height: 30
+                    width: 30
+                    enter_color: "#bbb"
+                    radius:40
+                    anchors {
+                        verticalCenter: parent.verticalCenter
+                    }
+                    Image{
+                        //                        anchors.fill: parent
+                        source : "qrc:/src/src/setting.png"
+                        height: parent.height * 0.5
+                        width: height
+                        sourceSize.height: height
+                        sourceSize.width: width
+                        anchors.centerIn: parent
+                    }
+
+                    onClick: {
+                        var newsettingwindow = GEN.createWindow("SettingWindow",mainform);
+                        if(newsettingwindow){
+                            newsettingwindow.setTxtIp(client.ip);
+                            newsettingwindow.setTxtPort(client.port);
+                            newsettingwindow._tishi = tishi;
+                            GEN.showWindow(newsettingwindow);
+                        }else{
+                            console.error(newsettingwindow + " 未创建...");
+                        }
+                    }
+                }
+
+                MyButton{
+                    id:add
+                    title:"<b>+</b>"
+                    font_size: 20
+                    height: 30
+                    width: 30
+                    radius:30
+                    anchors {
+                        verticalCenter: parent.verticalCenter
+                    }
+                    enter_color: "#bbb"
+                    onClick: {
+
+                        if(!searchwindow){
+                            searchwindow = GEN.createWindow("SearchFriend",null);
+                            if(searchwindow){
+                                GEN.showWindow(searchwindow);
+                            }
+                        }else{
+                            searchwindow.raise()
+                        }
+                    }
+                }
+            }
+        }
     }
 
     DropShadow {
@@ -221,9 +278,9 @@ Window {
         source: mainform
     }
 
-    Component.onCompleted: {
-
-        GEN.windowArray = [];
+    function addFriend(id,name,ol,addr){
+        friendmodel.append({"ID":id,"name":name,"onLine":ol,"address":addr});
+        friendListArray.push(id);
     }
 }
 

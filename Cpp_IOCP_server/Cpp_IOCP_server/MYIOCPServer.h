@@ -1,4 +1,5 @@
 #pragma once
+#pragma comment(lib, "json_vc71_libmt.lib")
 #include <string>
 #include <winsock2.h>   
 #include <Windows.h>  
@@ -10,6 +11,14 @@
 #include <atlutil.h>
 #include <queue>
 #include "WorkQueue.h"
+#include "mysql\include\json\json.h"
+
+#define SQLenable 1
+
+#if SQLenable
+#include "MYSQL.h"
+#endif
+
 //#include "WorkA.h"
 //#include "WorkB.h"
 using namespace std;
@@ -91,5 +100,8 @@ private:
 	static CMYIOCPServer *m_pInstance;
 	static char m_byteMsg[MessMaxLen];
 	static CWorkQueue m_CWorkQueue;//Ïß³Ì³Ø
+#if SQLenable
+	static CMYSQL *m_sql;
+#endif
 };
 

@@ -33,6 +33,8 @@ Window {
             id:_settingwindowHeader
             title : "设置"
             movetarget : _settingwindow
+            marginRight: 1
+            minable: false
             anchors {
                 top : _settingwindowbakg.top
                 topMargin: _settingwindowbakg.border.width

@@ -9,6 +9,7 @@ function init(){
 }
 
 function createWindow(src,parent){
+//    console.log("create window");
     try{
         var newwidnow;
         var component = Qt.createComponent("../" + src + ".qml");
@@ -70,9 +71,13 @@ function setWindowSize(window,height,width){
 }
 
 function releaseWindow(window){
-    console.log("释放窗口：",window.title);
-    removeWindowFromArray(window);
-    window.destroy();
+    try{
+        console.log("释放窗口：",window.title);
+        removeWindowFromArray(window);
+        window.destroy();
+    }catch(ex){
+        console.log(ex);
+    }
 }
 
 function isExistWindow(userid){

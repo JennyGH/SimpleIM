@@ -102,7 +102,7 @@ Rectangle{
 
         OnlineLED{
             id:onlineled
-            online : onLine
+            online : true
             anchors{
                 verticalCenter: parent.verticalCenter
             }
@@ -114,7 +114,25 @@ Rectangle{
             anchors{
                 verticalCenter: parent.verticalCenter
             }
-            text:ID + " - " + name + "(" + address + ")"
+            text:name + "(" + ID + ")"
+        }
+    }
+
+
+    MyButton{
+        id:edit
+        height: 25
+        width:60
+        title:"编辑"
+        enter_color: "#5aa7f8"
+        enter_font_color: "#fff"
+        radius:5
+        font_size: 12
+        border_color: "#e2e2e2"
+        anchors{
+            verticalCenter: parent.verticalCenter
+            right:parent.right
+            rightMargin: 10
         }
     }
 

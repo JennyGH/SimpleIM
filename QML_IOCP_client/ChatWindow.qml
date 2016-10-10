@@ -52,9 +52,8 @@ Window{
             MainWindowHeader{
                 id:_chatwindowtitle
                 movetarget : chatwindow
-                marginRight: 1
+                maxable: true
                 anchors {
-                    //                    topMargin: _chatwindowbakg.border.width
                     fill: parent
                 }
                 title:""
@@ -64,51 +63,7 @@ Window{
                         ismax = false;
                     }
                 }
-
-                Row{
-                    spacing : 1
-                    anchors {
-                        top : _chatwindowtitle.top
-                        right:_chatwindowtitle.closebtn.left
-                        rightMargin: 1
-                    }
-                    MyButton{
-                        id:min
-                        height: 30
-                        width:40
-                        anchors {
-                            verticalCenter: parent.verticalCenter
-                        }
-                        title : "—"
-                        font_size: 11
-                        enter_color: "#bbb"
-                        onClick: {
-                            _chatwindowtitle.movetarget.showMinimized();
-                        }
-                    }
-                    MyButton{
-                        id:max
-                        height: 30
-                        width:40
-                        anchors {
-                            verticalCenter: parent.verticalCenter
-                        }
-                        title : "□"
-                        font_size: 20
-                        enter_color: "#bbb"
-                        onClick: {
-                            if(!_chatwindowtitle.movetarget.ismax){
-                                _chatwindowtitle.movetarget.showMaximized();
-                                _chatwindowtitle.movetarget.ismax = true;
-                            }else{
-                                _chatwindowtitle.movetarget.showNormal();
-                                _chatwindowtitle.movetarget.ismax = false;
-                            }
-                        }
-                    }
-                }
             }
-
         }
 
         Column{
@@ -130,6 +85,9 @@ Window{
                 ScrollView {
                     width: parent.width - msgArea.border.width*2
                     height: parent.height - parent.border.width*2
+                    horizontalScrollBarPolicy:Qt.ScrollBarAlwaysOff
+                    verticalScrollBarPolicy:Qt.ScrollBarAsNeeded
+                    style: ScrollViewStyle{transientScrollBars:true}
                     anchors {
                         centerIn: parent
                     }

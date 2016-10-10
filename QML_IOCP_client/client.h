@@ -24,25 +24,30 @@ class Client : public QObject
     Q_PROPERTY(int port READ port WRITE setPort)
     Q_PROPERTY(int Ret READ Ret)
 public:
-    explicit Client(QObject *parent = 0);
     Q_INVOKABLE bool initSocket();
     Q_INVOKABLE bool reconnect();
     Q_INVOKABLE bool sendmessage(QString msg,QString fid,unsigned int type);
     Q_INVOKABLE bool saveSetting(QString vip,QString vport);
     Q_INVOKABLE bool login(QString id,QString psw);
+    Q_INVOKABLE bool searchNewFriend(QString idOrName);
     int port() const;
     void setPort(int p);
     QString ip() const;
     void setIp(QString vip);
     int Ret() const;
     static DWORD WINAPI recvThread(Client *clt);
+    static Client* GetInstance();
+    ~Client();
 signals:
     void recvmessage();
+    void loseConnect();
 public slots:
     QString getMessage();
     unsigned int keepMessage(QString userid,QString msg);
     QString alreadyRead(QString userid);
 private ://私有方法
+
+    explicit Client(QObject *parent = 0);
 
     template<typename T>
     static void debug(T e);
@@ -64,6 +69,7 @@ private : //私有属性
     HANDLE threadhld;
     map<string,list<string>> m_keep;
     unsigned int m_msgcount;
+    static Client* m_client;
 };
 
 #endif // CLIENT_H

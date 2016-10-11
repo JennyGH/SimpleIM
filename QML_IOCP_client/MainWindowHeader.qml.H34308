@@ -96,13 +96,13 @@ Rectangle{
             onClick: {
                 if(!movetarget.ismax){
                     movetarget.showMaximized();
-                    movetarget.bakg.height = movetarget.height;
-                    movetarget.bakg.width = movetarget.width;
+                    movetarget.bakg.height = movetarget.bakg.parent.height;
+                    movetarget.bakg.width = movetarget.bakg.parent.width;
                     movetarget.ismax = true;
                 }else{
+                    movetarget.bakg.height = movetarget.bakg.parent.height - 30;
+                    movetarget.bakg.width = movetarget.bakg.parent.width - 30;
                     movetarget.showNormal();
-                    movetarget.bakg.height = movetarget.height - 30;
-                    movetarget.bakg.width = movetarget.width - 30;
                     movetarget.ismax = false;
                 }
             }
@@ -127,10 +127,6 @@ Rectangle{
                 movetarget.close();
             }
         }
-    }
-
-    function maxclick(){
-        max.click();
     }
 
 }

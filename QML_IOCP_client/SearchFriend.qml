@@ -47,7 +47,7 @@ Window {
         height: 450
         width: 440
         color : "#f8f8f8"
-        radius:5
+        radius:3
         border.color: "#fff"
         anchors.centerIn: parent
 
@@ -160,6 +160,10 @@ Window {
                         id:friend
                         height: 50
                         onDbclick: {}
+                        onDetailsClick: {}
+                        onAddClick: {
+                            client.sendmessage(name,ID,5);    //消息5：添加好友
+                        }
                     }
                 }
             }

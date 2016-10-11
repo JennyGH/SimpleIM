@@ -23,7 +23,10 @@ int main()
 	//	ss >> temp;
 	//	sql->Add("JennyChat", "account", "`id`,`pswd`,`username`", "\"" + temp + "\",\"134345\",\"jenny" + temp + "\"");
 	//}
-	sql->Add("JennyChat", "friendlist", "`fid`,`fname`,`accountid`", "\"1\",\"jenny1\",\"1000\"");
+	//sql->Del("JennyChat", "friendlist", "fid", "1003");
+	cout << sql->Search("JennyChat", "friendlist", "fid", "(`accountid`='1' and `fid`='1007')", "")
+		 << endl;
+	//sql->Add("JennyChat", "friendlist", "`fid`,`fname`,`accountid`", "\"1\",\"jenny1\",\"1000\"");
 
 	//sql->Del("JennyChat", "account", "username", "Jenny2");
 #endif

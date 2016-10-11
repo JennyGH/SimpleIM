@@ -32,7 +32,6 @@ Window {
         if(!fatherWindow.visible){
             GEN.clearWindow();
         }else{
-            fadeout.start();
             client.sendmessage("","",4);    //消息4：更新好友列表
         }
     }
@@ -80,14 +79,13 @@ Window {
                     }
                 }break;
             case 5:
-                if(obj.message !== 0){
-                    if(obj.message.SqlMsgType === 0){
-                        client.sendmessage("","",4);
-                    }else{
-                        console.log("添加好友发生错误：",obj.message.Result);
-                    }
+                if(obj.message.SqlMsgType === 0){
+//                    console.log(obj.message.Result);
+//                    result = obj.message.Result;
+//                    addFriend(result[i][0],result[i][1],true,"");
+                    client.sendmessage("","",4);
                 }else{
-                    console.log("好友已存在...");
+                    console.log("添加好友发生错误：",obj.message.Result);
                 }
                 break;
             case 6:
@@ -118,9 +116,8 @@ Window {
             centerIn: parent
         }
         border.color: "#fff"//"#88888888"
-        color : "#f5f5f5"
+//        color : "#f5f5f5"
         radius: 5
-        opacity: 0
 
         MainWindowHeader {
             id:header
@@ -161,16 +158,14 @@ Window {
         }
 
         Rectangle{
-            height: mainform.height - me.height - header.height - tishi.height - mainformfooter.height - mainform.border.width*2 - 10
-            width: mainform.width - mainform.border.width * 2 - 10
+            height: mainform.height - me.height - header.height - tishi.height - mainformfooter.height - mainform.border.width*2
+            width: mainform.width - mainform.border.width * 2
             anchors{
                 top:me.bottom
-                topMargin: 5
                 horizontalCenter: parent.horizontalCenter
             }
-            color : "transparent"
-            border.color: "#fff"
-            radius:3
+//            color : "#fff"
+//            radius:mainform.radius
             ScrollView {
                 height: parent.height - parent.radius*2
                 width: parent.width - parent.radius*2
@@ -320,18 +315,6 @@ Window {
         samples: 32
         color: "#80000000"
         source: mainform
-        opacity: mainform.opacity
-        scale:mainform.scale
-    }
-
-    PropertyAnimation {
-        id: fadeout
-        target: mainform
-        duration: 400
-        easing.type: Easing.OutSine
-        property: 'opacity'
-        from: 0
-        to: 1
     }
 
     function addFriend(id,name,ol,addr){

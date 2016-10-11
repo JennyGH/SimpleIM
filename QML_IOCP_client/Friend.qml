@@ -1,4 +1,6 @@
 import QtQuick 2.0
+import QtQuick.Controls 1.4
+import QtQuick.Controls.Styles 1.4
 
 Rectangle{
     id:father
@@ -108,13 +110,53 @@ Rectangle{
             }
         }
 
-        MyText{
-            id:txt
-            color:father.font_color
+        Row{
+            spacing : 1
             anchors{
                 verticalCenter: parent.verticalCenter
             }
-            text:name + "(" + ID + ")"
+            TextField{
+                id:txtname
+                text : name
+    //            color:father.font_color
+                width: 100
+                height: 30
+                font.family: txt.font.family
+                font.pixelSize: txt.font.pixelSize
+                anchors{
+                    verticalCenter: parent.verticalCenter
+                }
+                property int borderwidth: 0
+                property bool change: false
+                style:TextFieldStyle{
+                    background: Rectangle{
+                        anchors.fill: parent
+                        color : "transparent"
+                        border.color: "#e2e2e2"
+                        border.width:txtname.borderwidth
+                    }
+                }
+
+                selectByMouse: true
+                readOnly: true
+                enabled: !readOnly
+                onTextChanged: {
+                    if(length > 10){
+                        text = text.substring(0,10)
+                    }
+                    change = true;
+                }
+            }
+
+            MyText{
+                id:txt
+                color:father.font_color
+                anchors{
+                    verticalCenter: parent.verticalCenter
+                }
+
+                text:"(" + ID + ")"
+            }
         }
     }
 
@@ -122,17 +164,40 @@ Rectangle{
     MyButton{
         id:edit
         height: 25
-        width:60
+        width:40
         title:"编辑"
         enter_color: "#5aa7f8"
         enter_font_color: "#fff"
         radius:5
         font_size: 12
         border_color: "#e2e2e2"
+        property bool editting: false
         anchors{
             verticalCenter: parent.verticalCenter
             right:parent.right
             rightMargin: 10
+        }
+        onClick: {
+            if(editting){
+                title = "编辑"
+                editting = !editting
+                enter_color = "#5aa7f8"
+//                console.log("保存修改")
+                txtname.readOnly = true;
+                txtname.borderwidth = 0;
+                if(txtname.change){
+                    client.sendmessage(txtname.text,ID,6); //消息6：修改好友备注
+                }
+                txtname.change = false;
+            }else{
+                title = "保存"
+                editting = !editting
+                enter_color = "#09bb07"
+//                console.log("编辑模式")
+                txtname.readOnly = false;
+                txtname.borderwidth = 1;
+                txtname.change = false;
+            }
         }
     }
 

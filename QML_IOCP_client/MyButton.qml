@@ -12,7 +12,11 @@ Rectangle{
     property color exit_color : "#f5f5f5"// Qt.rgba(0,0,0,0)
     property color enter_font_color : "#444"
     property color exit_font_color : "#444"
-    property color border_color : Qt.rgba(0,0,0,0)
+    property int enter_border_width: 1
+    property int exit_border_width: 0
+    property color enter_border_color : border_color
+    property color exit_border_color : border_color
+    property color border_color : "transparent"
     property int border_width: 1
     property string title : "Default"
     property int font_size: 15
@@ -53,6 +57,10 @@ Rectangle{
                 color : btn.enter_color
             }
             PropertyChanges {
+                target: btn
+                border.color: enter_border_color
+            }
+            PropertyChanges {
                 target: btn_title
                 color : btn_title.enter_color
             }
@@ -62,6 +70,10 @@ Rectangle{
             PropertyChanges {
                 target: btn
                 color : btn.exit_color
+            }
+            PropertyChanges {
+                target: btn
+                border.color: exit_border_color
             }
             PropertyChanges {
                 target: btn_title

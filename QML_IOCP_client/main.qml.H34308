@@ -25,14 +25,14 @@ Window {
         if(!visible){
             //
         }else{
-//            animBig.start();
+            animBig.start();
         }
     }
 
     Component.onCompleted: {
 //        client.ip = "119.29.178.76"
         txtID.forceActiveFocus();
-        animBig.start();
+//        animBig.start();
     }
 
     Connections {
@@ -42,13 +42,14 @@ Window {
             var obj = GEN.formatMessage(returnmsg);
             console.log(returnmsg)
             if(parseInt(returnmsg) === 0){
+                fadeout.start();
                 try{
                     if(!temp_chatwindow){
                         temp_chatwindow = GEN.createWindow("ChatMainWindow",null);
                     }
                     if(temp_chatwindow){
-    //                        chatmainwindow.setClient(client);
-    //                        console.log("client:" + chatmainwindow.client);
+//                        chatmainwindow.setClient(client);
+//                        console.log("client:" + chatmainwindow.client);
                         temp_chatwindow.conn = true;
                         temp_chatwindow.myName = _loginwindow.userID;
                         temp_chatwindow.loginwindow = _loginwindow;
@@ -95,11 +96,9 @@ Window {
     Rectangle{
         id:_loginwindowbakg
         color : "#f5f5f5"
-//        border.color: "#88888888"
-        border.color: "#fff"
+        border.color: "#88888888"
         scale:0
         border.width: 1
-        radius:5
 //        anchors.fill: parent
         height: parent.height - 30
         width: parent.width - 30
@@ -111,14 +110,11 @@ Window {
         MainWindowHeader{
             id:_loginwindowheader
             movetarget : _loginwindow
-            marginRight:5//parent.border.width
-            title : "JennyChat"
+            marginRight:parent.border.width
+            title : ""
             anchors {
                 topMargin: marginRight
             }
-            btnHeight: 30
-            btnWidth: btnHeight
-            btnraduis: _loginwindowbakg.radius * 100
             MyButton{
                 id:setting
                 title : ""
@@ -126,9 +122,6 @@ Window {
                     right: _loginwindowheader.closebtn.left
                     rightMargin: 1
                 }
-                height: 30
-                width: 30
-                radius: _loginwindowbakg.radius * 100
                 Image{
 //                        anchors.fill: parent
                     source : "qrc:/src/src/setting.png"
@@ -138,6 +131,9 @@ Window {
                     sourceSize.width: width
                     anchors.centerIn: parent
                 }
+
+                height: 30
+                width: 40
                 enter_color: "#bbb"
                 onClick: {
                     if(!newsettingwindow){
@@ -178,7 +174,6 @@ Window {
                 spacing: 20
                 width: _loginwindowbakg.width
                 anchors.centerIn: parent
-
                 Row{
                     anchors {
                         horizontalCenter: parent.horizontalCenter
@@ -194,7 +189,7 @@ Window {
                     }
                     TextField{
                         id:txtID
-                        width: _loginwindowbakg.width - lblID.contentWidth - 50 - _signin.width
+                        width: _loginwindowbakg.width - lblID.contentWidth - 50
                         font.family: "微软雅黑"
                         font.pixelSize: 15
                         height: 30
@@ -226,21 +221,7 @@ Window {
                             event.accepted = true;
                         }
                     }
-
-                    MyButton{
-                        id:_signin
-                        title:"注册"
-                        width: 70
-                        height: 30
-                        enter_font_color: "#000"
-                        border_color: "#ddd"
-                        radius: _loginwindowbakg.radius
-                        exit_border_color:"transparent"
-                        enter_border_color: "transparent"
-                        anchors.verticalCenter: parent.verticalCenter
-                    }
                 }
-
                 Row{
                     anchors {
                         horizontalCenter: parent.horizontalCenter
@@ -256,7 +237,7 @@ Window {
                     }
                     TextField{
                         id:txtpsw
-                        width: _loginwindowbakg.width - lblpsw.contentWidth - 50 - _forget.width
+                        width: _loginwindowbakg.width - lblpsw.contentWidth - 50
                         font.family: "微软雅黑"
                         font.pixelSize: 15
                         height: 30
@@ -289,21 +270,7 @@ Window {
                             event.accepted = true;
                         }
                     }
-
-                    MyButton{
-                        id:_forget
-                        title:"忘记密码"
-                        width: 70
-                        height: 30
-                        enter_font_color: "#000"
-                        border_color: "#ddd"
-                        radius: _loginwindowbakg.radius
-                        exit_border_color:"transparent"
-                        enter_border_color: "transparent"
-                        anchors.verticalCenter: parent.verticalCenter
-                    }
                 }
-
                 MyButton{
                     id:btnlogin
                     height: 40
@@ -314,8 +281,7 @@ Window {
                     enter_color: Qt.lighter("#3399ff",1.2)
                     enter_font_color: "#fff"
                     exit_font_color: "#fff"
-                    border_color: Qt.darker("#3399ff",1.2)
-                    radius:_loginwindowbakg.radius
+                    border_color: "#fff"
                     anchors {
                         horizontalCenter: parent.horizontalCenter
                     }
@@ -339,7 +305,6 @@ Window {
                     }
                 }
             }
-
         }
 
 
@@ -349,25 +314,22 @@ Window {
     PropertyAnimation {
         id: animBig
         target: _loginwindowbakg
-        duration: 150
+        duration: 200
         easing.type: Easing.OutExpo
         property: 'scale'
         from: 0
         to: 1
     }
 
-//    PropertyAnimation {
-//        id: fadeout
-//        target: _loginwindowbakg
-//        duration: 500
-//        easing.type: Easing.OutExpo
-//        property: 'opacity'
-//        from: 1
-//        to: 0
-//        onStopped: {
-
-//        }
-//    }
+    PropertyAnimation {
+        id: fadeout
+        target: _loginwindowbakg
+        duration: 200
+        easing.type: Easing.OutExpo
+        property: 'opacity'
+        from: 1
+        to: 0
+    }
 
     DropShadow {
         anchors.fill: _loginwindowbakg
@@ -378,7 +340,6 @@ Window {
         color: "#80000000"
         source: _loginwindowbakg
         scale: _loginwindowbakg.scale
-        opacity: _loginwindowbakg.opacity
     }
     function showTips(msg){
         GEN.showMessageBox(_logintips,msg);

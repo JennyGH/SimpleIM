@@ -221,7 +221,7 @@ DWORD WINAPI   CMYIOCPServer::ServerWorkThread(LPVOID CompletionPortID)
 		case 4:	//返回好友列表
 		{
 			cout << "返回好友列表" << endl;
-			string result = m_sql->Search("JennyChat", "friendlist", "fid,fname", "accountid=(select id from account where id='" + msg->recverID + "')", "");
+			string result = m_sql->Search("JennyChat", "friendlist", "fid,fname", "accountid='" + msg->recverID + "'", "");
 			if (result != "") {
 				Json::Reader reader;
 				Json::Value value;
@@ -233,6 +233,41 @@ DWORD WINAPI   CMYIOCPServer::ServerWorkThread(LPVOID CompletionPortID)
 			}
 			string returnmsg = "{\"type\":4,\"message\":" + (result == "" ? "\"\"" : result) + "}";
 			cout << "returnmsg:" << returnmsg << endl;
+			send(PerHandleData->socket, (char*)returnmsg.c_str(), returnmsg.length(), 0);	//发送搜索结果JSON格式数据
+			break;
+		}
+		case 5: 
+		{
+			cout << "添加好友" << endl;
+			string result, returnmsg;
+			result = m_sql->Search("JennyChat", "friendlist", "fid", "(`accountid`='" + msg->recverID + "' and `fid`='" + msg->senderID + "')", "");
+			if (result == "") {
+				result = m_sql->Add("JennyChat", "friendlist", "`fname`,`fid`,`accountid`", "'" + msg->m_message + "','" + msg->senderID + "','" + msg->recverID + "'");
+				returnmsg = "{\"type\":5,\"message\":" + (result == "" ? "\"\"" : result) + "}";
+			}
+			else {
+				Json::Reader reader;
+				Json::Value value;
+				if (reader.parse(result, value)) {
+					if (value["SqlMsgType"] != 0) {
+						//搜索出错
+						result = m_sql->Add("JennyChat", "friendlist", "`fname`,`fid`,`accountid`", "'" + msg->m_message + "','" + msg->senderID + "','" + msg->recverID + "'");
+						returnmsg = "{\"type\":5,\"message\":" + (result == "" ? "\"\"" : result) + "}";
+					}
+					else {
+						//搜索有结果
+						returnmsg = "{\"type\":5,\"message\":0}";
+					}
+				}
+			}
+			send(PerHandleData->socket, (char*)returnmsg.c_str(), returnmsg.length(), 0);	//发送搜索结果JSON格式数据
+			break;
+		}
+		case 6:
+		{
+			cout << "修改备注" << endl;
+			string result = m_sql->Update("JennyChat", "friendlist", "`fname`='" + msg->m_message + "'", "(`fid`='" + msg->senderID + "' and `accountid`='" + msg->recverID + "')");
+			string returnmsg = "{\"type\":6,\"message\":" + (result == "" ? "\"\"" : result) + "}";
 			send(PerHandleData->socket, (char*)returnmsg.c_str(), returnmsg.length(), 0);	//发送搜索结果JSON格式数据
 			break;
 		}

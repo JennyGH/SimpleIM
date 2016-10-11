@@ -105,6 +105,12 @@ bool Client::sendmessage(QString msg,QString fid,unsigned int type = 2)
     case 4:
         msgpakage->m_type = UPDATE_LIST;
         break;
+    case 5:
+        msgpakage->m_type = ADD;
+        break;
+    case 6:
+        msgpakage->m_type = EDIT;
+        break;
     default:
         msgpakage->m_type = "0";
         break;

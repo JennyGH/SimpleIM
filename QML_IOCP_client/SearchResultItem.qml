@@ -13,6 +13,8 @@ Rectangle{
 
     width: parent.width
     signal dbclick()
+    signal detailsClick();
+    signal addClick();
     height: 40
 
 //    border.color: father.border_color
@@ -101,9 +103,15 @@ Rectangle{
             enter_color: "#5aa7f8"
             enter_font_color: "#fff"
             border_color: "#e2e2e2"
+            visible: false
+            enabled: false
             radius:_searchwindowbakg.radius
             anchors{
                 verticalCenter: parent.verticalCenter
+            }
+            onClick: {
+                //详情按钮点击...
+                detailsClick();
             }
         }
 
@@ -118,6 +126,10 @@ Rectangle{
             radius:_searchwindowbakg.radius
             anchors{
                 verticalCenter: parent.verticalCenter
+            }
+            onClick: {
+                //添加按钮点击...
+                addClick();
             }
         }
     }

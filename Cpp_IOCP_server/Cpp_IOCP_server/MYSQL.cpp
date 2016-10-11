@@ -179,7 +179,7 @@ string CMYSQL::Update(cstr database, cstr table, cstr set, cstr whr)
 	//UPDATE `jennychat`.`account` SET `username`='ddd' WHERE `id`='13';
 	try {
 
-		string query = "UPDATE `" + database + "`.`" + table + " set `" + set + " where " + whr;
+		string query = "UPDATE `" + database + "`.`" + table + "` set " + set + " where " + whr;
 
 		if (mysql_real_query(&m_sql, query.c_str(), (unsigned int)query.length())) {
 

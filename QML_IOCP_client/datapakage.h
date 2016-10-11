@@ -9,6 +9,8 @@ using namespace std;
 #define CHAT_MSG "2"
 #define SEARCH_MSG "3"
 #define UPDATE_LIST "4"
+#define ADD "5"
+#define EDIT "6"
 
 struct MessagePakag{    //消息包
     string friend_id;  //好友ID

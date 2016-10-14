@@ -102,7 +102,7 @@ function removeWindowFromArray(window){
 
 function clearWindow(){
     windowArray = mainform.chatwindows;
-    var count = windowArray.length;
+    var count = windowArray ? windowArray.length : 0;
     for(var i=0;i<count;i++){
         windowArray[0].close();
     }

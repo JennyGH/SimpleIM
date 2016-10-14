@@ -9,6 +9,7 @@ Rectangle{
     property color border_color: "#eee"
     property int border_width: 1
     signal ctrl_Enter();
+    signal enter();
 
     //-----------------------
 
@@ -41,7 +42,11 @@ Rectangle{
             {
                 //发送消息
                 ctrl_Enter();
-            }else if(event.key == Qt.Key_Escape){
+            }
+            else if(((event.key == Qt.Key_Enter) || (event.key == Qt.Key_Return))){
+                enter();
+            }
+            else if(event.key == Qt.Key_Escape){
                 footer.getCloseBtn().click();
             }else{
                 return;

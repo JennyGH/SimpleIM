@@ -19,6 +19,7 @@ Window {
     property string psw
     property ChatMainWindow temp_chatwindow: null
     property SettingWindow newsettingwindow: null
+    property SignInWindow newsigninwindow: null
     color: Qt.rgba(0,0,0,0)
 
     onVisibleChanged: {
@@ -27,12 +28,6 @@ Window {
         }else{
 //            animBig.start();
         }
-    }
-
-    Component.onCompleted: {
-//        client.ip = "119.29.178.76"
-        txtID.forceActiveFocus();
-        animBig.start();
     }
 
     Connections {
@@ -83,15 +78,6 @@ Window {
         }
 
     }
-
-
-    ResizeBar {
-        id:reize
-//        target: _loginwindow
-        barwidth: 30    //鼠标有效区域的宽度
-        enabled: false  //设为true后可调整窗口大小
-    }
-
     Rectangle{
         id:_loginwindowbakg
         color : "#f5f5f5"
@@ -106,6 +92,11 @@ Window {
 //        scale:0
         anchors {
             centerIn: parent
+        }
+        Component.onCompleted: {
+    //        client.ip = "119.29.178.76"
+            txtID.forceActiveFocus();
+            animBig.start();
         }
 
         MainWindowHeader{
@@ -238,6 +229,12 @@ Window {
                         exit_border_color:"transparent"
                         enter_border_color: "transparent"
                         anchors.verticalCenter: parent.verticalCenter
+                        onClick: {
+                            if(!newsigninwindow){
+                                //如果 newsigninwindow 为空则创建新的注册窗口
+                                newsigninwindow = GEN.createWindow("SignInWindow",_loginwindow);
+                            }
+                        }
                     }
                 }
 
@@ -340,10 +337,6 @@ Window {
                 }
             }
 
-        }
-
-
-        Component.onCompleted: {
         }
     }
     PropertyAnimation {

@@ -33,6 +33,7 @@ Rectangle{
         font_size: btn.font_size
         enter_color : enter_font_color
         exit_color : exit_font_color
+        textFormat: Text.RichText
     }
 
     MouseArea{
@@ -83,7 +84,7 @@ Rectangle{
     ]
     transitions: Transition {
         ParallelAnimation {
-            ColorAnimation { property: "color"; duration: 200; easing.type: Easing.InOutSine}
+            ColorAnimation { property: "color"; duration: 150; easing.type: Easing.InOutSine}
         }
     }
 }

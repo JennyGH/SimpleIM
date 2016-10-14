@@ -66,6 +66,9 @@ Window {
                     width: _settingwindowbakg.width -lblIP.width - 50
                     font.family:"微软雅黑"
                     font.pixelSize: 15
+                    validator: RegExpValidator {
+                        regExp:/((?:(?:25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(?:25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d))))/
+                    }
                     anchors {
                         verticalCenter: parent.verticalCenter
                     }

@@ -6,97 +6,92 @@ Item {
 
     property Window target
     property int barwidth: 0
+    property bool canhide: false
+    property bool ishide: false
+    signal mouseIn();
+    signal timeout();
 
     anchors.fill: parent
 
     enabled: true
 
+    Timer {
+        id:timer
+        interval: 300;
+        onTriggered: {
+            timeout();
+        }
+    }
+
     MouseArea {
         id:_top
         height: barwidth
         width: parent.width - barwidth*2
-        cursorShape :Qt.SizeVerCursor
-        enabled: parent.enabled
+//        color:"blue"
         anchors {
             top:parent.top
             horizontalCenter: parent.horizontalCenter
         }
-        property point clickPos: "0,0"
-        onPressed: {
-            clickPos = Qt.point(mouse.x,mouse.y);
-        }
-        onPositionChanged: {
-            //鼠标偏移量
-            var delta = Qt.point(mouse.x-clickPos.x, mouse.y-clickPos.y);
-            if(_resize.parent.height + delta.y >= minimumHeight){
-                _resize.parent.height += delta.y;
-            }
+        hoverEnabled: true
+        onEntered: {
+            mouseIn();
         }
     }
     MouseArea{
         id:_bottom
         height: barwidth
         width: parent.width - barwidth*2
-        cursorShape :Qt.SizeVerCursor
         enabled: parent.enabled
+//        color:"red"
         anchors {
             bottom:parent.bottom
             horizontalCenter: parent.horizontalCenter
         }
-        property point clickPos: "0,0"
-        onPressed: {
-            clickPos = Qt.point(mouse.x,mouse.y);
-        }
-        onPositionChanged: {
-            //鼠标偏移量
-            var delta = Qt.point(mouse.x-clickPos.x, mouse.y-clickPos.y);
-            if(_resize.parent.height + delta.y >= minimumHeight){
-                _resize.parent.height += delta.y;
-            }
+        hoverEnabled: true
+        onEntered: {
+            mouseIn();
         }
     }
     MouseArea{
         id:_left
-        height: parent.height - barwidth*2
+        height: parent.height
         width: barwidth
-        cursorShape :Qt.SizeHorCursor
         enabled: parent.enabled
+//        color:"yellow"
         anchors {
             left: parent.left
             verticalCenter: parent.verticalCenter
         }
-        property point clickPos: "0,0"
-        onPressed: {
-            clickPos = Qt.point(mouse.x,mouse.y);
-        }
-        onPositionChanged: {
-            //鼠标偏移量
-            var delta = Qt.point(mouse.x-clickPos.x, mouse.y-clickPos.y);
-            if(_resize.parent.width + delta.x >= _resize.parent.minimumWidth){
-                _resize.parent.width += delta.x
-            }
+        hoverEnabled: true
+        onEntered: {
+            mouseIn();
         }
     }
     MouseArea{
         id:_right
-        height: parent.height - barwidth*2
+        height: parent.height
         width: barwidth
-        cursorShape :Qt.SizeHorCursor
         enabled: parent.enabled
+//        color:"green"
         anchors {
             right: parent.right
             verticalCenter: parent.verticalCenter
         }
-        property point clickPos: "0,0"
-        onPressed: {
-            clickPos = Qt.point(mouse.x,mouse.y);
+        hoverEnabled: true
+        onEntered: {
+            mouseIn();
         }
-        onPositionChanged: {
-            //鼠标偏移量
-            var delta = Qt.point(mouse.x-clickPos.x, mouse.y-clickPos.y);
-            if(_resize.parent.width + delta.x >= _resize.parent.minimumWidth){
-                _resize.parent.width += delta.x
-            }
+    }
+
+    function run(){
+        if(timer.running){
+            timer.interval = 300;
+            timer.restart();
+        }else{
+            timer.start();
         }
+    }
+    function setTime(time){
+        timer.interval = time;
     }
 }

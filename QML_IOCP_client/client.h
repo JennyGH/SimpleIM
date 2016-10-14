@@ -36,6 +36,7 @@ public:
     void setIp(QString vip);
     int Ret() const;
     static DWORD WINAPI recvThread(Client *clt);
+    static DWORD WINAPI updateThread(Client *clt);
     static Client* GetInstance();
     ~Client();
 signals:
@@ -66,7 +67,9 @@ private : //ÀΩ”– Ù–‘
     MessagePakag *msgpakage;
     char buff[BUFFSIZE];
     int p_ret;
-    HANDLE threadhld;
+//    HANDLE recvthread;
+//    HANDLE updatethread;
+    map<string,HANDLE> thread_map;
     map<string,list<string>> m_keep;
     unsigned int m_msgcount;
     static Client* m_client;

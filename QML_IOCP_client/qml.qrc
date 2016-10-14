@@ -26,6 +26,9 @@
         <file>SearchFriend.qml</file>
         <file>SearchResultModel.qml</file>
         <file>SearchResultItem.qml</file>
+        <file>SignInWindow.qml</file>
+        <file>MyToolBar.qml</file>
+        <file>ImgButton.qml</file>
     </qresource>
     <qresource prefix="/src">
         <file>src/userIcon.png</file>
@@ -34,6 +37,7 @@
         <file>src/naill.png</file>
         <file>src/gray-naill.png</file>
         <file>src/setting.png</file>
+        <file>src/photo.png</file>
     </qresource>
     <qresource prefix="/js">
         <file>generic.js</file>

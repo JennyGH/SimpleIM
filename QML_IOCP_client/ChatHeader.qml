@@ -5,6 +5,7 @@ Rectangle{
     height: 50
     width: parent.width
     color:"#f9f9f9"
+    smooth: true
 
     //----------私有属性-------------
 
@@ -28,7 +29,7 @@ Rectangle{
             headIconSource: headsrc
             height: 40
             width: 40
-            radius: 0
+            radius: 40
             anchors {
                 verticalCenter: parent.verticalCenter
             }

@@ -26,9 +26,11 @@ Rectangle{
             id:send
             height: 30
             width : contentwidth
-            title : "发送(Ctrl+Enter)"
+            title : "发送"
             border_color : "#aaa"
-            enter_color: "#bbb"
+            enter_color: "#157efb"
+            enter_font_color: "#fff"
+            enter_border_color: "#fff"//Qt.darker("#157efb",1.5)
             font_size:father.font_size
             radius:btnradius
             onClick: {
@@ -43,9 +45,11 @@ Rectangle{
             id:close
             height: 30
             width : contentwidth
-            title : "关闭(Esc)"
+            title : "关闭"
             border_color : "#aaa"
-            enter_color: "#bbb"
+            enter_color: "#157efb"
+            enter_font_color: "#fff"
+            enter_border_color: "#fff"//Qt.darker("#157efb",1.5)
             font_size:father.font_size
             radius:btnradius
             onClick: {

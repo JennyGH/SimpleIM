@@ -5,7 +5,9 @@ Client* Client::m_client = NULL;
 Client::Client(QObject *parent) : QObject(parent)
 {
     sk = NULL;
-    threadhld = NULL;
+//    recvthread = NULL;
+    thread_map["recv"] = NULL;
+    thread_map["update"] = NULL;
     m_msgcount = 0;
     //    memset(buff,0,sizeof(buff));
     ifstream fin("setting.ini");
@@ -245,7 +247,32 @@ DWORD WINAPI Client::recvThread(Client *clt)
             closesocket(m_client->sk);
             WSACleanup();
             m_client->sk = NULL;
-            m_client->threadhld = NULL;
+            m_client->thread_map["recv"] = NULL;
+            m_client->thread_map["update"] = NULL;
+            emit m_client->loseConnect();
+            break;
+        }
+        //成功接收数据后
+        m_client->buff[ret] = '\0';//由于接收的数据末尾不带结束符\0，要手动加上。
+        cout << "emit:" << m_client->buff << ",current thread:" << GetCurrentThreadId() << ",client:" << m_client << endl;
+        emit m_client->recvmessage();
+    }
+    return 0;
+}
+
+DWORD Client::updateThread(Client *clt)
+{
+    int ret;
+    memset(m_client->buff,0,BUFFSIZE);
+    while(1){
+        ret = recv(m_client->sk,m_client->buff,sizeof(m_client->buff),0);
+        if (ret == SOCKET_ERROR) {
+            debug("接收失败...");
+            closesocket(m_client->sk);
+            WSACleanup();
+            m_client->sk = NULL;
+            m_client->thread_map["recv"] = NULL;
+            m_client->thread_map["update"] = NULL;
             emit m_client->loseConnect();
             break;
         }
@@ -312,18 +339,29 @@ bool Client::_connect()
 
 bool Client::_recv()
 {
-    if(threadhld == NULL)
+    if(thread_map["recv"] == NULL)
     {
-        threadhld = ::CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Client::recvThread, (LPVOID)this, 0, NULL);
-        if(threadhld == NULL){
+        thread_map["recv"] = ::CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Client::recvThread, (LPVOID)this, 0, NULL);
+        if(thread_map["recv"] == NULL){
             debug ("创建线程失败...");
             return false;
         }
         debug("线程创建成功...");
-        CloseHandle(threadhld);
+        CloseHandle(thread_map["recv"]);
     }else{
-        cout << "已存在线程 " << threadhld << endl;
+        cout << "已存在接收线程 " << thread_map["recv"] << endl;
     }
+//    if(thread_map["update"] == NULL){
+//        thread_map["update"] = ::CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Client::updateThread, (LPVOID)this, 0, NULL);
+//        if(thread_map["update"] == NULL){
+//            debug ("创建线程失败...");
+//            return false;
+//        }
+//        debug("线程创建成功...");
+//        CloseHandle(thread_map["update"]);
+//    }else{
+//        cout << "已存在更新线程 " << thread_map["update"] << endl;
+//    }
     return true;
 }
 

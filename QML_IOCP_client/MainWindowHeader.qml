@@ -16,6 +16,7 @@ Rectangle{
     property int btnWidth: 40
     signal closeClick();
     signal move();
+    signal dbclick();
     z: 10
     color: Qt.rgba(0,0,0,0)
     anchors {
@@ -37,6 +38,10 @@ Rectangle{
             movetarget.setX(movetarget.x+delta.x)
             movetarget.setY(movetarget.y+delta.y)
 //            console.log(mouseX,mouseY);
+        }
+        onDoubleClicked: {
+            dbclick();
+            maxclick();
         }
     }
     MyText{
@@ -125,6 +130,7 @@ Rectangle{
             onClick: {
                 closeClick();
                 movetarget.close();
+                movetarget.destroy();
             }
         }
     }

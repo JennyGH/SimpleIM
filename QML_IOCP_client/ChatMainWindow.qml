@@ -14,6 +14,8 @@ Window {
     property bool conn: false
     property string myName : "Me"
     property var friendListArray: new Array
+    property bool canhide: false
+    property bool ishide: false
     property SearchFriend searchwindow: null
     property SettingWindow newsettingwindow: null
     property Window loginwindow: null
@@ -42,6 +44,25 @@ Window {
         GEN.windowArray = [];
 
 //        console.log("show mainform")
+    }
+
+    onActiveChanged: {
+        if(!fatherWindow.active){
+            if(!ishide && canhide){
+                senseArea.run();
+//                hideWindow.start();
+            }
+
+//            ishide = true;
+//            canhide = true;
+        }
+    }
+
+    onCanhideChanged: {
+        senseArea.canhide = fatherWindow.canhide
+    }
+    onIshideChanged: {
+        senseArea.ishide = fatherWindow.ishide
     }
 
     Connections{
@@ -108,6 +129,31 @@ Window {
         }
     }
 
+    ResizeBar {
+        id:senseArea
+//        target: _loginwindow
+        barwidth: 15    //鼠标有效区域的宽度
+        enabled: false  //设为true后可调整窗口大小
+        ishide : fatherWindow.ishide
+        canhide : fatherWindow.canhide
+        z:999
+        onMouseIn: {
+            console.log("mouse in")
+            run();
+        }
+        onTimeout: {
+            if(ishide){
+                //显示
+                hideWindow.stop();
+                showWindow.start();
+            }else{
+                //隐藏
+                showWindow.stop();
+                hideWindow.start();
+            }
+        }
+    }
+
     MainForm {
         id:mainform
         property color font_color: "#444"
@@ -121,6 +167,25 @@ Window {
         color : "#f5f5f5"
         radius: 5
         opacity: 0
+
+//        MouseArea {
+//            id:senseArea
+//            anchors.fill: parent
+//            hoverEnabled: true
+//            enabled: canhide
+//            z:10
+//            onEntered: {
+//                if(ishide){
+//                    //显示
+//                    hideWindow.stop();
+//                    showWindow.start();
+//                }else{
+//                    //隐藏
+//                    showWindow.stop();
+//                    hideWindow.start();
+//                }
+//            }
+//        }
 
         MainWindowHeader {
             id:header
@@ -136,6 +201,19 @@ Window {
                 console.log(searchwindow);
                 if(searchwindow){
                     searchwindow.close();
+                }
+            }
+            onMove:{
+//                console.log(fatherWindow.y)
+                if(fatherWindow.y <= -15){
+                    //到达屏幕边缘
+                    canhide = true;
+                    fatherWindow.y = -15
+                    senseArea.enabled = true;
+                }else{
+                    //未到屏幕边缘
+                    canhide = false;
+                    senseArea.enabled = false;
                 }
             }
         }
@@ -333,6 +411,69 @@ Window {
         from: 0
         to: 1
     }
+
+    PropertyAnimation {
+        id: hideWindow
+        target: fatherWindow
+        duration: 200
+        easing.type: Easing.OutSine
+        property: 'y'
+        from: y//-16
+        to: -10-(height - 28)
+        onStopped: {
+//            canhide = true;
+            senseArea.z = 999
+            ishide = true;
+            senseArea.setTime(0);
+        }
+    }
+
+    PropertyAnimation {
+        id: showWindow
+        target: fatherWindow
+        duration: 200
+        easing.type: Easing.OutSine
+        property: 'y'
+        to: -16
+        from: y//-10-(height - 28)
+        onStopped:{
+//            canhide = false;
+            senseArea.z = 0
+            ishide = false;
+            senseArea.setTime(300);
+        }
+    }
+
+//    states: [
+//        State {
+//            name: "hide"
+//            PropertyChanges {
+//                target: fatherWindow
+//                y: -fatherWindow.height - 15
+//            }
+//        },
+//        State {
+//            name: "show"
+//            PropertyChanges {
+//                target: fatherWindow
+//                y: -15
+//            }
+//        }
+//    ]
+
+//    transitions: [
+//        Transition {
+//            from: "*"
+//            to: "*"
+
+//            NumberAnimation {
+//                target: fatherWindow
+//                property: "y"
+//                duration: 200
+//                easing.type: Easing.InOutQuad
+//            }
+//        }
+//    ]
 
     function addFriend(id,name,ol,addr){
         friendmodel.append({"ID":id,"name":name,"onLine":ol,"address":addr});

@@ -29,7 +29,7 @@ Rectangle{
             id:my_head
             height: 60
             width: 60
-            radius:0
+            radius:60
             anchors{
                 verticalCenter: parent.verticalCenter
             }

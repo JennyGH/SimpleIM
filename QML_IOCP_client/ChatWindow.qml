@@ -27,6 +27,7 @@ Window{
             GEN.releaseWindow(this);
         }else{
             animBig.start();
+            inputarea.text().forceActiveFocus();
         }
     }
 
@@ -84,6 +85,7 @@ Window{
         }
 
         Column{
+            spacing : 5
             //            anchors.fill: parent
             height: _chatwindowbakg.height - chatwindowheader.height - _chatwindowbakg.border.width*2
             width: _chatwindowbakg.width - _chatwindowbakg.border.width*2
@@ -94,7 +96,7 @@ Window{
             MessageArea {
                 id:msgArea
                 border.color: _chatwindowbakg.border.color
-                height: _chatwindowbakg.height - chatwindowheader.height - sendarea.height - 2
+                height: _chatwindowbakg.height - chatwindowheader.height - sendarea.height - toolbar.height - parent.spacing*2 - 2
                 width: _chatwindowbakg.width
                 anchors {
                     horizontalCenter: parent.horizontalCenter
@@ -117,24 +119,18 @@ Window{
                     }
                 }
             }
-            Rectangle{
-                id:sendarea
-                height: 100 + footer.height
-                color: footer.color
+
+            MyToolBar{
+                id:toolbar
                 width: parent.width
-                property int spacing: 5
+                btnradius: 5
+                btnHeight: 30
                 MouseArea{
-                    id:toolbar
-                    width: parent.width
-                    height: sendarea.spacing
-                    anchors {
-                        top : parent.top
-                        horizontalCenter: parent.horizontalCenter
-                    }
                     property point clickPos: "0,0"
                     property int movecount: 0
                     property int ychangecount: 0
                     property int average:0
+                    anchors.fill: parent
                     onPressed: {
                         clickPos = Qt.point(mouse.x,mouse.y);
                         movecount = 0;
@@ -159,22 +155,35 @@ Window{
                     }
                 }
 
+            }
+
+            Rectangle{
+                id:sendarea
+                height: 100 + footer.height
+//                color: footer.color
+                color : "transparent"
+                width: parent.width
+                property int spacing: 5
+
                 InputArea {
                     id:inputarea
                     height : undefined
-                    border_color: "#e2e2e2"
-                    border_width : 2
                     width: parent.width - sendarea.spacing*2
                     anchors {
-                        top : toolbar.bottom
+                        top : sendarea.top
                         //                        topMargin: sendarea.spacing
                         horizontalCenter: parent.horizontalCenter
                         bottom: footer.top
                         bottomMargin: inputarea.border_width
                     }
                     onCtrl_Enter: {
-                        GEN.send(userid,"我",chatwindow.getContent());
-                        chatwindow.setContent("");
+                        text().append("");
+//                        GEN.send(userid,"我",chatwindow.getContent());
+//                        chatwindow.setContent("");
+                    }
+                    onEnter:{
+                          GEN.send(userid,"我",chatwindow.getContent());
+                          chatwindow.setContent("");
                     }
                 }
 
@@ -186,6 +195,7 @@ Window{
                     font_size: 13
                     anchors {
                         bottom : parent.bottom
+//                        bottomMargin:10
                     }
                 }
             }

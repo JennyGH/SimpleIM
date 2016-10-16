@@ -35,6 +35,9 @@ public:
 	//改:UPDATE `jennychat`.`account` SET `username`='ddd' WHERE `id`='13';
 	string Update(cstr database, cstr table, cstr set, cstr whr);
 
+	//检查连接
+	bool CheckConnect();
+
 	//关闭数据库
 	void CloseSQL();
 

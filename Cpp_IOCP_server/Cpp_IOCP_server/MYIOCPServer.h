@@ -7,6 +7,8 @@
 #include <map>
 #include <iostream>
 #include <sstream>
+#include <ctime>
+#include <iomanip>
 //#include "CThreadPool.h" 
 #include <atlutil.h>
 #include <queue>
@@ -31,6 +33,7 @@ using namespace std;
 #define DataBuffSize   2 * 1024 
 
 static map<string, SOCKET> m_clients;
+static string sqlpswd;
 
 //消息包结构体
 struct MessagePakag {    //消息包
@@ -79,12 +82,15 @@ public:
 	static void SendMessage(SOCKET &tSOCKET, char MessAge[MessMaxLen]);
 	static CMYIOCPServer* GetInstance();
 	static void formatMessage(char* str, MessagePakag &mp);
+	static void setPswd(string pswd);
+	static string now();
 private:
 	//私有方法
 	CMYIOCPServer(void);
 	bool  LoadWindowsSocket();
 	bool InitServerSocket();
 	bool CreateServerSocker();
+	static char* getIpAddr(SOCKADDR_STORAGE saddr);
 	static void HandleMessage();
 	static unsigned int login(string id,string psw,SOCKET s);
 	static void showClients(map<string,SOCKET> clts);

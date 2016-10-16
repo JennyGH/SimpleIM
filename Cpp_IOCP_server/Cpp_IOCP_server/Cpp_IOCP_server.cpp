@@ -6,11 +6,30 @@
 //#pragma comment(lib, "Kernel32.lib") 
 #define SERVER 1
 
-int main()
+int main(int argc, char **argv)
 {
 #if SERVER
+	if (argc <= 1) {
+		CMYIOCPServer::setPswd("");
+		//cout << sqlpswd << endl;
+	}
+	else {
+		CMYIOCPServer::setPswd(argv[1]);
+		//cout << sqlpswd << endl;
+	}
 	CMYIOCPServer* server = CMYIOCPServer::GetInstance();
-	server->SetPortW(5150);
+	if (argc <= 2) {
+		server->SetPortW(5150);
+		cout << "using port: 5150" << endl;
+	}
+	else {
+		stringstream ss;
+		ss << argv[2];
+		int p;
+		ss >> p;
+		server->SetPortW(p);
+		cout << "using port: " << p << endl;
+	}
 	server->ServerSetUp();
 #else
 	CMYSQL *sql = CMYSQL::GetInstance();

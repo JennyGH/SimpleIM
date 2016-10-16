@@ -207,6 +207,14 @@ string CMYSQL::Update(cstr database, cstr table, cstr set, cstr whr)
 	return "{\"SqlMsgType\":0,\"Result\":\"Update Success...\"}";
 }
 
+bool CMYSQL::CheckConnect()
+{
+	if (mysql_ping(&m_sql)) {
+		return false;
+	}
+	return true;
+}
+
 void CMYSQL::CloseSQL()
 {
 	mysql_close(&m_sql);

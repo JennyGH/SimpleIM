@@ -1,3 +1,4 @@
+//#define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include "StdAfx.h"
 #include "MYIOCPServer.h"
 
@@ -23,9 +24,9 @@ CMYIOCPServer* CMYIOCPServer::GetInstance()
 
 #if SQLenable
 
-		m_sql = CMYSQL::GetInstance();
+	m_sql = CMYSQL::GetInstance();
 
-		m_sql->InitSQL("localhost","root","","JennyChat",3306,"utf8");
+	m_sql->InitSQL("localhost", "root", sqlpswd, "JennyChat", 3306, "utf8");
 
 #endif
 
@@ -44,6 +45,28 @@ void CMYIOCPServer::formatMessage(char * str, MessagePakag & mp)
 		mp.m_message = value["message"].asString();
 		mp.recverID = value["myid"].asString();
 		mp.senderID = value["fid"].asString();
+	}
+}
+void CMYIOCPServer::setPswd(string pswd)
+{
+	sqlpswd = pswd;
+}
+string CMYIOCPServer::now()
+{
+	time_t t = time(NULL);
+	tm currenttime = { 0 };
+	int err = localtime_s(&currenttime, &t);
+	if (err) {
+		return "Get Time Error...";
+	}
+	else {
+		stringstream ss;
+		ss << setw(2) << setfill('0') << setiosflags(ios::right) << currenttime.tm_hour << ":"
+			<< setw(2) << setfill('0') << setiosflags(ios::right) << currenttime.tm_min << ":"
+			<< setw(2) << setfill('0') << setiosflags(ios::right) << currenttime.tm_sec;
+		string now_time;
+		ss >> now_time;
+		return now_time;
 	}
 }
 /**************************
@@ -104,6 +127,8 @@ DWORD WINAPI   CMYIOCPServer::ServerWorkThread(LPVOID CompletionPortID)
 		if (bRet == 0) {
 			map<string, SOCKET>::iterator mapptr;
 			mapptr = m_clients.find(PerHandleData->username);
+			//system("time");
+			cout << "[" << now() << "] ";
 			if (mapptr != m_clients.end()) {
 				m_clients.erase(mapptr);	//用户退出后删除map表中相应用户
 				cerr << "用户 " << PerHandleData->username << " 退出..." << endl;
@@ -136,7 +161,8 @@ DWORD WINAPI   CMYIOCPServer::ServerWorkThread(LPVOID CompletionPortID)
 		//得到客户端SOCKET信息
 		SOCKET sClientSocket;
 		MessagePakag *msg = new MessagePakag;
-		cout << "m_byteMsg:" << m_byteMsg << endl;
+		//system("time");
+		cout << "[" << now() << "] " << "(" << getIpAddr(PerHandleData->ClientAddr) << ")" << " m_byteMsg:" << m_byteMsg << endl;
 		formatMessage(m_byteMsg, *msg);
 		stringstream ss;
 		ss << msg->m_type;
@@ -164,7 +190,7 @@ DWORD WINAPI   CMYIOCPServer::ServerWorkThread(LPVOID CompletionPortID)
 			}
 			case 1: {
 				char* sysmsg = "{\"type\":1,\"message\":1}";
-				cout << "帐号不存在" << endl;
+				//cout << "帐号不存在" << endl;
 				//SendMessage(PerHandleData->socket, sysmsg);	//	发送登录失败的系统消息
 				send(PerHandleData->socket, sysmsg, strlen(sysmsg), 0);
 				//closesocket(PerHandleData->socket);
@@ -172,7 +198,7 @@ DWORD WINAPI   CMYIOCPServer::ServerWorkThread(LPVOID CompletionPortID)
 			}
 			case 2: {
 				char* sysmsg = "{\"type\":1,\"message\":2}";
-				cout << "密码错误" << endl;
+				//cout << "密码错误" << endl;
 				//SendMessage(PerHandleData->socket, sysmsg);	//	发送登录失败的系统消息
 				send(PerHandleData->socket, sysmsg, strlen(sysmsg), 0);
 				//closesocket(PerHandleData->socket);
@@ -197,7 +223,8 @@ DWORD WINAPI   CMYIOCPServer::ServerWorkThread(LPVOID CompletionPortID)
 			string result = m_sql->Search("JennyChat", "account", "id,username", "id='" + msg->senderID + "'", "");
 			if (result == "") {
 				result = m_sql->Search("JennyChat", "account", "id,username", "username='" + msg->senderID + "'", "");
-			}else{
+			}
+			else {
 				Json::Reader reader;
 				Json::Value value;
 				if (reader.parse(result, value)) {
@@ -232,11 +259,11 @@ DWORD WINAPI   CMYIOCPServer::ServerWorkThread(LPVOID CompletionPortID)
 				}
 			}
 			string returnmsg = "{\"type\":4,\"message\":" + (result == "" ? "\"\"" : result) + "}";
-			cout << "returnmsg:" << returnmsg << endl;
+			//cout << "returnmsg:" << returnmsg << endl;
 			send(PerHandleData->socket, (char*)returnmsg.c_str(), returnmsg.length(), 0);	//发送搜索结果JSON格式数据
 			break;
 		}
-		case 5: 
+		case 5:
 		{
 			cout << "添加好友" << endl;
 			string result, returnmsg;
@@ -326,23 +353,26 @@ void CMYIOCPServer::HandleMessage()
 unsigned int CMYIOCPServer::login(string id, string psw, SOCKET s)
 {
 #if SQLenable
-		//-----链接数据库验证用户信息------
-		string result = m_sql->Search("JennyChat", "account", "pswd", "id=" + id, "");
-		//-------------------------------
-		//如果账号不存在
-		if (result == "") {
-			return 1;
-		}
+	if (!m_sql->CheckConnect()) {
+		m_sql->InitSQL("localhost", "root", sqlpswd, "JennyChat", 3306, "utf8");
+	}
+	//-----链接数据库验证用户信息------
+	string result = m_sql->Search("JennyChat", "account", "pswd", "id=" + id, "");
+	//-------------------------------
+	//如果账号不存在
+	if (result == "") {
+		return 1;
+	}
 
-		//如果密码错误
-		Json::Reader reader;
-		Json::Value root;
-		if (reader.parse(result, root))  // reader将Json字符串解析到root，root将包含Json里所有子元素   
-		{
-			if (root["Result"][0][0] != psw) {
-				return 2;
-			}
+	//如果密码错误
+	Json::Reader reader;
+	Json::Value root;
+	if (reader.parse(result, root))  // reader将Json字符串解析到root，root将包含Json里所有子元素   
+	{
+		if (root["Result"][0][0] != psw) {
+			return 2;
 		}
+	}
 #endif
 	//	如果正确
 	m_clients[id] = s;	//将新用户存入哈希表
@@ -458,7 +488,7 @@ bool CMYIOCPServer::CreateServerSocker()
 	}
 
 	// 开始处理IO数据   
-	cout << "本服务器已准备就绪，正在等待客户端的接入...\n";
+	cout << "[" << CMYIOCPServer::now() << "] " << "本服务器已准备就绪，正在等待客户端的接入...\n";
 	int icount = 0;
 	while (true) {
 		PER_HANDLE_DATA * PerHandleData = NULL;
@@ -515,6 +545,13 @@ bool CMYIOCPServer::CreateServerSocker()
 	return true;
 }
 
+char * CMYIOCPServer::getIpAddr(SOCKADDR_STORAGE saddr)
+{
+	sockaddr_in sin;
+	memcpy(&sin, &saddr, sizeof(sin));
+	return inet_ntoa(sin.sin_addr);
+}
+
 /*********************
 启动服务器
 *********************/
@@ -532,5 +569,6 @@ bool CMYIOCPServer::ServerSetUp()
 	{
 		return false;
 	}
+	//cout << "[" << CMYIOCPServer::now() << "] " << " 服务启动..." << endl;
 	return true;
 }

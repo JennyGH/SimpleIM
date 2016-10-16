@@ -115,7 +115,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <SDLCheck>true</SDLCheck>
+      <SDLCheck>false</SDLCheck>
       <AdditionalIncludeDirectories>D:\JennyGit\IOCP\Cpp_IOCP_server\Cpp_IOCP_server\mysql\include\json;D:\JennyGit\IOCP\Cpp_IOCP_server\Cpp_IOCP_server\mysql\include;D:\JennyGit\IOCP\Cpp_IOCP_server\Cpp_IOCP_server\mysql\include\mysql;D:\JennyGit\IOCP\Cpp_IOCP_server\Cpp_IOCP_server\mysql\include\mysql\psi;D:\JennyGit\IOCP\Cpp_IOCP_server\Cpp_IOCP_server\mysql\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>

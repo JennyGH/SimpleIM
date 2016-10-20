@@ -126,12 +126,12 @@ DWORD WINAPI   CMYIOCPServer::ServerWorkThread(LPVOID CompletionPortID)
 		bRet = GetQueuedCompletionStatus(m_completionPort, &BytesTransferred, (PULONG_PTR)&PerHandleData, (LPOVERLAPPED*)&IpOverlapped, INFINITE);
 		if (bRet == 0) {
 			map<string, SOCKET>::iterator mapptr;
-			mapptr = m_clients.find(PerHandleData->username);
+			mapptr = m_clients.find(PerHandleData->userid);
 			//system("time");
 			cout << "[" << now() << "] ";
 			if (mapptr != m_clients.end()) {
 				m_clients.erase(mapptr);	//用户退出后删除map表中相应用户
-				cerr << "用户 " << PerHandleData->username << " 退出..." << endl;
+				cerr << "用户 " << PerHandleData->userid << " 退出..." << endl;
 			}
 			else {
 				if (GetLastError() == 64)
@@ -179,11 +179,11 @@ DWORD WINAPI   CMYIOCPServer::ServerWorkThread(LPVOID CompletionPortID)
 			*/
 			//客户端转发消息为2
 			//查找新朋友为3
-			switch (login(msg->recverID, msg->m_message, PerHandleData->socket)) {
+			switch (login(msg->recverID, msg->m_message, PerHandleData)) {
 			case 0: {
 				char* sysmsg = "0";
 				cout << "用户 " << msg->recverID << " 登入：" << endl;
-				PerHandleData->username = msg->recverID;	//保存客户ID
+				PerHandleData->userid = msg->recverID;	//保存客户ID
 				//SendMessage(PerHandleData->socket, sysmsg);	//	发送登录失败的系统消息
 				send(PerHandleData->socket, sysmsg, strlen(sysmsg), 0);
 				break;
@@ -258,7 +258,7 @@ DWORD WINAPI   CMYIOCPServer::ServerWorkThread(LPVOID CompletionPortID)
 					}
 				}
 			}
-			string returnmsg = "{\"type\":4,\"message\":" + (result == "" ? "\"\"" : result) + "}";
+			string returnmsg = "{\"type\":4,\"myName\":\"" + PerHandleData->username + "\",\"message\":" + (result == "" ? "\"\"" : result) + "}";
 			//cout << "returnmsg:" << returnmsg << endl;
 			send(PerHandleData->socket, (char*)returnmsg.c_str(), returnmsg.length(), 0);	//发送搜索结果JSON格式数据
 			break;
@@ -295,6 +295,53 @@ DWORD WINAPI   CMYIOCPServer::ServerWorkThread(LPVOID CompletionPortID)
 			cout << "修改备注" << endl;
 			string result = m_sql->Update("JennyChat", "friendlist", "`fname`='" + msg->m_message + "'", "(`fid`='" + msg->senderID + "' and `accountid`='" + msg->recverID + "')");
 			string returnmsg = "{\"type\":6,\"message\":" + (result == "" ? "\"\"" : result) + "}";
+			send(PerHandleData->socket, (char*)returnmsg.c_str(), returnmsg.length(), 0);	//发送搜索结果JSON格式数据
+			break;
+		}
+		case 7:	//删除好友
+		{
+			cout << "删除好友" << endl;
+			string result = m_sql->Del("JennyChat", "friendlist","fid", msg->senderID,"`accountid`='" + msg->recverID + "'");
+			string returnmsg = "{\"type\":7,\"message\":" + (result == "" ? "\"\"" : result) + "}";
+			send(PerHandleData->socket, (char*)returnmsg.c_str(), returnmsg.length(), 0);	//发送搜索结果JSON格式数据
+			break;
+		}
+		case 8: //注册
+		{
+			cout << "注册帐号" << endl
+				<< msg->m_message << endl
+				<< msg->senderID << endl;
+			string result = m_sql->Search("JennyChat", "account", "max(`id`)", "", "");
+			string returnmsg;
+			if (result == "") {
+				result = m_sql->Add("JennyChat", "account", "`id`,`username`,`pswd`", "'1000','" + msg->senderID + "','" + msg->m_message + "'");
+				returnmsg = "{\"type\":8,\"message\":\"注册成功，ID为：1000\"}";
+			}
+			else {
+				Json::Reader reader;
+				Json::Value value;
+				if (reader.parse(result, value)) {
+					if (value["SqlMsgType"] != 0) {
+						//搜索出错
+						cout << "查询最大ID失败：" << value["Result"].asString() << endl;
+						returnmsg = "{\"type\":8,\"message\":\"注册失败...\"}";
+					}
+					else {
+						stringstream ssmaxid;
+						ssmaxid << value["Result"][0][0].asString();
+						int intmaxid;
+						ssmaxid >> intmaxid;
+						ssmaxid.clear();
+						intmaxid++;
+						ssmaxid << intmaxid;
+						string strmaxid;
+						ssmaxid >> strmaxid;
+						result = m_sql->Add("JennyChat", "account", "`id`,`username`,`pswd`", "'" + strmaxid + "','" + msg->senderID + "','" + msg->m_message + "'");
+						returnmsg = "{\"type\":8,\"message\":\"注册成功，ID为：" + strmaxid + "\"}";
+						//搜索有结果
+					}
+				}
+			}
 			send(PerHandleData->socket, (char*)returnmsg.c_str(), returnmsg.length(), 0);	//发送搜索结果JSON格式数据
 			break;
 		}
@@ -350,14 +397,16 @@ void CMYIOCPServer::HandleMessage()
 	cout << "完成发送句柄消息..." << endl;
 }
 
-unsigned int CMYIOCPServer::login(string id, string psw, SOCKET s)
+unsigned int CMYIOCPServer::login(string id, string psw, LPPER_HANDLE_DATA lhd)
 {
+	string username = "";
 #if SQLenable
 	if (!m_sql->CheckConnect()) {
 		m_sql->InitSQL("localhost", "root", sqlpswd, "JennyChat", 3306, "utf8");
 	}
 	//-----链接数据库验证用户信息------
-	string result = m_sql->Search("JennyChat", "account", "pswd", "id=" + id, "");
+	string result = m_sql->Search("JennyChat", "account", "pswd,username", "id=" + id, "");
+	//cout << result << endl;
 	//-------------------------------
 	//如果账号不存在
 	if (result == "") {
@@ -372,10 +421,12 @@ unsigned int CMYIOCPServer::login(string id, string psw, SOCKET s)
 		if (root["Result"][0][0] != psw) {
 			return 2;
 		}
+		username = root["Result"][0][1].asString();
 	}
 #endif
 	//	如果正确
-	m_clients[id] = s;	//将新用户存入哈希表
+	lhd->username = username;
+	m_clients[id] = lhd->socket;	//将新用户存入哈希表
 	return 0;
 }
 

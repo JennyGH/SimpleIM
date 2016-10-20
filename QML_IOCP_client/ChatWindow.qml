@@ -2,7 +2,6 @@ import QtQuick 2.4
 import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
-import QtGraphicalEffects 1.0
 import "../js/generic.js" as GEN
 
 Window{
@@ -24,7 +23,7 @@ Window{
 
     onVisibleChanged: {
         if(!visible){
-            GEN.releaseWindow(this);
+            GEN.releaseWindow(mainform.chatwindows,this);
         }else{
             animBig.start();
             inputarea.text().forceActiveFocus();
@@ -64,14 +63,19 @@ Window{
                 movetarget : chatwindow
                 maxable: true
                 marginRight: 5
-                btnHeight: 30
+                btnHeight: 25
                 btnWidth: btnHeight
                 btnraduis: _chatwindowbakg.radius * 100
-                anchors {
-//                    fill: parent
-
-                    topMargin:_chatwindowtitle.marginRight
+                z: -1
+                gradient: Gradient{
+                    GradientStop{position: 0.0;color : "#fff"}
+                    GradientStop{position: 1.0;color : "transparent"}
                 }
+//                anchors {
+////                    fill: parent
+
+//                    topMargin:_chatwindowtitle.marginRight
+//                }
                 title:""
                 onMove: {
                     if(movetarget.ismax){
@@ -203,19 +207,9 @@ Window{
 
 
     }
-
-    DropShadow {
+    OuterShadow {
         id:_shadow
-        anchors.fill: _chatwindowbakg
-        horizontalOffset: 0
-        verticalOffset: 0
-        radius: 16.0
-        samples: 32
-        color: "#80000000"
-        source: _chatwindowbakg
-//        enabled: false
-//        visible: false
-        scale: _chatwindowbakg.scale
+        target :_chatwindowbakg
     }
 
     PropertyAnimation {

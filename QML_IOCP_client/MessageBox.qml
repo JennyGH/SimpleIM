@@ -2,7 +2,7 @@ import QtQuick 2.0
 
 Rectangle {
     id:father
-    height: 50
+    height: 40
     width: parent.width
     color: Qt.lighter("#eee789",1);
     property string tips: ""
@@ -51,8 +51,8 @@ Rectangle {
             name: "show"
             PropertyChanges {
                 target: father
-                height : 50
-                opacity : 1
+                height : 40
+                opacity : 0.8
             }
         }
     ]

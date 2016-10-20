@@ -30,7 +30,7 @@ public:
 	string Add(cstr database, cstr table, cstr keys, cstr values);
 
 	//É¾:DELETE FROM `jennychat`.`account` WHERE `id`='14';
-	string Del(cstr database,cstr table,cstr key,cstr value);
+	string Del(cstr database,cstr table,cstr key,cstr value,cstr extra);
 
 	//¸Ä:UPDATE `jennychat`.`account` SET `username`='ddd' WHERE `id`='13';
 	string Update(cstr database, cstr table, cstr set, cstr whr);

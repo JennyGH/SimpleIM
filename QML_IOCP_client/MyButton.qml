@@ -18,7 +18,7 @@ Rectangle{
     property color exit_border_color : border_color
     property color border_color : "transparent"
     property int border_width: 1
-    property string title : "Default"
+    property string title : "Button"
     property int font_size: 15
     property int contentwidth: btn_title.contentWidth + 20
     state : "out"

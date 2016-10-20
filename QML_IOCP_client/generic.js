@@ -1,12 +1,5 @@
-var windowArray;
+//var windowArray;
 var existwindow;
-
-function init(){
-    var component = Qt.createComponent("../VirtualWindow.qml");
-    if (component.status === Component.Ready) {
-        fatherWindow.virtualwindow = component.createObject(null);
-    }
-}
 
 function createWindow(src,parent){
 //    console.log("create window");
@@ -22,33 +15,19 @@ function createWindow(src,parent){
     return newwidnow;
 }
 
-function createChatWindow(id,name,address,online) {
-
-    if((existwindow = isExistWindow(id))){
-
-        existwindow.requestActivate();
-
-        return existwindow;
-    }
+function createSingleWindow(array,src,pare) {
 
     try{
-        var component = Qt.createComponent("../ChatWindow.qml");
+        var component = Qt.createComponent("../" + src + ".qml");
 
         if (component.status === Component.Ready) {
-            var _chatwindow = component.createObject(null);
+            var _chatwindow = component.createObject(pare);
 
-            _chatwindow.userid = id;
-            _chatwindow.name = name;
-            _chatwindow.address= address;
-            _chatwindow.online = online;
-
-    //        _chatwindow.header.headsrc = id;
-            _chatwindow.getHeader().clientname = name;
-            _chatwindow.getHeader().online = online;
-
-            windowArray.push(_chatwindow);
-
-            mainform.chatwindows = windowArray; //传出到mainform以不被初始化
+//            windowArray.push(_chatwindow);
+//            mainform.chatwindows = windowArray; //传出到mainform以不被初始化
+//            console.log(mainform.chatwindows);
+            array.push(_chatwindow);
+            console.log(array);
 
 //            setWindowSize(_chatwindow,300,300);
             showWindow(_chatwindow);
@@ -70,41 +49,41 @@ function setWindowSize(window,height,width){
     window.width = width;
 }
 
-function releaseWindow(window){
+function releaseWindow(array,window){
     try{
-        console.log("释放窗口：",window.title);
-        removeWindowFromArray(window);
+        console.log("释放窗口：",array);
+        removeWindowFromArray(array,window);
         window.destroy();
     }catch(ex){
         console.log(ex);
     }
 }
 
-function isExistWindow(userid){
-    for(var i in windowArray){
-        if(windowArray[i].userid === userid) return windowArray[i];
+function isExistWindow(array,userid){
+    for(var i in array){
+        if(array[i].userid === userid) return array[i];
     }
 }
 
-function removeWindowFromArray(window){
+function removeWindowFromArray(array,window){
 
-    windowArray = mainform.chatwindows;
+//    windowArray = mainform.chatwindows;
 
-    for(var i in windowArray){
+    for(var i in array){
 
-        if(window === windowArray[i]){
+        if(window === array[i]){
 
-            windowArray.splice(i,1);
+            array.splice(i,1);
 
         }
     }
 }
 
-function clearWindow(){
-    windowArray = mainform.chatwindows;
-    var count = windowArray ? windowArray.length : 0;
+function clearWindow(array){
+//    windowArray = mainform.chatwindows;
+    var count = array ? array.length : 0;
     for(var i=0;i<count;i++){
-        windowArray[0].close();
+        array[0].close();
     }
 }
 

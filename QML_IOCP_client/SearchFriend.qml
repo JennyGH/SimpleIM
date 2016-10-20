@@ -47,21 +47,19 @@ Window {
         height: 450
         width: 440
         color : "#f8f8f8"
-        radius:3
+        radius:5
         border.color: "#fff"
         anchors.centerIn: parent
 
         MainWindowHeader{
             id:_searchwindowheader
             movetarget : _searchwindow
-            marginRight:parent.border.width
+            marginRight:5
+            marginTop:marginRight
             title : "查找好友"
-            btnraduis: 30
-            btnHeight: 30
-            btnWidth: 30
-            anchors {
-                topMargin: marginRight
-            }
+            btnHeight: 25
+            btnWidth: btnHeight
+            btnraduis: _searchwindowbakg.radius * 100
             onCloseClick: {
                 fatherWindow.searchwindow = null;
             }
@@ -80,34 +78,20 @@ Window {
                 horizontalCenter: parent.horizontalCenter
             }
 
-            TextField{
+            MyTextInput{
                 id:txtsearchuser
                 width: _searchwindowbakg.width - btnsearchuser.width - 30
-                font.family: "微软雅黑"
-                font.pixelSize: 15
-                height: 30
-                anchors {
-                    verticalCenter: parent.verticalCenter
+                height: 28
+
+                onEnterPressed: {
+                    btnsearchuser.click();
                 }
-                Keys.enabled: true
-                Keys.onPressed: {
-                    if ((event.key == Qt.Key_Enter) || (event.key == Qt.Key_Return))
-                    {
-                        btnsearchuser.click();
-
-                    }else if(event.key == Qt.Key_Escape){
-
-                        text = "";
-
-                    }else{
-                        return;
-                    }
-
-                    event.accepted = true;
+                onEscPressed: {
+                    text = "";
                 }
             }
 
-            MyButton{
+            GradientButton{
                 id:btnsearchuser
                 height: 30
                 width: 60
@@ -116,9 +100,11 @@ Window {
                 }
                 title : "查找"
 
-                enter_color: "#e2e2e2"
+//                enter_color: "#e2e2e2"
 
-                border.color: "#ddd"
+                border_color: "#ddd"
+
+                enter_font_color: "#fff"
 
                 radius: _searchwindowbakg.radius
 

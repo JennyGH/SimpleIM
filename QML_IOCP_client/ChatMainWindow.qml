@@ -2,7 +2,6 @@ import QtQuick 2.4
 import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
-import QtGraphicalEffects 1.0
 import "../js/generic.js" as GEN
 //import Client 1.0
 
@@ -12,7 +11,7 @@ Window {
     height: mainform.height + 30//630
     width:mainform.width + 30//330
     property bool conn: false
-    property string myName : "Me"
+    property string myName : "null"
     property var friendListArray: new Array
     property bool canhide: false
     property bool ishide: false
@@ -32,19 +31,15 @@ Window {
 
     onVisibleChanged: {
         if(!fatherWindow.visible){
-            GEN.clearWindow();
+            GEN.clearWindow(mainform.chatwindows);
+            GEN.clearWindow(mainform.detailswindows);
         }else{
             fadeout.start();
             client.sendmessage("","",4);    //消息4：更新好友列表
         }
     }
 
-    Component.onCompleted: {
-
-        GEN.windowArray = [];
-
-//        console.log("show mainform")
-    }
+    Component.onCompleted: {}
 
     onActiveChanged: {
         if(!fatherWindow.active){
@@ -74,7 +69,7 @@ Window {
             var result;
             switch(parseInt(obj.type)){
             case 2:
-                var currentwindow = GEN.isExistWindow(obj.friend);
+                var currentwindow = GEN.isExistWindow(mainform.chatwindows,obj.friend);
                 if(currentwindow){
                     console.log("新消息...",currentwindow);
                     currentwindow.recv(currentwindow.name,obj.message);
@@ -93,13 +88,9 @@ Window {
                 break;
             case 4:
                 //返回好友列表信息
-                friendmodel.clear();
-                if(parseInt(obj.message.SqlMsgType) == 0){
-                    result = obj.message.Result;
-                    for(var i=0;i<result.length;i++){
-                        addFriend(result[i][0],result[i][1],true,"");
-                    }
-                }break;
+                refresh(obj);
+                myName = obj.myName;
+                break;
             case 5:
                 if(obj.message !== 0){
                     if(obj.message.SqlMsgType === 0){
@@ -113,7 +104,15 @@ Window {
                 break;
             case 6:
                 //修改好友备注
-                console.log(obj.message.Result);
+//                console.log(obj.message.ID);
+                break;
+            case 7 :
+//                console.log(obj.message.Result);
+                if(obj.message.SqlMsgType == 0){
+//                    client.sendmessage("","",4);    //消息4：更新好友列表
+//                    refresh(obj);
+//                    friendList.remove();
+                }
                 break;
             default:
                 break;
@@ -122,6 +121,7 @@ Window {
         onLoseConnect:{
 //            var newloginwindow = GEN.createWindow("main",null);
             fatherWindow.visible = false;
+            loginwindow.isConnect = false;
             loginwindow.visible = true;
             loginwindow.showTips("与服务器断开连接，请重新登陆...");
 //            fatherWindow.destroy();
@@ -157,9 +157,10 @@ Window {
     MainForm {
         id:mainform
         property color font_color: "#444"
-        property var chatwindows
+        property var chatwindows : new Array
+        property var detailswindows: new Array
         height: 600
-        width: 300
+        width: 280
         anchors {
             centerIn: parent
         }
@@ -168,35 +169,17 @@ Window {
         radius: 5
         opacity: 0
 
-//        MouseArea {
-//            id:senseArea
-//            anchors.fill: parent
-//            hoverEnabled: true
-//            enabled: canhide
-//            z:10
-//            onEntered: {
-//                if(ishide){
-//                    //显示
-//                    hideWindow.stop();
-//                    showWindow.start();
-//                }else{
-//                    //隐藏
-//                    showWindow.stop();
-//                    hideWindow.start();
-//                }
-//            }
-//        }
-
         MainWindowHeader {
             id:header
             title : "JennyChat"
             marginRight:5//mainform.border.width
-            btnHeight: 30
+            marginTop: marginRight
+            btnHeight: 25
             btnWidth: btnHeight
             btnraduis: mainform.radius * btnHeight
-            anchors {
-                topMargin:header.marginRight
-            }
+//            anchors {
+//                topMargin:header.marginRight
+//            }
             onCloseClick:{
                 console.log(searchwindow);
                 if(searchwindow){
@@ -239,6 +222,7 @@ Window {
         }
 
         Rectangle{
+            id:mainformbody
             height: mainform.height - me.height - header.height - tishi.height - mainformfooter.height - mainform.border.width*2 - 10
             width: mainform.width - mainform.border.width * 2 - 10
             anchors{
@@ -250,12 +234,14 @@ Window {
             border.color: "#fff"
             radius:3
             ScrollView {
+                id:mainformbodyscroll
                 height: parent.height - parent.radius*2
                 width: parent.width - parent.radius*2
                 horizontalScrollBarPolicy:Qt.ScrollBarAlwaysOff
                 verticalScrollBarPolicy:Qt.ScrollBarAsNeeded
                 style: ScrollViewStyle{transientScrollBars:true}
                 anchors.centerIn: parent
+//                visible: false
                 ListView{
                     id:friendList
                     anchors {
@@ -278,8 +264,26 @@ Window {
                     delegate: Friend{
                         id:friend
                         height: 60
+//                        color : mainformbody.color
+//                        background_color : mainformbody.color
                         onDbclick: {
-                            var newchatwindow = GEN.createChatWindow(ID,name,address,onLine);
+                            var existwindow;
+                            if((existwindow = GEN.isExistWindow(mainform.chatwindows,ID))){
+
+                                existwindow.requestActivate();
+
+                                return existwindow;
+                            }else{
+
+                                var newchatwindow = GEN.createSingleWindow(mainform.chatwindows,"ChatWindow",null);
+                                newchatwindow.userid = ID;
+                                newchatwindow.name = name;
+                                newchatwindow.address= address;
+                                newchatwindow.online = onLine;
+                                newchatwindow.getHeader().clientname = name;
+                                newchatwindow.getHeader().online = onLine;
+                            }
+
                             if(friend.msgcount){
                                 var jsonstr = client.alreadyRead(ID);
                                 if(jsonstr.trim() !== ""){
@@ -293,15 +297,18 @@ Window {
                             }
                         }
                     }
-                    highlight: Rectangle{
-                        color: "#3399ff"
-                        height: 50
-                        width: parent.width
-                    }
                 }
             }
-
         }
+//        InnerShadow {
+//            anchors.fill: mainformbody
+//            horizontalOffset: 1
+//            verticalOffset: 1
+//            radius: 4.0
+//            samples: 8
+//            color: "#dddddddd"
+//            source: mainformbody
+//        }
 
         Rectangle{
             id:mainformfooter
@@ -340,7 +347,7 @@ Window {
                     }
                     Image{
                         //                        anchors.fill: parent
-                        source : "qrc:/src/src/setting.png"
+                        source : "qrc:/src/src/settings.png"
                         height: parent.height * 0.5
                         width: height
                         sourceSize.height: height
@@ -389,17 +396,9 @@ Window {
             }
         }
     }
-
-    DropShadow {
-        anchors.fill: mainform
-        horizontalOffset: 0
-        verticalOffset: 0
-        radius: 16.0
-        samples: 32
-        color: "#80000000"
-        source: mainform
-        opacity: mainform.opacity
-        scale:mainform.scale
+    OuterShadow {
+        id:_shadow
+        target :mainform
     }
 
     PropertyAnimation {
@@ -478,6 +477,22 @@ Window {
     function addFriend(id,name,ol,addr){
         friendmodel.append({"ID":id,"name":name,"onLine":ol,"address":addr});
         friendListArray.push(id);
+    }
+    function refresh(obj){
+        var result;
+        friendmodel.clear();
+        if(parseInt(obj.message.SqlMsgType) == 0){
+            result = obj.message.Result;
+            for(var i=0;i<result.length;i++){
+                addFriend(result[i][0],result[i][1],true,"");
+            }
+        }
+    }
+    function remove(index){
+        friendmodel.remove(index,1);
+    }
+    function rename(index,name){
+        friendmodel.set(index, {"name":name});
     }
 }
 

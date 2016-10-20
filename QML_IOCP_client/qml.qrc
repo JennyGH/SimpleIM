@@ -14,7 +14,6 @@
         <file>ChatHeader.qml</file>
         <file>MainWindowHeader.qml</file>
         <file>ChatFooter.qml</file>
-        <file>VirtualWindow.qml</file>
         <file>OnlineLED.qml</file>
         <file>ChatMessagePop.qml</file>
         <file>ChatMessageListModel.qml</file>
@@ -29,6 +28,13 @@
         <file>SignInWindow.qml</file>
         <file>MyToolBar.qml</file>
         <file>ImgButton.qml</file>
+        <file>PopMenu.qml</file>
+        <file>DetailsWindow.qml</file>
+        <file>Alert.qml</file>
+        <file>GradientButton.qml</file>
+        <file>OuterShadow.qml</file>
+        <file>MyTextInput.qml</file>
+        <file>Busy.qml</file>
     </qresource>
     <qresource prefix="/src">
         <file>src/userIcon.png</file>
@@ -38,6 +44,11 @@
         <file>src/gray-naill.png</file>
         <file>src/setting.png</file>
         <file>src/photo.png</file>
+        <file>src/chat.png</file>
+        <file>src/pen.png</file>
+        <file>src/picture.png</file>
+        <file>src/settings.png</file>
+        <file>src/check.png</file>
     </qresource>
     <qresource prefix="/js">
         <file>generic.js</file>

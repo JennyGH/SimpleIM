@@ -13,6 +13,7 @@ Rectangle{
     state:"exit"
 
     signal click()
+    signal dbClick();
 
     Row{
         id:row
@@ -63,6 +64,9 @@ Rectangle{
         }
         onExited: {
             myself.state = "exit";
+        }
+        onDoubleClicked: {
+            dbClick();
         }
     }
     states: [

@@ -2,11 +2,12 @@ import QtQuick 2.0
 
 Rectangle{
     id:father
-    property color background_color: mainform.color
-    property color background_hover_color: "#eee"
+    property color background_color: "#fff"//mainform.color
+    property color background_hover_color: "#1f85fb"
     property color border_color: "#aaa"
     property color border_hover_color: "#aaa"
     property color font_color: mainform.font_color
+    property color enter_font_color: "#fff"
     property int marginleft: 10
 
     state: "out" //默认状态
@@ -71,7 +72,7 @@ Rectangle{
             id:head
             height: 40
             width:40
-            radius:0
+            radius:height
             anchors{
                 verticalCenter: parent.verticalCenter
             }
@@ -115,14 +116,14 @@ Rectangle{
             }
         }
 
-        MyButton{
+        GradientButton{
             id:request  //申请好友
             height: 30
             width: 60
             title : "添加"
-            enter_color: "#09bb07"
+//            enter_color: "#09bb07"
             enter_font_color: "#fff"
-            border_color: "#e2e2e2"
+            border_color: "#ddd"
             radius:_searchwindowbakg.radius
             anchors{
                 verticalCenter: parent.verticalCenter
@@ -141,6 +142,10 @@ Rectangle{
                 target: father
                 color : background_hover_color
             }
+            PropertyChanges {
+                target: txt
+                color : enter_font_color
+            }
         },
         State {
             name: "out"
@@ -148,11 +153,15 @@ Rectangle{
                 target: father
                 color : background_color
             }
+            PropertyChanges {
+                target: txt
+                color : font_color
+            }
         }
     ]
     transitions: Transition {
         ParallelAnimation {
-            ColorAnimation { property: "color"; duration: 200 ;}
+            ColorAnimation { property: "color"; duration: 150 ;}
         }
     }
 

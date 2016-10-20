@@ -13,7 +13,7 @@ Image{
     property color enter_font_color : "#444"
     property color exit_font_color : "#444"
     property color border_color : "transparent"
-    property string title : "Default"
+    property string title : ""
     property int font_size: 15
     property int contentwidth: btn_title.contentWidth + 20
     state : "out"

@@ -1,6 +1,8 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
+import QtGraphicalEffects 1.0
+import "../js/generic.js" as GEN
 
 Rectangle{
     id:father
@@ -25,19 +27,50 @@ Rectangle{
     //-----样式-------------
 
 //    source: "qrc:/"       //Image时用source属性加载背景图片
-//    gradient: Gradient {  //Mac渐变
-//              GradientStop { position: 0.0; color: "#fff" }
-//              GradientStop { position: 1.0; color: "#e2e2e2" }
-//          }
 
     color:father.background_color
 
     //----------------------
 
+//    PopMenu{
+//        id:rightmenu
+////        visible:(mousearea.pressedButtons & Qt.RightButton)
+//        enabled:visible
+//        z:999
+//        parent: father.parent
+
+//        onVisibleChanged: {
+//            if(visible){
+//                forceActiveFocus();
+//            }
+//        }
+
+//        onActiveFocusChanged: {
+//            if(!activeFocus){
+//                console.log("un active");
+//                visible = false;
+//            }
+//        }
+//    }
+
     MouseArea{
+        id:mousearea
         anchors.fill: parent
         hoverEnabled: true
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
         onClicked:{
+            if(mouse.button === Qt.RightButton){
+//                edit.width = 60
+                if(edit.x >= edit.hidex){
+                    showdetailsbtn.start();
+                }
+            }else{
+                forceActiveFocus();
+//                edit.width = 0;
+                if(edit.x <= edit.showx){
+                    hidedetailsbtn.start();
+                }
+            }
             father.click();
         }
         onEntered: {
@@ -55,7 +88,8 @@ Rectangle{
 //            row.scale = 1
         }
         onDoubleClicked: {
-            dbclick();
+            if(mousearea.pressedButtons & Qt.LeftButton)
+                dbclick();
         }
     }
 
@@ -115,38 +149,6 @@ Rectangle{
             anchors{
                 verticalCenter: parent.verticalCenter
             }
-            TextField{
-                id:txtname
-                text : name
-    //            color:father.font_color
-                width: 100
-                height: 30
-                font.family: txt.font.family
-                font.pixelSize: txt.font.pixelSize
-                anchors{
-                    verticalCenter: parent.verticalCenter
-                }
-                property int borderwidth: 0
-                property bool change: false
-                style:TextFieldStyle{
-                    background: Rectangle{
-                        anchors.fill: parent
-                        color : "transparent"
-                        border.color: "#e2e2e2"
-                        border.width:txtname.borderwidth
-                    }
-                }
-
-                selectByMouse: true
-                readOnly: true
-                enabled: !readOnly
-                onTextChanged: {
-                    if(length > 10){
-                        text = text.substring(0,10)
-                    }
-                    change = true;
-                }
-            }
 
             MyText{
                 id:txt
@@ -154,49 +156,55 @@ Rectangle{
                 anchors{
                     verticalCenter: parent.verticalCenter
                 }
-
-                text:"(" + ID + ")"
+                text:name
             }
         }
     }
-
-
     MyButton{
         id:edit
-        height: 25
-        width:40
-        title:"编辑"
+        height: parent.height
+        width:60
+        title:"查看"
+        state:"hide"
         enter_color: "#5aa7f8"
         enter_font_color: "#fff"
-        radius:5
+//        radius:5
         font_size: 12
-        border_color: "#e2e2e2"
-        property bool editting: false
+//        border_color: "#e2e2e2"
+        property int showx: 202
+        property int hidex: 262
+        x : 262
+        color : Qt.lighter("#5aa7f8",1.2)
+        exit_color: Qt.lighter("#5aa7f8",1.2)
         anchors{
             verticalCenter: parent.verticalCenter
-            right:parent.right
-            rightMargin: 10
+//            right:parent.right
+//            left : father.right
+//            rightMargin: 10
         }
         onClick: {
-            if(editting){
-                title = "编辑"
-                editting = !editting
-                enter_color = "#5aa7f8"
-//                console.log("保存修改")
-                txtname.readOnly = true;
-                txtname.borderwidth = 0;
-                if(txtname.change){
-                    client.sendmessage(txtname.text,ID,6); //消息6：修改好友备注
-                }
-                txtname.change = false;
+            var newdetailswindow;
+            if((newdetailswindow = GEN.isExistWindow(mainform.detailswindows,ID))){
+
+                newdetailswindow.requestActivate();
+
+                return newdetailswindow;
             }else{
-                title = "保存"
-                editting = !editting
-                enter_color = "#09bb07"
-//                console.log("编辑模式")
-                txtname.readOnly = false;
-                txtname.borderwidth = 1;
-                txtname.change = false;
+                newdetailswindow = GEN.createSingleWindow(mainform.detailswindows,"DetailsWindow",mainform);
+                newdetailswindow.userid = ID;
+                newdetailswindow.friendindex = index;
+                newdetailswindow.setName(name);
+            }
+//            newdetailswindow.visible = true;
+        }
+        Component.onCompleted: {
+//            console.log(x)
+        }
+        onActiveFocusChanged: {
+            if(!activeFocus){
+                if(edit.x <= edit.showx){
+                    hidedetailsbtn.start();
+                }
             }
         }
     }
@@ -234,6 +242,31 @@ Rectangle{
     transitions: Transition {
         ParallelAnimation {
             ColorAnimation { property: "color"; duration: 200 ;}
+        }
+    }
+    PropertyAnimation {
+        id: showdetailsbtn
+        target: edit
+        duration: 150
+        easing.type: Easing.OutExpo
+        property: 'x'
+        from: edit.hidex
+        to: edit.showx
+        onStarted: {
+            edit.enabled = true;
+            edit.forceActiveFocus();
+        }
+    }
+    PropertyAnimation {
+        id: hidedetailsbtn
+        target: edit
+        duration: 150
+        easing.type: Easing.OutExpo
+        property: 'x'
+        from: edit.showx
+        to: edit.hidex
+        onStarted: {
+            edit.enabled = false;
         }
     }
     function shine(){

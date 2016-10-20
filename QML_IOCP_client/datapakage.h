@@ -11,6 +11,8 @@ using namespace std;
 #define UPDATE_LIST "4"
 #define ADD "5"
 #define EDIT "6"
+#define DEL "7"
+#define SIGNIN "8"
 
 struct MessagePakag{    //消息包
     string friend_id;  //好友ID

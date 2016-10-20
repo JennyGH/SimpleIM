@@ -2,7 +2,6 @@ import QtQuick 2.0
 import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
-import QtGraphicalEffects 1.0
 import "../js/generic.js" as GEN
 
 Window {
@@ -60,17 +59,11 @@ Window {
                         verticalCenter: parent.verticalCenter
                     }
                 }
-                TextField{
+                MyTextInput{
                     id:txtIp
-                    height: 30
                     width: _settingwindowbakg.width -lblIP.width - 50
-                    font.family:"微软雅黑"
-                    font.pixelSize: 15
                     validator: RegExpValidator {
                         regExp:/((?:(?:25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(?:25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d))))/
-                    }
-                    anchors {
-                        verticalCenter: parent.verticalCenter
                     }
                 }
             }
@@ -84,15 +77,9 @@ Window {
                         verticalCenter: parent.verticalCenter
                     }
                 }
-                TextField{
+                MyTextInput{
                     id:txtPort
-                    height: 30
                     width: _settingwindowbakg.width - lblPort.width - 50
-                    font.family:"微软雅黑"
-                    font.pixelSize: 15
-                    anchors {
-                        verticalCenter: parent.verticalCenter
-                    }
                 }
             }
             MyButton{
@@ -117,14 +104,8 @@ Window {
 
     }
 
-    DropShadow {
-        anchors.fill: _settingwindowbakg
-        horizontalOffset: 0
-        verticalOffset: 0
-        radius: 16.0
-        samples: 32
-        color: "#80000000"
-        source: _settingwindowbakg
+    OuterShadow {
+        target : _settingwindowbakg
     }
 
     onVisibleChanged: {

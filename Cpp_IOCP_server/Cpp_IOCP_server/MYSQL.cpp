@@ -141,12 +141,12 @@ string CMYSQL::Add(cstr database, cstr table,cstr keys,cstr values)
 	return "{\"SqlMsgType\":0,\"Result\":\"Insert Success...\"}";
 }
 
-string CMYSQL::Del(cstr database, cstr table, cstr key, cstr value)
+string CMYSQL::Del(cstr database, cstr table, cstr key, cstr value,cstr extra)
 {
 	//DELETE FROM `database`.`table` WHERE `key`='value';
 	try {
 
-		string query = "delete from `" + database + "`.`" + table + "` where `" + key + "`='" + value + "'";
+		string query = "delete from `" + database + "`.`" + table + "` where `" + key + "`='" + value + "'" + (extra == "" ? "" : (" and " + extra));
 
 		if (mysql_real_query(&m_sql, query.c_str(), (unsigned int)query.length())) {
 

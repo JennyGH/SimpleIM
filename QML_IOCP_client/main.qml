@@ -2,13 +2,12 @@ import QtQuick 2.5
 import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
-import QtGraphicalEffects 1.0
 import "../js/generic.js" as GEN
 //import Client 1.0
 
 Window {
     id:_loginwindow
-    height: 280
+    height: 330
     width: 380
 
     minimumHeight: 280
@@ -20,6 +19,7 @@ Window {
     property ChatMainWindow temp_chatwindow: null
     property SettingWindow newsettingwindow: null
     property SignInWindow newsigninwindow: null
+    property bool isConnect: false
     color: Qt.rgba(0,0,0,0)
 
     onVisibleChanged: {
@@ -29,6 +29,9 @@ Window {
 //            animBig.start();
         }
     }
+//    onClosing:{
+//        console.log("closing")
+//    }
 
     Connections {
         target: client
@@ -89,6 +92,11 @@ Window {
 //        anchors.fill: parent
         height: parent.height - 30
         width: parent.width - 30
+        layer.enabled: true
+        layer.effect: OuterShadow {
+            target : _loginwindowbakg
+            transparentBorder: true
+        }
 //        scale:0
         anchors {
             centerIn: parent
@@ -103,11 +111,12 @@ Window {
             id:_loginwindowheader
             movetarget : _loginwindow
             marginRight:5//parent.border.width
+            marginTop: marginRight
             title : "JennyChat"
-            anchors {
-                topMargin: marginRight
-            }
-            btnHeight: 30
+//            anchors {
+//                topMargin: marginRight
+//            }
+            btnHeight: 25
             btnWidth: btnHeight
             btnraduis: _loginwindowbakg.radius * 100
             MyButton{
@@ -116,14 +125,16 @@ Window {
                 anchors {
                     right: _loginwindowheader.closebtn.left
                     rightMargin: 1
+                    topMargin: parent.marginRight
+                    top :parent.top
                 }
-                height: 30
-                width: 30
+                height: 25
+                width: height
                 radius: _loginwindowbakg.radius * 100
                 Image{
 //                        anchors.fill: parent
-                    source : "qrc:/src/src/setting.png"
-                    height: parent.height * 0.5
+                    source : "qrc:/src/src/settings.png"
+                    height: parent.height * 0.6
                     width: height
                     sourceSize.height: height
                     sourceSize.width: width
@@ -149,6 +160,8 @@ Window {
         MessageBox{
             id:_logintips
             state : "hide"
+            z: 999
+            opacity : 0.8
             topObject : _loginwindowheader
             width: _loginwindowbakg.width - _loginwindowbakg.border.width*2
             anchors{
@@ -156,25 +169,45 @@ Window {
             }
         }
 
+        Head{
+            id:_loginwindowheadicon
+            height: 120
+            width : 120
+            radius: height
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+                top : _logintips.top
+//                topMargin: 10
+            }
+        }
+
         Item{
-            height: _loginwindowbakg.height - _loginwindowheader.height - _logintips.height
-            width: _loginwindowbakg.width
+            id:row
+//            spacing : 10
+//            color : "blue"
+//            height: _loginwindowbakg.height - _loginwindowheader.height - _logintips.height - btnlogin.height - _loginwindowheadicon.height
+            width: _loginwindowbakg.width - 50
             anchors {
 //                fill : parent
-                top : _logintips.bottom
+                top : _loginwindowheadicon.bottom
+//                topMargin: 10
                 horizontalCenter: _loginwindowbakg.horizontalCenter
+                bottom:btnlogin.top
+//                bottomMargin: 10
             }
 
             Column{
-                spacing: 20
-                width: _loginwindowbakg.width
-                anchors.centerIn: parent
+                spacing: 10
+                width: _loginwindowbakg.width - 20
+//                anchors.centerIn: parent
+                anchors.verticalCenter: parent.verticalCenter
 
                 Row{
                     anchors {
                         horizontalCenter: parent.horizontalCenter
                     }
                     spacing: 10
+                    width : parent.width
 
                     MyText{
                         id:lblID
@@ -183,15 +216,9 @@ Window {
                             verticalCenter: parent.verticalCenter
                         }
                     }
-                    TextField{
+                    MyTextInput{
                         id:txtID
-                        width: _loginwindowbakg.width - lblID.contentWidth - 50 - _signin.width
-                        font.family: "微软雅黑"
-                        font.pixelSize: 15
-                        height: 30
-                        anchors {
-                            verticalCenter: parent.verticalCenter
-                        }
+                        width: parent.width - lblID.contentWidth - 50 - _signin.width
                         validator: RegExpValidator {
                             regExp:/[1-9][0-9]{1,10}/
                         }
@@ -200,31 +227,19 @@ Window {
 //                            GEN.limitNumber(txtID);
 //                            console.log(parseInt(txtID.text));
                         }
-
-                        Keys.enabled: true
-                        Keys.onPressed: {
-                            switch(event.key){
-                            case Qt.Key_Return:
-                                txtpsw.forceActiveFocus();
-                                break;
-                            case Qt.Key_Enter:
-                                txtpsw.forceActiveFocus();
-                                break;
-                            case Qt.Key_Escape:
-                                break;
-                            default : return
-                            }
-                            event.accepted = true;
+                        onEnterPressed: {
+                            txtpsw.forceActiveFocus();
                         }
                     }
 
                     MyButton{
                         id:_signin
                         title:"注册"
-                        width: 70
+                        width: 40
                         height: 30
                         enter_font_color: "#000"
                         border_color: "#ddd"
+                        font_size: 12
                         radius: _loginwindowbakg.radius
                         exit_border_color:"transparent"
                         enter_border_color: "transparent"
@@ -243,6 +258,7 @@ Window {
                         horizontalCenter: parent.horizontalCenter
                     }
                     spacing: 10
+                    width: parent.width
 
                     MyText{
                         id:lblpsw
@@ -251,92 +267,85 @@ Window {
                             verticalCenter: parent.verticalCenter
                         }
                     }
-                    TextField{
+                    MyTextInput{
                         id:txtpsw
-                        width: _loginwindowbakg.width - lblpsw.contentWidth - 50 - _forget.width
-                        font.family: "微软雅黑"
-                        font.pixelSize: 15
-                        height: 30
-                        anchors {
-                            verticalCenter: parent.verticalCenter
-                        }
+                        width: parent.width - lblpsw.contentWidth - 50 - _forget.width
                         validator:  RegExpValidator {
                             regExp:/[0-9a-zA-z\.\*]{1,16}/  //只允许输入0-9,a-z,A-Z,*,.
                         }
-
-                        echoMode : TextInput.Password
-
-                        style:TextFieldStyle{
-                            passwordCharacter: "*"
-                        }
-
-                        Keys.enabled: true
-                        Keys.onPressed: {
-                            switch(event.key){
-                            case Qt.Key_Return:
-                                btnlogin.click();
-                                break;
-                            case Qt.Key_Enter:
-                                btnlogin.click();
-                                break;
-                            case Qt.Key_Escape:
-                                break;
-                            default : return
-                            }
-                            event.accepted = true;
+                        onEnterPressed: {
+                            btnlogin.click();
                         }
                     }
 
                     MyButton{
                         id:_forget
                         title:"忘记密码"
-                        width: 70
+                        width: 40
                         height: 30
                         enter_font_color: "#000"
                         border_color: "#ddd"
+                        font_size: 12
                         radius: _loginwindowbakg.radius
                         exit_border_color:"transparent"
                         enter_border_color: "transparent"
                         anchors.verticalCenter: parent.verticalCenter
                     }
                 }
-
-                MyButton{
-                    id:btnlogin
-                    height: 40
-                    width: _loginwindowbakg.width * 0.9
-                    title:"<b>登录</b>"
-                    font_size: 16
-                    exit_color: "#3399ff"
-                    enter_color: Qt.lighter("#3399ff",1.2)
-                    enter_font_color: "#fff"
-                    exit_font_color: "#fff"
-                    border_color: Qt.darker("#3399ff",1.2)
-                    radius:_loginwindowbakg.radius
-                    anchors {
-                        horizontalCenter: parent.horizontalCenter
-                    }
-                    onClick: {
-                        _loginwindowbakg.state = "hide"
-                        _loginwindow.userID = txtID.text;
-                        _loginwindow.psw = txtpsw.text;
-                        if(userID.trim() == ""){
-                            GEN.showMessageBox(_logintips,"用户名不能为空...");
-                            return false;
-                        }
-                        if(psw.trim() == ""){
-                            GEN.showMessageBox(_logintips,"密码不能为空...");
-                            return false;
-                        }
-                        if(!client.initSocket()){
-                            GEN.showMessageBox(_logintips,"连接服务器失败...");
-                            return false;
-                        }
-                        client.login(userID,psw);
-                    }
-                }
             }
 
+        }
+        GradientButton{
+            id:btnlogin
+            height: 40
+            width: _loginwindowbakg.width * 0.9
+            title:"<b>登录</b>"
+            font_size: 16
+//            exit_color: Qt.lighter("green",1.2)//"#3399ff"
+//            enter_color: Qt.lighter("green",1.5)//Qt.lighter("#3399ff",1.2)
+            enter_gradient:Gradient{
+                GradientStop{position: 0.0;color : Qt.lighter("#1bbf2e",1.3)}
+                GradientStop{position: 1.0;color : "#1bbf2e"}
+            }
+            exit_gradient : Gradient{
+                GradientStop{position: 0.0;color : "#1bbf2e"}
+                GradientStop{position: 1.0;color : Qt.darker("#1bbf2e",1.5)}
+            }
+
+            enter_font_color: "#fff"
+            exit_font_color: "#fff"
+            border_color: hasShadow ? "transparent" : "#fff" //Qt.darker("#3399ff",1.2)
+            radius:_loginwindowbakg.radius
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+//                top :row.bottom
+                bottom:parent.bottom
+                bottomMargin: 10
+            }
+            onClick: {
+                _loginwindowbakg.state = "hide"
+                _loginwindow.userID = txtID.text;
+                _loginwindow.psw = txtpsw.text;
+                if(userID.trim() == ""){
+                    GEN.showMessageBox(_logintips,"用户名不能为空...");
+                    txtID.forceActiveFocus();
+                    return false;
+                }
+                if(psw.trim() == ""){
+                    GEN.showMessageBox(_logintips,"密码不能为空...");
+                    txtpsw.forceActiveFocus();
+                    return false;
+                }
+                if(!isConnect){
+                    if(!client.initSocket()){
+                        GEN.showMessageBox(_logintips,"连接服务器失败...");
+                        return false;
+                    }else{
+                        isConnect = true;
+                    }
+                }
+                client.login(userID,psw);
+            }
         }
     }
     PropertyAnimation {
@@ -347,31 +356,6 @@ Window {
         property: 'scale'
         from: 0
         to: 1
-    }
-
-//    PropertyAnimation {
-//        id: fadeout
-//        target: _loginwindowbakg
-//        duration: 500
-//        easing.type: Easing.OutExpo
-//        property: 'opacity'
-//        from: 1
-//        to: 0
-//        onStopped: {
-
-//        }
-//    }
-
-    DropShadow {
-        anchors.fill: _loginwindowbakg
-        horizontalOffset: 0
-        verticalOffset: 0
-        radius: 16.0
-        samples: 32
-        color: "#80000000"
-        source: _loginwindowbakg
-        scale: _loginwindowbakg.scale
-        opacity: _loginwindowbakg.opacity
     }
     function showTips(msg){
         GEN.showMessageBox(_logintips,msg);

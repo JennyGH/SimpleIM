@@ -113,6 +113,12 @@ bool Client::sendmessage(QString msg,QString fid,unsigned int type = 2)
     case 6:
         msgpakage->m_type = EDIT;
         break;
+    case 7 :
+        msgpakage->m_type = DEL;
+        break;
+    case 8:
+        msgpakage->m_type = SIGNIN;
+        break;
     default:
         msgpakage->m_type = "0";
         break;

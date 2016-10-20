@@ -67,6 +67,7 @@ typedef struct
 {
 	SOCKET socket;
 	SOCKADDR_STORAGE ClientAddr;
+	string userid;
 	string username;
 }PER_HANDLE_DATA, *LPPER_HANDLE_DATA;
 
@@ -92,7 +93,7 @@ private:
 	bool CreateServerSocker();
 	static char* getIpAddr(SOCKADDR_STORAGE saddr);
 	static void HandleMessage();
-	static unsigned int login(string id,string psw,SOCKET s);
+	static unsigned int login(string id,string psw, LPPER_HANDLE_DATA lhd);
 	static void showClients(map<string,SOCKET> clts);
 	//Ë½ÓÐÊý¾Ý
 	string m_sServerIP;

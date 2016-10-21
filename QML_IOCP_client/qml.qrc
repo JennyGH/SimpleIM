@@ -49,6 +49,8 @@
         <file>src/picture.png</file>
         <file>src/settings.png</file>
         <file>src/check.png</file>
+        <file>src/x.png</file>
+        <file>src/bakg.png</file>
     </qresource>
     <qresource prefix="/js">
         <file>generic.js</file>

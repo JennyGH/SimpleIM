@@ -38,7 +38,7 @@ Rectangle{
         radius: 1.0
         samples: 2
         verticalOffset: 1
-        color : "#ddd"
+        color : "#aaa"
     }
     //---------------------
 

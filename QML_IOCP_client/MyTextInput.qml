@@ -13,19 +13,12 @@ TextField{
     height: 25
     selectByMouse: true
     property bool isPassword: false
+    property int radius: 5
 
     signal enterPressed();
     signal escPressed();
 
     onActiveFocusChanged: {
-//        console.log(active)
-//        if(active){
-
-////            _txtstyle.enabled = true
-//        }else{
-////            _txtstyle.enabled = false
-//        }
-//        console.log(txt.style.background.layer.enabled)
     }
 
     echoMode: isPassword? TextInput.Password : TextInput.Normal
@@ -34,28 +27,51 @@ TextField{
         regExp:isPassword ? /[0-9a-zA-z\.\*]{1,16}/ : /.*/  //只允许输入0-9,a-z,A-Z,*,.
     }
 
+    Image{
+        id:_cleartxt
+        height: 15
+        width: height
+        source: "qrc:/src/src/x.png"
+        visible: ((text.length > 0) && txt.activeFocus)
+        anchors {
+            verticalCenter: parent.verticalCenter
+            right: parent.right
+            rightMargin: 5
+        }
+        MouseArea{
+            enabled: parent.visible
+            anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
+            onClicked: {
+                txt.text = "";
+            }
+        }
+    }
+
     style:TextFieldStyle {
-        passwordCharacter: "*"
+        passwordCharacter: "●"
         textColor : "#444"
         background: Rectangle{
             id:_txtstyle
             anchors.fill: parent
+            width : txt.bakgwidth
             border.width: 1
-            radius: 4
+            radius: txt.radius
             state : txt.activeFocus ? "active" : "negative"
             layer.enabled: txt.activeFocus
             layer.effect: OuterShadow{
                 target:_txtstyle
-                color: "#1f85fb"
-                radius: 3
-                samples: 8
+                color: "#50c3f8"
+                radius: 7
+                samples: 14
+                spread: 0.18
             }
             states: [
                 State {
                     name: "active"
                     PropertyChanges {
                         target: _txtstyle
-                        border.color : "#1f85fb"
+                        border.color : "#168de9"
                     }
                 },
                 State {

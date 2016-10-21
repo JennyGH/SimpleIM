@@ -174,9 +174,6 @@ Window {
             title : "JennyChat"
             marginRight:5//mainform.border.width
             marginTop: marginRight
-            btnHeight: 25
-            btnWidth: btnHeight
-            btnraduis: mainform.radius * btnHeight
 //            anchors {
 //                topMargin:header.marginRight
 //            }
@@ -347,7 +344,7 @@ Window {
                     }
                     Image{
                         //                        anchors.fill: parent
-                        source : "qrc:/src/src/settings.png"
+                        source : "qrc:/src/src/setting.png"
                         height: parent.height * 0.5
                         width: height
                         sourceSize.height: height

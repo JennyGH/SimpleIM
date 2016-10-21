@@ -71,9 +71,6 @@ Window{
             marginRight:_signinwindowbakg.radius + _signinwindowbakg.border.width
             marginTop: marginRight
             title:"注册"
-            btnHeight: 30
-            btnWidth: btnHeight
-            btnraduis: _signinwindowbakg.radius * 100
             onCloseClick: {
                 _loginwindow.newsigninwindow = null;
             }

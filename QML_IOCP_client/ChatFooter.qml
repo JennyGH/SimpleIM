@@ -34,8 +34,17 @@ Rectangle{
             font_size:father.font_size
             radius:btnradius
             onClick: {
-                GEN.send(userid,"我",chatwindow.getContent());
-                chatwindow.setContent("");
+                if(inputarea.text().text.length >= 800){
+                    var alert = GEN.createWindow("Alert",_chatwindowbakg);
+                    alert.isComfirm = false;
+                    alert.alertHeight = 130;
+                    alert.alertWidth = 220;
+                    alert.content = "字数过多，请分段发送\n当前字数:" + inputarea.text().text.length;
+                    return false;
+                }else{
+                    GEN.send(userid,"我",chatwindow.getContent());
+                    chatwindow.setContent("");
+                }
             }
             anchors {
                 verticalCenter: parent.verticalCenter
@@ -67,5 +76,8 @@ Rectangle{
     }
     function getSendBtn(){
         return send;
+    }
+    function sendbtnclick(){
+        send.click();
     }
 }

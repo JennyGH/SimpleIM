@@ -15,9 +15,10 @@ Rectangle{
     property bool moveable: true
     property bool closeable: true
     property bool isWindow: true
-    property int btnraduis: 0
-    property int btnHeight: 30
-    property int btnWidth: 40
+    property bool isVerticalCenter: false
+    property int btnraduis: btnHeight
+    property int btnHeight: 15
+    property int btnWidth: btnHeight
     signal closeClick();
     signal move();
     signal dbclick();
@@ -52,7 +53,9 @@ Rectangle{
         }
         onDoubleClicked: {
             dbclick();
-            maxclick();
+            if(maxable){
+                maxclick();
+            }
         }
     }
     MyText{
@@ -69,20 +72,21 @@ Rectangle{
 
     Row{
         id:_row
-        spacing: 1
+        spacing: 5
 
         anchors{
             right:parent.right
             rightMargin: marginRight
-            top:parent.top
-            topMargin: marginTop
+            top:isVerticalCenter ? undefined : parent.top
+            topMargin: isVerticalCenter ? 0 : marginTop
+            verticalCenter: isVerticalCenter ? parent.verticalCenter : undefined
         }
 
         MyButton{
             id:min
             height: btnHeight
             width: btnWidth
-            title : "—"
+            title : ""
             font_size: 11
             enabled: minable
             visible: minable
@@ -90,7 +94,10 @@ Rectangle{
             anchors {
                 verticalCenter: parent.verticalCenter
             }
-            enter_color: "#bbb"
+            enter_color: "yellow"
+//            color : "#f0d765"
+            exit_color: "#f0d765"
+            border_color: "#c0a630"
             onClick: {
                 movetarget.showMinimized();
             }
@@ -106,9 +113,11 @@ Rectangle{
             enabled: maxable
             visible: maxable
             radius:btnraduis
-            title : "□"
+            title : ""
             font_size: 15
-            enter_color: "#bbb"
+            enter_color: "green"
+            exit_color: "#97cd75"
+            border_color: "#599731"
             onClick: {
                 if(!movetarget.ismax){
                     movetarget.showMaximized();
@@ -128,8 +137,10 @@ Rectangle{
             id:close
             height: btnHeight
             width: btnWidth
-            enter_color: "#e81123"
-            title : "×"
+            enter_color: "red"
+            exit_color: "#f5544d"
+            border_color: "#bc1b14"
+            title : ""
             font_size : 20
             enabled: visible
             visible: closeable

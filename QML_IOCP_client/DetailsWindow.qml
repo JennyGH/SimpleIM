@@ -38,9 +38,6 @@ Window {
         MainWindowHeader{
             id:_detailswindowheader
             movetarget: details_fatherWindow
-            btnHeight:30
-            btnWidth:btnHeight
-            btnraduis: _detailswindowbakg.radius * 100
             minable:false
             marginRight:5
             title : userid
@@ -85,17 +82,10 @@ Window {
                         MyTextInput{
                             id:txtname
                             width: 100
-                            style:TextFieldStyle{
-                                background: Rectangle{
-                                    anchors.fill: parent
-                                    color : "transparent"
-                                    border.color: "#e2e2e2"
-                                    border.width:1
-                                }
-                            }
                             readOnly: true
                             enabled: !readOnly
                             property bool change: false
+                            radius: 0
                             onTextChanged: {
                                 if(length > 10){
                                     text = text.substring(0,10)

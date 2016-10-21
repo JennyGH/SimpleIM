@@ -93,10 +93,13 @@ function clearWindow(array){
 //}
 
 function send(userid,name,msg){
+    var orginmsg = msg;
     if(msg.trim() === "" || msg === "\n") return;
-    msg = msg.replace(/(\n)+|(\r\n)+/g, "");
+    msg = msg.replace(/\\/gi, "&s;");
+    msg = msg.replace(/(\n)+|(\r\n)+/g, "&r;");
+    msg = msg.replace(/\"/gi,"&q;");
     if(client.sendmessage(msg,userid,2)){
-        chatmessagelistmodel.append({"name": name , "message": msg , "me" : true});
+        chatmessagelistmodel.append({"name": name , "message": orginmsg , "me" : true});
     }
 }
 

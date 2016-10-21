@@ -63,9 +63,7 @@ Window{
                 movetarget : chatwindow
                 maxable: true
                 marginRight: 5
-                btnHeight: 25
-                btnWidth: btnHeight
-                btnraduis: _chatwindowbakg.radius * 100
+                isVerticalCenter : true
                 z: -1
                 gradient: Gradient{
                     GradientStop{position: 0.0;color : "#fff"}
@@ -186,8 +184,9 @@ Window{
 //                        chatwindow.setContent("");
                     }
                     onEnter:{
-                          GEN.send(userid,"我",chatwindow.getContent());
-                          chatwindow.setContent("");
+                        footer.sendbtnclick();
+//                          GEN.send(userid,"我",chatwindow.getContent());
+//                          chatwindow.setContent("");
                     }
                 }
 
@@ -210,6 +209,7 @@ Window{
     OuterShadow {
         id:_shadow
         target :_chatwindowbakg
+        verticalOffset: 4
     }
 
     PropertyAnimation {
@@ -232,6 +232,10 @@ Window{
         return chatwindowheader;
     }
     function recv(friend,msg){
+        //{"type":2,"friend":"1","message":"\"trimmsg\"\"trimmsg\"  \"trimmsg\""}
+        msg = msg.replace(/(&s;)/gi,"\\");
+        msg = msg.replace(/(&r;)/gi,"\n");
+        msg = msg.replace(/(&q;)/gi,"\"");
         chatmessagelistmodel.append({"name": friend , "message": msg , "me" : false});
     }
 }

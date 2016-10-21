@@ -57,9 +57,6 @@ Window {
             marginRight:5
             marginTop:marginRight
             title : "查找好友"
-            btnHeight: 25
-            btnWidth: btnHeight
-            btnraduis: _searchwindowbakg.radius * 100
             onCloseClick: {
                 fatherWindow.searchwindow = null;
             }

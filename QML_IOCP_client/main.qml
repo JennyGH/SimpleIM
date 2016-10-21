@@ -96,6 +96,7 @@ Window {
         layer.effect: OuterShadow {
             target : _loginwindowbakg
             transparentBorder: true
+            verticalOffset : 4
         }
 //        scale:0
         anchors {
@@ -107,18 +108,25 @@ Window {
             animBig.start();
         }
 
+        Image{
+            id:_bakg
+            source : "qrc:src/src/bakg.png"
+            width: parent.width
+            height: _loginwindowheadicon.height + 20
+            sourceSize: Qt.size(height,width)
+//            anchors.centerIn: parent
+            anchors.top : _loginwindowheader.bottom
+            anchors.horizontalCenter: parent.horizontalCenter
+            z: 0
+        }
+
         MainWindowHeader{
             id:_loginwindowheader
             movetarget : _loginwindow
-            marginRight:5//parent.border.width
+            marginRight:10//parent.border.width
             marginTop: marginRight
             title : "JennyChat"
-//            anchors {
-//                topMargin: marginRight
-//            }
-            btnHeight: 25
-            btnWidth: btnHeight
-            btnraduis: _loginwindowbakg.radius * 100
+            isVerticalCenter: true
             MyButton{
                 id:setting
                 title : ""
@@ -131,6 +139,8 @@ Window {
                 height: 25
                 width: height
                 radius: _loginwindowbakg.radius * 100
+                visible: false
+                enabled: visible
                 Image{
 //                        anchors.fill: parent
                     source : "qrc:/src/src/settings.png"
@@ -171,12 +181,14 @@ Window {
 
         Head{
             id:_loginwindowheadicon
-            height: 120
-            width : 120
+            height: 100
+            width : 100
             radius: height
+            border.width: 1
             anchors {
                 horizontalCenter: parent.horizontalCenter
                 top : _logintips.top
+                topMargin: 10
 //                topMargin: 10
             }
         }
@@ -189,8 +201,8 @@ Window {
             width: _loginwindowbakg.width - 50
             anchors {
 //                fill : parent
-                top : _loginwindowheadicon.bottom
-//                topMargin: 10
+                top : _bakg.bottom
+                topMargin: 10
                 horizontalCenter: _loginwindowbakg.horizontalCenter
                 bottom:btnlogin.top
 //                bottomMargin: 10
@@ -222,6 +234,7 @@ Window {
                         validator: RegExpValidator {
                             regExp:/[1-9][0-9]{1,10}/
                         }
+                        radius : 0
 
                         onTextChanged: {
 //                            GEN.limitNumber(txtID);
@@ -273,6 +286,8 @@ Window {
                         validator:  RegExpValidator {
                             regExp:/[0-9a-zA-z\.\*]{1,16}/  //只允许输入0-9,a-z,A-Z,*,.
                         }
+                        isPassword: true
+                        radius : 0
                         onEnterPressed: {
                             btnlogin.click();
                         }
@@ -301,20 +316,26 @@ Window {
             width: _loginwindowbakg.width * 0.9
             title:"<b>登录</b>"
             font_size: 16
+            hasShadow:true
+            border_color : Qt.darker("#1f85fb",1.2)
 //            exit_color: Qt.lighter("green",1.2)//"#3399ff"
 //            enter_color: Qt.lighter("green",1.5)//Qt.lighter("#3399ff",1.2)
-            enter_gradient:Gradient{
-                GradientStop{position: 0.0;color : Qt.lighter("#1bbf2e",1.3)}
-                GradientStop{position: 1.0;color : "#1bbf2e"}
+            exit_gradient:Gradient{
+//                GradientStop{position: 0.0;color : Qt.lighter("#1bbf2e",1.3)}
+//                GradientStop{position: 1.0;color : "#1bbf2e"}
+                GradientStop{position: 0.0;color : "#6bb2f7"}
+                GradientStop{position: 1.0;color : "#1f85fb"}
             }
-            exit_gradient : Gradient{
-                GradientStop{position: 0.0;color : "#1bbf2e"}
-                GradientStop{position: 1.0;color : Qt.darker("#1bbf2e",1.5)}
+            enter_gradient : Gradient{
+//                GradientStop{position: 0.0;color : "#1bbf2e"}
+//                GradientStop{position: 1.0;color : Qt.darker("#1bbf2e",1.5)}
+                GradientStop{position: 0.0;color : Qt.lighter("#6bb2f7",1.1)}
+                GradientStop{position: 1.0;color : Qt.lighter("#1f85fb",1.1)}
             }
 
             enter_font_color: "#fff"
             exit_font_color: "#fff"
-            border_color: hasShadow ? "transparent" : "#fff" //Qt.darker("#3399ff",1.2)
+//            border_color: hasShadow ? "transparent" : "#fff" //Qt.darker("#3399ff",1.2)
             radius:_loginwindowbakg.radius
             anchors {
                 horizontalCenter: parent.horizontalCenter

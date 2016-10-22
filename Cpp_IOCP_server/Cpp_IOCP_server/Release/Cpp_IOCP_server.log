@@ -1,10 +1,9 @@
-﻿  Cpp_IOCP_server.cpp
-  MYIOCPServer.cpp
-MYIOCPServer.cpp(603): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+﻿  MYIOCPServer.cpp
+MYIOCPServer.cpp(612): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
   C:\Program Files (x86)\Windows Kits\8.1\Include\um\winsock2.h(1868): note: 参见“inet_ntoa”的声明
   正在生成代码
-  8 of 1533 functions ( 0.5%) were compiled, the rest were copied from previous compilation.
-    1 functions were new in current compilation
-    24 functions had inline decision re-evaluated but remain unchanged
+  12 of 1543 functions ( 0.8%) were compiled, the rest were copied from previous compilation.
+    10 functions were new in current compilation
+    35 functions had inline decision re-evaluated but remain unchanged
   已完成代码的生成
   Cpp_IOCP_server.vcxproj -> D:\JennyGit\IOCP\Cpp_IOCP_server\Release\Cpp_IOCP_server.exe

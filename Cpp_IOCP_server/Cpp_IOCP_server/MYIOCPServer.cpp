@@ -426,7 +426,16 @@ unsigned int CMYIOCPServer::login(string id, string psw, LPPER_HANDLE_DATA lhd)
 #endif
 	//	如果正确
 	lhd->username = username;
+	cout << "新 socket 登入：" << m_clients[id] << endl;
+	if (m_clients[id]) {
+		if (closesocket(m_clients[id]) == 0) {
+			cout << "断开旧 socket：" << m_clients[id] << endl;
+			m_clients.erase(id);
+		}
+		//showClients(m_clients);
+	}
 	m_clients[id] = lhd->socket;	//将新用户存入哈希表
+	cout << "加入哈希表后新 socket：" << m_clients[id] << endl;
 	return 0;
 }
 

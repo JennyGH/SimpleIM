@@ -21,7 +21,6 @@
         <file>SettingWindow.qml</file>
         <file>MessageBox.qml</file>
         <file>ChatMainWindow.qml</file>
-        <file>ResizeBar.qml</file>
         <file>SearchFriend.qml</file>
         <file>SearchResultModel.qml</file>
         <file>SearchResultItem.qml</file>
@@ -35,6 +34,19 @@
         <file>OuterShadow.qml</file>
         <file>MyTextInput.qml</file>
         <file>Busy.qml</file>
+        <file>TabBar.qml</file>
+        <file>MyTab.qml</file>
+        <file>fontawesome.js</file>
+        <file>generic.js</file>
+        <file>Border.qml</file>
+        <file>Sliper.qml</file>
+        <file>GradientBorder.qml</file>
+        <file>Toast.qml</file>
+        <file>ToolTip.qml</file>
+        <file>FileElement.qml</file>
+        <file>MainWindowFooter.qml</file>
+        <file>Span.qml</file>
+        <file>Blur.qml</file>
     </qresource>
     <qresource prefix="/src">
         <file>src/userIcon.png</file>
@@ -49,10 +61,18 @@
         <file>src/picture.png</file>
         <file>src/settings.png</file>
         <file>src/check.png</file>
-        <file>src/x.png</file>
         <file>src/bakg.png</file>
+        <file>src/x_hovered.png</file>
+        <file>src/x_normal.png</file>
+        <file>src/File.ico</file>
+        <file>src/naroow.png</file>
     </qresource>
-    <qresource prefix="/js">
-        <file>generic.js</file>
+    <qresource prefix="/font">
+        <file>font-awesome/FontAwesome.otf</file>
+        <file>font-awesome/fontawesome-webfont.eot</file>
+        <file>font-awesome/fontawesome-webfont.svg</file>
+        <file>font-awesome/fontawesome-webfont.ttf</file>
+        <file>font-awesome/fontawesome-webfont.woff</file>
+        <file>font-awesome/fontawesome-webfont.woff2</file>
     </qresource>
 </RCC>

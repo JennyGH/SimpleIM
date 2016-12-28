@@ -2,5 +2,5 @@
 
 UpdateMessage::UpdateMessage()
 {
-
+    type = "4";
 }

@@ -1,5 +1,5 @@
 import QtQuick 2.0
-import "../js/generic.js" as GEN
+import "generic.js" as GEN
 
 Rectangle{
     id:btn
@@ -20,10 +20,12 @@ Rectangle{
     property int border_width: 1
     property string title : "Button"
     property int font_size: 15
+    property bool usingFA: false
     property int contentwidth: btn_title.contentWidth + 20
     state : "out"
     border.color: border_color
     border.width: border_width
+    smooth: true
     //---------------------
 
     MyText {
@@ -34,6 +36,7 @@ Rectangle{
         enter_color : enter_font_color
         exit_color : exit_font_color
         textFormat: Text.RichText
+        fa : usingFA
     }
 
     MouseArea{

@@ -1,5 +1,5 @@
 import QtQuick 2.0
-import "../js/generic.js" as GEN
+import "generic.js" as GEN
 
 Rectangle{
     id:father
@@ -22,15 +22,15 @@ Rectangle{
 //            top : father.top
 //            topMargin: 5
         }
-        MyButton{
+        GradientButton{
             id:send
-            height: 30
-            width : contentwidth
+            height: 26
+            width : contentwidth + 15
             title : "发送"
-            border_color : "#aaa"
-            enter_color: "#157efb"
+            border_color : "#bbb"
+//            enter_color: "#157efb"
             enter_font_color: "#fff"
-            enter_border_color: "#fff"//Qt.darker("#157efb",1.5)
+//            enter_border_color: "#fff"//Qt.darker("#157efb",1.5)
             font_size:father.font_size
             radius:btnradius
             onClick: {
@@ -50,19 +50,23 @@ Rectangle{
                 verticalCenter: parent.verticalCenter
             }
         }
-        MyButton{
+        GradientButton{
             id:close
-            height: 30
-            width : contentwidth
+            height: 26
+            width : contentwidth + 15
             title : "关闭"
-            border_color : "#aaa"
-            enter_color: "#157efb"
+            border_color : "#bbb"
+//            enter_color: "#157efb"
             enter_font_color: "#fff"
-            enter_border_color: "#fff"//Qt.darker("#157efb",1.5)
+//            enter_border_color: "#fff"//Qt.darker("#157efb",1.5)
             font_size:father.font_size
             radius:btnradius
             onClick: {
-                chatwindow.close();
+                GEN.removeWindowFromArray(mainform.chatwindows,null,_tabbar.currentIndex);
+                _tabbar.removeTab(_tabbar.currentIndex);
+                if(_tabbar.count == 0){
+                    _chatarea.width = 0;
+                }
             }
             anchors {
                 verticalCenter: parent.verticalCenter

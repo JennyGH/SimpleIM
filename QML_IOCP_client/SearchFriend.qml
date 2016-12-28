@@ -3,7 +3,8 @@ import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import QtGraphicalEffects 1.0
-import "../js/generic.js" as GEN
+import "generic.js" as GEN
+import "fontawesome.js" as FontAwesome
 
 Window {
     id:_searchwindow
@@ -91,11 +92,12 @@ Window {
             GradientButton{
                 id:btnsearchuser
                 height: 30
-                width: 60
+                width: 50
                 anchors {
                     verticalCenter : parent.verticalCenter
                 }
-                title : "查找"
+                usingFA : true
+                title : FontAwesome.icons.Search
 
 //                enter_color: "#e2e2e2"
 
@@ -145,7 +147,7 @@ Window {
                         onDbclick: {}
                         onDetailsClick: {}
                         onAddClick: {
-                            client.sendmessage(name,ID,5);    //消息5：添加好友
+                            client.sendmessage(name,ID,addMessage);    //消息5：添加好友
                         }
                     }
                 }

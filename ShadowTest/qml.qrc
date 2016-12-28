@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>Sliper.qml</file>
+        <file>OuterShadow.qml</file>
+        <file>GradientButton.qml</file>
+        <file>MyText.qml</file>
+        <file>Toast.qml</file>
+        <file>MacCheckBox.qml</file>
+        <file>checkBox_normal.png</file>
+        <file>checkBox_selected.png</file>
+    </qresource>
+</RCC>

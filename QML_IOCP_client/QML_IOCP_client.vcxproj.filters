@@ -1,0 +1,364 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;moc;h;def;odl;idl;res;</Extensions>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;moc;h;def;odl;idl;res;</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Generated Files\Debug">
+      <UniqueIdentifier>{4699a41e-7073-455d-90e1-7e085719150d}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Generated Files\Release">
+      <UniqueIdentifier>{b419b9e3-3764-4da3-9336-336b2b484cf9}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="addmessage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="chatmessage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="client.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="deletemessage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="deletemessagemessag.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="editmessage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="leavingmessagemessage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="loginmessage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="message.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="searchmessage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="signinmessage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="updatemessage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_client.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_client.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_message.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_message.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\qrc_qml.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="addmessage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="chatmessage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <CustomBuild Include="client.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <ClInclude Include="datapakage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deletemessage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deletemessagemessage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="editmessage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headfiles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="leavingmessagemessage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="loginmessage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <CustomBuild Include="message.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <ClInclude Include="searchmessage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="signinmessage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="updatemessage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Alert.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Blur.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Border.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Busy.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ChatFooter.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ChatHeader.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ChatMainWindow.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ChatMessageListItem.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ChatMessageListModel.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ChatMessagePop.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ChatWindow.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="DetailsWindow.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="src\File.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="FileElement.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="font-awesome\FontAwesome.otf">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Friend.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="FriendModel.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="GradientBorder.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="GradientButton.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Head.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ImgButton.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="InputArea.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="MainForm.ui.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="MainWindowFooter.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="MainWindowHeader.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Me.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="MessageArea.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="MessageBox.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="MyButton.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="MyTab.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="MyText.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="MyTextInput.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="MyToolBar.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="OnlineLED.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="src\OpacityMask.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="OuterShadow.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="PopMenu.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="SearchFriend.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="SearchResultItem.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="SearchResultModel.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="SettingWindow.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="SignInWindow.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Sliper.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Span.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="TabBar.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Toast.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ToolTip.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="src\bakg.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="src\chat.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="src\check.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="font-awesome\fontawesome-webfont.eot">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="font-awesome\fontawesome-webfont.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="font-awesome\fontawesome-webfont.ttf">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="font-awesome\fontawesome-webfont.woff2">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="font-awesome\fontawesome-webfont.woff">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="fontawesome.js">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="generic.js">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="src\gray-naill.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="src\line.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="main.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="src\naill.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="src\naroow.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="src\pen.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="src\photo.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="src\picture.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <CustomBuild Include="qml.qrc">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <None Include="src\setting.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="src\settings.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="src\userIcon.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="src\x_hovered.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="src\x_normal.png">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+</Project>

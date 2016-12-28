@@ -1,171 +1,123 @@
 import QtQuick 2.4
-import QtQuick.Window 2.2
+//import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
-import "../js/generic.js" as GEN
+import "generic.js" as GEN
+import "fontawesome.js" as FA
 
-Window{
+Rectangle{
     id:chatwindow
     property string userid: ""
     property string name: ""
     property string address: ""
     property bool online: false
     property bool ismax: false
+    property int tabIndex
     property Rectangle bakg: _chatwindowbakg
-    height: 480
-    width: 640
-    visible: false
-    title: "与 " + name  + " 交谈中..."
-    flags: Qt.FramelessWindowHint | Qt.Window
-    minimumHeight: 400
-    minimumWidth: 600
-    color: Qt.rgba(0,0,0,0)
+    anchors.fill: parent
+
+    visible: true
+    color: "transparent"
 
     onVisibleChanged: {
-        if(!visible){
-            GEN.releaseWindow(mainform.chatwindows,this);
-        }else{
-            animBig.start();
+        if(visible){
             inputarea.text().forceActiveFocus();
         }
     }
 
+    Component.onDestruction: {
+//        console.log("chat window was destoyed!");
+    }
+
     Rectangle{
         id:_chatwindowbakg
-        height: parent.height - 30
-        width: parent.width - 30
-        scale:0
         anchors {
-            centerIn: parent
+            verticalCenter: parent.verticalCenter
+            left: parent.left
+            leftMargin: 5
+            right: files.left
+            rightMargin: 10
         }
+        height: parent.height
 
-        color:"#f5f5f5"
-
-        radius: 5
-
-//        border.color: "#aaa"
-        border.color: "#fff"
+        color: mainform.color
 
         ChatHeader {
             id:chatwindowheader
             height : 50
-            width: parent.width - parent.border.width*2
+            width: parent.width
             clientname:chatwindow.name
+            clip : true
             anchors {
                 top:_chatwindowbakg.top
                 topMargin: _chatwindowbakg.border.width
                 horizontalCenter: _chatwindowbakg.horizontalCenter
             }
             color:"transparent"
+            GradientBorder{
+                pos : "bottom"
+                color_middle : "#ccc"
+            }
+        }
 
-            MainWindowHeader{
-                id:_chatwindowtitle
-                movetarget : chatwindow
-                maxable: true
-                marginRight: 5
-                isVerticalCenter : true
-                z: -1
-                gradient: Gradient{
-                    GradientStop{position: 0.0;color : "#fff"}
-                    GradientStop{position: 1.0;color : "transparent"}
+        MessageArea {
+            id:msgArea
+            border.color: "#f0f0f0"
+            //                height: _chatwindowbakg.height - chatwindowheader.height - sendarea.height - toolbar.height - parent.spacing*2 - 2
+            width: _chatwindowbakg.width
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+                bottom : toolbar.top
+                bottomMargin: 5
+                top : chatwindowheader.bottom
+            }
+            ScrollView {
+                width: parent.width - msgArea.border.width*2
+                height: parent.height - parent.border.width*2
+                horizontalScrollBarPolicy:Qt.ScrollBarAlwaysOff
+                verticalScrollBarPolicy:Qt.ScrollBarAsNeeded
+                style: ScrollViewStyle{transientScrollBars:true}
+                anchors {
+                    centerIn: parent
                 }
-//                anchors {
-////                    fill: parent
 
-//                    topMargin:_chatwindowtitle.marginRight
-//                }
-                title:""
-                onMove: {
-                    if(movetarget.ismax){
-                        _chatwindowtitle.movetarget.showNormal();
-                        _chatwindowtitle.movetarget.bakg.height = _chatwindowtitle.movetarget.height - 30;
-                        _chatwindowtitle.movetarget.bakg.width = _chatwindowtitle.movetarget.width - 30;
-                        ismax = false;
-                    }
+                ListView {
+                    id:chatmessahelist
+                    anchors.fill: parent
+                    model: ChatMessageListModel{id:chatmessagelistmodel}
+                    delegate : ChatMessageListItem{id:chatmessagelistitem}
                 }
             }
         }
 
-        Column{
-            spacing : 5
-            //            anchors.fill: parent
-            height: _chatwindowbakg.height - chatwindowheader.height - _chatwindowbakg.border.width*2
-            width: _chatwindowbakg.width - _chatwindowbakg.border.width*2
+        MyToolBar{
+            id:toolbar
+            width: parent.width
+            btnradius: 5
+            btnHeight: 25
             anchors {
-                top : chatwindowheader.bottom
-                horizontalCenter: chatwindowheader.horizontalCenter
+                horizontalCenter: parent.horizontalCenter
             }
-            MessageArea {
-                id:msgArea
-                border.color: _chatwindowbakg.border.color
-                height: _chatwindowbakg.height - chatwindowheader.height - sendarea.height - toolbar.height - parent.spacing*2 - 2
-                width: _chatwindowbakg.width
-                anchors {
-                    horizontalCenter: parent.horizontalCenter
-                }
-                ScrollView {
-                    width: parent.width - msgArea.border.width*2
-                    height: parent.height - parent.border.width*2
-                    horizontalScrollBarPolicy:Qt.ScrollBarAlwaysOff
-                    verticalScrollBarPolicy:Qt.ScrollBarAsNeeded
-                    style: ScrollViewStyle{transientScrollBars:true}
-                    anchors {
-                        centerIn: parent
-                    }
-
-                    ListView {
-                        id:chatmessahelist
-                        anchors.fill: parent
-                        model: ChatMessageListModel{id:chatmessagelistmodel}
-                        delegate : ChatMessageListItem{id:chatmessagelistitem}
-                    }
-                }
+            y : 400
+            onSelectFile: {
+//                file_progress.visible = true;
+                filemodel.append({"filename": filename , "fileurl": url , "filestate" : "ready"});
             }
+        }
 
-            MyToolBar{
-                id:toolbar
-                width: parent.width
-                btnradius: 5
-                btnHeight: 30
-                MouseArea{
-                    property point clickPos: "0,0"
-                    property int movecount: 0
-                    property int ychangecount: 0
-                    property int average:0
-                    anchors.fill: parent
-                    onPressed: {
-                        clickPos = Qt.point(mouse.x,mouse.y);
-                        movecount = 0;
-                        ychangecount = 0;
-                    }
-                    onPositionChanged: {
-                        //鼠标偏移量
-                        var delta = Qt.point(mouse.x-clickPos.x, mouse.y-clickPos.y);
-                        ychangecount += Math.abs(delta.y);
-                        movecount++;
-                        average = ychangecount / movecount;
-                        if(Math.abs(delta.y) > average){
-                            delta.y = (delta.y < 0 ? -average : average);
-                        }
-                        //如果mainwindow继承自QWidget,用setPos
-                        if((sendarea.height - delta.y) > _chatwindowbakg.height * 0.4)
-                            sendarea.height = _chatwindowbakg.height * 0.4;
-                        else if((sendarea.height - delta.y) < 100)
-                            sendarea.height = 100;
-                        else
-                            sendarea.height = sendarea.height - delta.y;
-                    }
-                }
-
-            }
-
-            Rectangle{
+        Rectangle{
                 id:sendarea
                 height: 100 + footer.height
-//                color: footer.color
                 color : "transparent"
                 width: parent.width
                 property int spacing: 5
+
+                anchors {
+                    top : toolbar.bottom
+                    topMargin: 5
+                    bottom : parent.bottom
+                    horizontalCenter: parent.horizontalCenter
+                }
 
                 InputArea {
                     id:inputarea
@@ -173,11 +125,11 @@ Window{
                     width: parent.width - sendarea.spacing*2
                     anchors {
                         top : sendarea.top
-                        //                        topMargin: sendarea.spacing
                         horizontalCenter: parent.horizontalCenter
                         bottom: footer.top
                         bottomMargin: inputarea.border_width
                     }
+
                     onCtrl_Enter: {
                         text().append("");
 //                        GEN.send(userid,"我",chatwindow.getContent());
@@ -198,28 +150,75 @@ Window{
                     font_size: 13
                     anchors {
                         bottom : parent.bottom
-//                        bottomMargin:10
                     }
                 }
             }
+
+    }
+
+    Rectangle {
+        id : files
+        height: parent.height - 20
+        width: 300
+        visible: width > 0
+        anchors {
+            right : parent.right
+            rightMargin: 5
+            verticalCenter: parent.verticalCenter
         }
 
+        color : "#fff"
+        border{
+            color : "#ccc"
+            width: 1
+        }
+        radius: 3
+        smooth : true
+        clip : false
 
+        ScrollView{
+            anchors.fill: parent
+            smooth : true
+            clip : false
+            ListView{
+                id : fileList
+                anchors.fill: parent
+                smooth : true
+                clip : false
+                model : ListModel {
+                    id : filemodel
+                    ListElement{filename : ".png";fileurl : "A:/dqwd/qd/wqrhrthrtd/qwd/.png";}
+                    ListElement{filename : "dddeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png";fileurl : "B:/dqwd/qd/wqrhrthrtd/qwd/dddeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png";}
+                    ListElement{filename : "dddeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png";fileurl : "C:/dqwd/qd/wqrhrthrtd/qwd/dddeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png";}
+                    ListElement{filename : "dddeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png";fileurl : "D:/dqwd/qd/wqrhrthrtd/qwd/dddeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png";}
+                    onCountChanged: {
+                        if(count == 0){
+                            files.width = 0;
+                            _chatwindowbakg.anchors.rightMargin = 0;
+//                            _chatarea.width = 800;
+                        }else{
+                            files.width = 300;
+                            _chatwindowbakg.anchors.rightMargin = 10;
+//                            _chatarea.width = 1000;
+                        }
+                    }
+                }
+                delegate:FileElement{
+                    id : filedelegate
+                    height: 55
+                    width: parent.width - 10
+                }
+            }
+        }
     }
-    OuterShadow {
-        id:_shadow
-        target :_chatwindowbakg
-        verticalOffset: 4
-    }
-
-    PropertyAnimation {
-        id: animBig
-        target: _chatwindowbakg
-        duration: 200
-        easing.type: Easing.OutQuint
-        property: 'scale'
-        from: 0
-        to: 1
+    ToolTip{
+        id : tooltip
+        opacity: 0
+        colorOpacity : 0.7
+//            anchors.bottom : parent.top
+        x : files.x + 20 - leftWidth
+        y : files.y
+        text : ""
     }
 
     function getContent(){

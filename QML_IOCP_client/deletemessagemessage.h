@@ -1,11 +1,11 @@
-#ifndef DELETEMESSAGEMESSAG_H
-#define DELETEMESSAGEMESSAG_H
+#ifndef DELETEMESSAGEMESSAGE_H
+#define DELETEMESSAGEMESSAGE_H
+#include "message.h"
 
-
-class DeletemessageMessag : public Message
+class DeletemessageMessage : public Message
 {
 public:
-    DeletemessageMessag();
+    DeletemessageMessage();
 };
 
 #endif // DELETEMESSAGEMESSAG_H

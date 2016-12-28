@@ -1,5 +1,5 @@
 import QtQuick 2.0
-import "../js/generic.js" as GEN
+import "generic.js" as GEN
 
 Image{
     id:btn

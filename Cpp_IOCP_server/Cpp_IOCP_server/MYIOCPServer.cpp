@@ -1,4 +1,4 @@
-//#define _WINSOCK_DEPRECATED_NO_WARNINGS
+ï»¿//#define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include "StdAfx.h"
 #include "MYIOCPServer.h"
 
@@ -26,7 +26,7 @@ CMYIOCPServer* CMYIOCPServer::GetInstance()
 
 	m_sql = CMYSQL::GetInstance();
 
-	m_sql->InitSQL("localhost", "root", sqlpswd, "JennyChat", 3306, "utf8");
+	m_sql->InitSQL("localhost", "root", sqlpswd, "JennyChat", 3306, "GBK");
 
 #endif
 
@@ -35,8 +35,8 @@ CMYIOCPServer* CMYIOCPServer::GetInstance()
 }
 void CMYIOCPServer::formatMessage(char * str, MessagePakag & mp)
 {
-	//----¶Ô·½£ºrecver
-	//----×Ô¼º£ºsender
+	//----å¯¹æ–¹ï¼šrecver
+	//----è‡ªå·±ï¼šsender
 	string temp = str;
 	Json::Reader reader;
 	Json::Value value;
@@ -70,21 +70,21 @@ string CMYIOCPServer::now()
 	}
 }
 /**************************
-ÀàµÄ¹¹Ôìº¯Êı
+ç±»çš„æ„é€ å‡½æ•°
 **************************/
 CMYIOCPServer::CMYIOCPServer(void)
 {
 	m_iLisenPoint = DefaultPort;
 }
 /**************************
-ÀàµÄÎö¹¹º¯Êı
+ç±»çš„ææ„å‡½æ•°
 **************************/
 CMYIOCPServer::~CMYIOCPServer(void)
 {
 	m_CWorkQueue.Destroy(5);
 }
 /**************************
-ÉèÖÃ·şÎñÆ÷IP
+è®¾ç½®æœåŠ¡å™¨IP
 **************************/
 void CMYIOCPServer::SetServerIp(const string & sIP)
 {
@@ -92,7 +92,7 @@ void CMYIOCPServer::SetServerIp(const string & sIP)
 }
 
 /**************************
-ÉèÖÃ·şÎñÆ÷¶Ë¿Ú
+è®¾ç½®æœåŠ¡å™¨ç«¯å£
 **************************/
 void  CMYIOCPServer::SetPort(const int &iPort)
 {
@@ -100,7 +100,7 @@ void  CMYIOCPServer::SetPort(const int &iPort)
 }
 
 /**************************
-ÉèÖÃ×î´óµÄ¿Í»§¶ËÁ¬½ÓÊıÄ¿
+è®¾ç½®æœ€å¤§çš„å®¢æˆ·ç«¯è¿æ¥æ•°ç›®
 **************************/
 void  CMYIOCPServer::SetMaxClientNum(const int &iMaxNum)
 {
@@ -108,8 +108,8 @@ void  CMYIOCPServer::SetMaxClientNum(const int &iMaxNum)
 }
 
 /**************************
-·şÎñÆ÷½ÓÊÕ¿Í»§¶ËÏûÏ¢£¬
-¹¤×÷Ïß³Ì
+æœåŠ¡å™¨æ¥æ”¶å®¢æˆ·ç«¯æ¶ˆæ¯ï¼Œ
+å·¥ä½œçº¿ç¨‹
 **************************/
 DWORD WINAPI   CMYIOCPServer::ServerWorkThread(LPVOID CompletionPortID)
 {
@@ -130,24 +130,24 @@ DWORD WINAPI   CMYIOCPServer::ServerWorkThread(LPVOID CompletionPortID)
 			//system("time");
 			cout << "[" << now() << "] ";
 			if (mapptr != m_clients.end()) {
-				m_clients.erase(mapptr);	//ÓÃ»§ÍË³öºóÉ¾³ımap±íÖĞÏàÓ¦ÓÃ»§
-				cerr << "ÓÃ»§ " << PerHandleData->userid << " ÍË³ö..." << endl;
+				m_clients.erase(mapptr);	//ç”¨æˆ·é€€å‡ºååˆ é™¤mapè¡¨ä¸­ç›¸åº”ç”¨æˆ·
+				cerr << "ç”¨æˆ· " << PerHandleData->userid << " é€€å‡º..." << endl;
 			}
 			else {
 				if (GetLastError() == 64)
-					cerr << "ÓĞÎ´µÇÂ¼ÓÃ»§¶Ï¿ªÁ¬½Ó..." << endl;
+					cerr << "æœ‰æœªç™»å½•ç”¨æˆ·æ–­å¼€è¿æ¥..." << endl;
 				else
 					cerr << "GetQueuedCompletionStatus Error: " << GetLastError() << endl;
 			}
 			closesocket(PerHandleData->socket);
-			showClients(m_clients);	//ÏÔÊ¾µ±Ç°ÔÚÏßÈËÊı
+			showClients(m_clients);	//æ˜¾ç¤ºå½“å‰åœ¨çº¿äººæ•°
 			continue;
-			//ÕâÀï²»ÄÜ·µ»Ø£¬·µ»Ø×ÓÏß³Ì¾Í½áÊøÁË
+			//è¿™é‡Œä¸èƒ½è¿”å›ï¼Œè¿”å›å­çº¿ç¨‹å°±ç»“æŸäº†
 			//return -1;  
 		}
 		PerIoData = (LPPER_IO_DATA)CONTAINING_RECORD(IpOverlapped, PER_IO_DATA, overlapped);
 
-		// ¼ì²éÔÚÌ×½Ó×ÖÉÏÊÇ·ñÓĞ´íÎó·¢Éú   
+		// æ£€æŸ¥åœ¨å¥—æ¥å­—ä¸Šæ˜¯å¦æœ‰é”™è¯¯å‘ç”Ÿ   
 		if (0 == BytesTransferred) {
 			closesocket(PerHandleData->socket);
 			GlobalFree(PerHandleData);
@@ -155,10 +155,10 @@ DWORD WINAPI   CMYIOCPServer::ServerWorkThread(LPVOID CompletionPortID)
 			continue;
 		}
 
-		//µÃµ½ÏûÏ¢ÂëÁ÷
-		memset(m_byteMsg, 0, MessMaxLen); //³õÊ¼»¯ m_byteMsg Êı×é
-		memcpy(m_byteMsg, PerIoData->databuff.buf, MessMaxLen);//½« buf ¸³Öµ¸ø m_byteMsg Êı×é
-		//µÃµ½¿Í»§¶ËSOCKETĞÅÏ¢
+		//å¾—åˆ°æ¶ˆæ¯ç æµ
+		memset(m_byteMsg, 0, MessMaxLen); //åˆå§‹åŒ– m_byteMsg æ•°ç»„
+		memcpy(m_byteMsg, PerIoData->databuff.buf, MessMaxLen);//å°† buf èµ‹å€¼ç»™ m_byteMsg æ•°ç»„
+		//å¾—åˆ°å®¢æˆ·ç«¯SOCKETä¿¡æ¯
 		SOCKET sClientSocket;
 		MessagePakag *msg = new MessagePakag;
 		//system("time");
@@ -170,56 +170,72 @@ DWORD WINAPI   CMYIOCPServer::ServerWorkThread(LPVOID CompletionPortID)
 		ss >> value;
 		switch (value)
 		{
-		case 1:	//µÇÂ½ÏûÏ¢
+		case 1:	//ç™»é™†æ¶ˆæ¯
 		{
-			/*ÏµÍ³ÏûÏ¢Îª1£¬
-			*  ÏûÏ¢0£ºµÇÂ½³É¹¦
-			*  ÏûÏ¢1£ºÓÃ»§Ãû²»´æÔÚ
-			*  ÏûÏ¢2£ºÃÜÂë´íÎó
+			/*ç³»ç»Ÿæ¶ˆæ¯ä¸º1ï¼Œ
+			*  æ¶ˆæ¯0ï¼šç™»é™†æˆåŠŸ
+			*  æ¶ˆæ¯1ï¼šç”¨æˆ·åä¸å­˜åœ¨
+			*  æ¶ˆæ¯2ï¼šå¯†ç é”™è¯¯
 			*/
-			//¿Í»§¶Ë×ª·¢ÏûÏ¢Îª2
-			//²éÕÒĞÂÅóÓÑÎª3
+			//å®¢æˆ·ç«¯è½¬å‘æ¶ˆæ¯ä¸º2
+			//æŸ¥æ‰¾æ–°æœ‹å‹ä¸º3
 			switch (login(msg->recverID, msg->m_message, PerHandleData)) {
 			case 0: {
 				char* sysmsg = "0";
-				cout << "ÓÃ»§ " << msg->recverID << " µÇÈë£º" << endl;
-				PerHandleData->userid = msg->recverID;	//±£´æ¿Í»§ID
-				//SendMessage(PerHandleData->socket, sysmsg);	//	·¢ËÍµÇÂ¼Ê§°ÜµÄÏµÍ³ÏûÏ¢
+				cout << "ç”¨æˆ· " << msg->recverID << " ç™»å…¥ï¼š" << endl;
+				PerHandleData->userid = msg->recverID;	//ä¿å­˜å®¢æˆ·ID
+				//SendMessage(PerHandleData->socket, sysmsg);	//	å‘é€ç™»å½•å¤±è´¥çš„ç³»ç»Ÿæ¶ˆæ¯
 				send(PerHandleData->socket, sysmsg, strlen(sysmsg), 0);
 				break;
 			}
 			case 1: {
 				char* sysmsg = "{\"type\":1,\"message\":1}";
-				//cout << "ÕÊºÅ²»´æÔÚ" << endl;
-				//SendMessage(PerHandleData->socket, sysmsg);	//	·¢ËÍµÇÂ¼Ê§°ÜµÄÏµÍ³ÏûÏ¢
+				//cout << "å¸å·ä¸å­˜åœ¨" << endl;
+				//SendMessage(PerHandleData->socket, sysmsg);	//	å‘é€ç™»å½•å¤±è´¥çš„ç³»ç»Ÿæ¶ˆæ¯
 				send(PerHandleData->socket, sysmsg, strlen(sysmsg), 0);
 				//closesocket(PerHandleData->socket);
 				break;
 			}
 			case 2: {
 				char* sysmsg = "{\"type\":1,\"message\":2}";
-				//cout << "ÃÜÂë´íÎó" << endl;
-				//SendMessage(PerHandleData->socket, sysmsg);	//	·¢ËÍµÇÂ¼Ê§°ÜµÄÏµÍ³ÏûÏ¢
+				//cout << "å¯†ç é”™è¯¯" << endl;
+				//SendMessage(PerHandleData->socket, sysmsg);	//	å‘é€ç™»å½•å¤±è´¥çš„ç³»ç»Ÿæ¶ˆæ¯
 				send(PerHandleData->socket, sysmsg, strlen(sysmsg), 0);
 				//closesocket(PerHandleData->socket);
 				break;
 			}
 			default:break;
 			}
-			showClients(m_clients);	//ÏÔÊ¾µ±Ç°ÔÚÏßÈËÊı
+			showClients(m_clients);	//æ˜¾ç¤ºå½“å‰åœ¨çº¿äººæ•°
 			break;
 		}
-		case 2:	//×ª·¢ÏûÏ¢
+		case 2:	//è½¬å‘æ¶ˆæ¯
 		{
-			cout << msg->recverID << " ¸æËß " << msg->senderID << "£º" << msg->m_message << endl;
+			if (Tools::trim(msg->senderID) == "") {
+				cout << "æ¥æ”¶æ–¹IDä¸ºç©º..." << endl;
+				break;
+			}
+			cout << msg->recverID << " å‘Šè¯‰ " << msg->senderID << "ï¼š" << msg->m_message << endl;
 			sClientSocket = m_clients.find(msg->senderID)->second;
-			string temp = "{\"type\":2,\"friend\":\"" + msg->recverID + "\",\"message\":\"" + msg->m_message + "\"}";
-			//SendMessage(sClientSocket, (char*)temp.c_str());	//	×ª·¢¸øÖ¸¿Í»§¶Ë
-			send(sClientSocket, (char*)temp.c_str(), temp.length(), 0);
+			
+			if (!sClientSocket) {
+				//å¦‚æœå¯¹æ–¹ä¸åœ¨çº¿
+				m_sql->Add("JennyChat", "message", "`message`,`recvID`,`senderID`,`isFriend`", "'" + msg->m_message + "','" + msg->senderID + "','" + msg->recverID + "','1'");
+			}else {
+				//å¯¹æ–¹åœ¨çº¿
+				string temp = "{\"type\":2,\"friend\":\"" + msg->recverID + "\",\"message\":\"" + msg->m_message + "\"}";
+				send(sClientSocket, (char*)temp.c_str(), temp.length(), 0);
+			}
+			//SendMessage(sClientSocket, (char*)temp.c_str());	//	è½¬å‘ç»™æŒ‡å®¢æˆ·ç«¯
+			
 			break;
 		}
-		case 3: //²éÕÒĞÂÅóÓÑ
+		case 3: //æŸ¥æ‰¾æ–°æœ‹å‹
 		{
+			if (Tools::trim(msg->senderID) == "") {
+				cout << "å…³é”®å­—ä¸ºç©º.." << endl;
+				break;
+			}
 			string result = m_sql->Search("JennyChat", "account", "id,username", "id='" + msg->senderID + "'", "");
 			if (result == "") {
 				result = m_sql->Search("JennyChat", "account", "id,username", "username='" + msg->senderID + "'", "");
@@ -242,12 +258,12 @@ DWORD WINAPI   CMYIOCPServer::ServerWorkThread(LPVOID CompletionPortID)
 			}
 			string returnmsg = "{\"type\":3,\"message\":" + (result == "" ? "\"\"" : result) + "}";
 			cout << "returnmsg:" << returnmsg << endl;
-			send(PerHandleData->socket, (char*)returnmsg.c_str(), returnmsg.length(), 0);	//·¢ËÍËÑË÷½á¹ûJSON¸ñÊ½Êı¾İ
+			send(PerHandleData->socket, (char*)returnmsg.c_str(), returnmsg.length(), 0);	//å‘é€æœç´¢ç»“æœJSONæ ¼å¼æ•°æ®
 			break;
 		}
-		case 4:	//·µ»ØºÃÓÑÁĞ±í
+		case 4:	//è¿”å›å¥½å‹åˆ—è¡¨
 		{
-			cout << "·µ»ØºÃÓÑÁĞ±í" << endl;
+			cout << "è¿”å›å¥½å‹åˆ—è¡¨" << endl;
 			string result = m_sql->Search("JennyChat", "friendlist", "fid,fname", "accountid='" + msg->recverID + "'", "");
 			if (result != "") {
 				Json::Reader reader;
@@ -259,13 +275,13 @@ DWORD WINAPI   CMYIOCPServer::ServerWorkThread(LPVOID CompletionPortID)
 				}
 			}
 			string returnmsg = "{\"type\":4,\"myName\":\"" + PerHandleData->username + "\",\"message\":" + (result == "" ? "\"\"" : result) + "}";
-			//cout << "returnmsg:" << returnmsg << endl;
-			send(PerHandleData->socket, (char*)returnmsg.c_str(), returnmsg.length(), 0);	//·¢ËÍËÑË÷½á¹ûJSON¸ñÊ½Êı¾İ
+			cout << "returnmsg:" << returnmsg << endl;
+			send(PerHandleData->socket, (char*)returnmsg.c_str(), returnmsg.length(), 0);	//å‘é€æœç´¢ç»“æœJSONæ ¼å¼æ•°æ®
 			break;
 		}
 		case 5:
 		{
-			cout << "Ìí¼ÓºÃÓÑ" << endl;
+			cout << "æ·»åŠ å¥½å‹" << endl;
 			string result, returnmsg;
 			result = m_sql->Search("JennyChat", "friendlist", "fid", "(`accountid`='" + msg->recverID + "' and `fid`='" + msg->senderID + "')", "");
 			if (result == "") {
@@ -277,54 +293,54 @@ DWORD WINAPI   CMYIOCPServer::ServerWorkThread(LPVOID CompletionPortID)
 				Json::Value value;
 				if (reader.parse(result, value)) {
 					if (value["SqlMsgType"] != 0) {
-						//ËÑË÷³ö´í
+						//æœç´¢å‡ºé”™
 						result = m_sql->Add("JennyChat", "friendlist", "`fname`,`fid`,`accountid`", "'" + msg->m_message + "','" + msg->senderID + "','" + msg->recverID + "'");
 						returnmsg = "{\"type\":5,\"message\":" + (result == "" ? "\"\"" : result) + "}";
 					}
 					else {
-						//ËÑË÷ÓĞ½á¹û
+						//æœç´¢æœ‰ç»“æœ
 						returnmsg = "{\"type\":5,\"message\":0}";
 					}
 				}
 			}
-			send(PerHandleData->socket, (char*)returnmsg.c_str(), returnmsg.length(), 0);	//·¢ËÍËÑË÷½á¹ûJSON¸ñÊ½Êı¾İ
+			send(PerHandleData->socket, (char*)returnmsg.c_str(), returnmsg.length(), 0);	//å‘é€æœç´¢ç»“æœJSONæ ¼å¼æ•°æ®
 			break;
 		}
 		case 6:
 		{
-			cout << "ĞŞ¸Ä±¸×¢" << endl;
+			cout << "ä¿®æ”¹å¤‡æ³¨" << endl;
 			string result = m_sql->Update("JennyChat", "friendlist", "`fname`='" + msg->m_message + "'", "(`fid`='" + msg->senderID + "' and `accountid`='" + msg->recverID + "')");
 			string returnmsg = "{\"type\":6,\"message\":" + (result == "" ? "\"\"" : result) + "}";
-			send(PerHandleData->socket, (char*)returnmsg.c_str(), returnmsg.length(), 0);	//·¢ËÍËÑË÷½á¹ûJSON¸ñÊ½Êı¾İ
+			send(PerHandleData->socket, (char*)returnmsg.c_str(), returnmsg.length(), 0);	//å‘é€æœç´¢ç»“æœJSONæ ¼å¼æ•°æ®
 			break;
 		}
-		case 7:	//É¾³ıºÃÓÑ
+		case 7:	//åˆ é™¤å¥½å‹
 		{
-			cout << "É¾³ıºÃÓÑ" << endl;
-			string result = m_sql->Del("JennyChat", "friendlist","fid", msg->senderID,"`accountid`='" + msg->recverID + "'");
+			cout << "åˆ é™¤å¥½å‹" << endl;
+			string result = m_sql->Del("JennyChat", "friendlist", "fid", msg->senderID, "`accountid`='" + msg->recverID + "'");
 			string returnmsg = "{\"type\":7,\"message\":" + (result == "" ? "\"\"" : result) + "}";
-			send(PerHandleData->socket, (char*)returnmsg.c_str(), returnmsg.length(), 0);	//·¢ËÍËÑË÷½á¹ûJSON¸ñÊ½Êı¾İ
+			send(PerHandleData->socket, (char*)returnmsg.c_str(), returnmsg.length(), 0);	//å‘é€æœç´¢ç»“æœJSONæ ¼å¼æ•°æ®
 			break;
 		}
-		case 8: //×¢²á
+		case 8: //æ³¨å†Œ
 		{
-			cout << "×¢²áÕÊºÅ" << endl
+			cout << "æ³¨å†Œå¸å·" << endl
 				<< msg->m_message << endl
 				<< msg->senderID << endl;
 			string result = m_sql->Search("JennyChat", "account", "max(`id`)", "", "");
 			string returnmsg;
 			if (result == "") {
 				result = m_sql->Add("JennyChat", "account", "`id`,`username`,`pswd`", "'1000','" + msg->senderID + "','" + msg->m_message + "'");
-				returnmsg = "{\"type\":8,\"message\":\"×¢²á³É¹¦£¬IDÎª£º1000\"}";
+				returnmsg = "{\"type\":8,\"message\":\"æ³¨å†ŒæˆåŠŸï¼ŒIDä¸ºï¼š1000\"}";
 			}
 			else {
 				Json::Reader reader;
 				Json::Value value;
 				if (reader.parse(result, value)) {
 					if (value["SqlMsgType"] != 0) {
-						//ËÑË÷³ö´í
-						cout << "²éÑ¯×î´óIDÊ§°Ü£º" << value["Result"].asString() << endl;
-						returnmsg = "{\"type\":8,\"message\":\"×¢²áÊ§°Ü...\"}";
+						//æœç´¢å‡ºé”™
+						cout << "æŸ¥è¯¢æœ€å¤§IDå¤±è´¥ï¼š" << value["Result"].asString() << endl;
+						returnmsg = "{\"type\":8,\"message\":\"æ³¨å†Œå¤±è´¥...\"}";
 					}
 					else {
 						stringstream ssmaxid;
@@ -337,25 +353,39 @@ DWORD WINAPI   CMYIOCPServer::ServerWorkThread(LPVOID CompletionPortID)
 						string strmaxid;
 						ssmaxid >> strmaxid;
 						result = m_sql->Add("JennyChat", "account", "`id`,`username`,`pswd`", "'" + strmaxid + "','" + msg->senderID + "','" + msg->m_message + "'");
-						returnmsg = "{\"type\":8,\"message\":\"×¢²á³É¹¦£¬IDÎª£º" + strmaxid + "\"}";
-						//ËÑË÷ÓĞ½á¹û
+						returnmsg = "{\"type\":8,\"message\":\"æ³¨å†ŒæˆåŠŸï¼ŒIDä¸ºï¼š" + strmaxid + "\"}";
+						//æœç´¢æœ‰ç»“æœ
 					}
 				}
 			}
-			send(PerHandleData->socket, (char*)returnmsg.c_str(), returnmsg.length(), 0);	//·¢ËÍËÑË÷½á¹ûJSON¸ñÊ½Êı¾İ
+			send(PerHandleData->socket, (char*)returnmsg.c_str(), returnmsg.length(), 0);	//å‘é€æœç´¢ç»“æœJSONæ ¼å¼æ•°æ®
 			break;
 		}
-		default: //Î´ÖªÏûÏ¢
+		case 9: {
+			cout << "æŸ¥çœ‹ç•™è¨€ä¿¡æ¯" << endl;
+			string result = m_sql->Search("JennyChat", "message", "message,senderID,isFriend", "(`recvID`='" + msg->recverID + "')", "");
+			string returnmsg = "{\"type\":9,\"message\":" + (result == "" ? "\"\"" : result) + "}";
+			send(PerHandleData->socket, (char*)returnmsg.c_str(), returnmsg.length(), 0);//å‘é€æœç´¢ç»“æœJSONæ ¼å¼æ•°æ®
+			break;
+		}
+		case 10: {
+			//æ¸…é™¤å·²è¯»æ¶ˆæ¯
+			cout << "æ¸…é™¤å·²è¯»æ¶ˆæ¯" << msg->m_message << endl;
+			string del_result = m_sql->Del("JennyChat", "message", "recvID", msg->recverID, "`senderID`='" + msg->senderID + "' and `isFriend`=" + msg->m_message);
+			cout << del_result << endl;
+			break;
+		}
+		default: //æœªçŸ¥æ¶ˆæ¯
 		{
-			cerr << "ÊÕµ½ " << msg->recverID << " Î´ÖªÀàĞÍÏûÏ¢..." << endl;
+			cerr << "æ”¶åˆ° " << msg->recverID << " æœªçŸ¥ç±»å‹æ¶ˆæ¯..." << msg->m_message << endl;
 			break;
 		}
 		}
 		//HandleMessage();
-		// ÎªÏÂÒ»¸öÖØµşµ÷ÓÃ½¨Á¢µ¥I/O²Ù×÷Êı¾İ   
-		ZeroMemory(&(PerIoData->overlapped), sizeof(OVERLAPPED)); // Çå¿ÕÄÚ´æ   
+		// ä¸ºä¸‹ä¸€ä¸ªé‡å è°ƒç”¨å»ºç«‹å•I/Oæ“ä½œæ•°æ®   
+		ZeroMemory(&(PerIoData->overlapped), sizeof(OVERLAPPED)); // æ¸…ç©ºå†…å­˜   
 		PerIoData->databuff.len = DataBuffSize;
-		memset(PerIoData->buffer, 0, strlen(PerIoData->buffer)); //	ÇåÀíÏûÏ¢»º´æ
+		memset(PerIoData->buffer, 0, strlen(PerIoData->buffer)); //	æ¸…ç†æ¶ˆæ¯ç¼“å­˜
 		PerIoData->databuff.buf = PerIoData->buffer;
 		PerIoData->operationType = 0;    // read   
 		WSARecv(PerHandleData->socket, &(PerIoData->databuff), 1, &RecvBytes, &Flags, &(PerIoData->overlapped), NULL);
@@ -367,11 +397,11 @@ DWORD WINAPI   CMYIOCPServer::ServerWorkThread(LPVOID CompletionPortID)
 }
 
 /*******************
-´¦ÀíÏûÏ¢Àà
+å¤„ç†æ¶ˆæ¯ç±»
 *******************/
 void CMYIOCPServer::HandleMessage()
 {
-	printf("µ±Ç°Ïß³ÌÎª %d\n", GetCurrentThreadId());
+	printf("å½“å‰çº¿ç¨‹ä¸º %d\n", GetCurrentThreadId());
 	WorkItemBase *pCworkItem = NULL;
 	byte iCommand = m_byteMsg[0];
 	switch (iCommand)
@@ -388,13 +418,13 @@ void CMYIOCPServer::HandleMessage()
 	default:
 		break;
 	}
-	//½«ÈÎÎñ½»¸øÏß³Ì³Ø´¦Àí
+	//å°†ä»»åŠ¡äº¤ç»™çº¿ç¨‹æ± å¤„ç†
 	if (NULL != pCworkItem)
 	{
 		m_CWorkQueue.InsertWorkItem(pCworkItem);
 	}
 
-	cout << "Íê³É·¢ËÍ¾ä±úÏûÏ¢..." << endl;
+	cout << "å®Œæˆå‘é€å¥æŸ„æ¶ˆæ¯..." << endl;
 }
 
 unsigned int CMYIOCPServer::login(string id, string psw, LPPER_HANDLE_DATA lhd)
@@ -402,21 +432,21 @@ unsigned int CMYIOCPServer::login(string id, string psw, LPPER_HANDLE_DATA lhd)
 	string username = "";
 #if SQLenable
 	if (!m_sql->CheckConnect()) {
-		m_sql->InitSQL("localhost", "root", sqlpswd, "JennyChat", 3306, "utf8");
+		m_sql->InitSQL("localhost", "root", sqlpswd, "JennyChat", 3306, "GBK");
 	}
-	//-----Á´½ÓÊı¾İ¿âÑéÖ¤ÓÃ»§ĞÅÏ¢------
+	//-----é“¾æ¥æ•°æ®åº“éªŒè¯ç”¨æˆ·ä¿¡æ¯------
 	string result = m_sql->Search("JennyChat", "account", "pswd,username", "id=" + id, "");
 	//cout << result << endl;
 	//-------------------------------
-	//Èç¹ûÕËºÅ²»´æÔÚ
+	//å¦‚æœè´¦å·ä¸å­˜åœ¨
 	if (result == "") {
 		return 1;
 	}
 
-	//Èç¹ûÃÜÂë´íÎó
+	//å¦‚æœå¯†ç é”™è¯¯
 	Json::Reader reader;
 	Json::Value root;
-	if (reader.parse(result, root))  // reader½«Json×Ö·û´®½âÎöµ½root£¬root½«°üº¬JsonÀïËùÓĞ×ÓÔªËØ   
+	if (reader.parse(result, root))  // readerå°†Jsonå­—ç¬¦ä¸²è§£æåˆ°rootï¼Œrootå°†åŒ…å«Jsoné‡Œæ‰€æœ‰å­å…ƒç´    
 	{
 		if (root["Result"][0][0] != psw) {
 			return 2;
@@ -424,24 +454,24 @@ unsigned int CMYIOCPServer::login(string id, string psw, LPPER_HANDLE_DATA lhd)
 		username = root["Result"][0][1].asString();
 	}
 #endif
-	//	Èç¹ûÕıÈ·
+	//	å¦‚æœæ­£ç¡®
 	lhd->username = username;
-	cout << "ĞÂ socket µÇÈë£º" << m_clients[id] << endl;
+	cout << "æ–° socket ç™»å…¥ï¼š" << m_clients[id] << endl;
 	if (m_clients[id]) {
 		if (closesocket(m_clients[id]) == 0) {
-			cout << "¶Ï¿ª¾É socket£º" << m_clients[id] << endl;
+			cout << "æ–­å¼€æ—§ socketï¼š" << m_clients[id] << endl;
 			m_clients.erase(id);
 		}
 		//showClients(m_clients);
 	}
-	m_clients[id] = lhd->socket;	//½«ĞÂÓÃ»§´æÈë¹şÏ£±í
-	cout << "¼ÓÈë¹şÏ£±íºóĞÂ socket£º" << m_clients[id] << endl;
+	m_clients[id] = lhd->socket;	//å°†æ–°ç”¨æˆ·å­˜å…¥å“ˆå¸Œè¡¨
+	cout << "åŠ å…¥å“ˆå¸Œè¡¨åæ–° socketï¼š" << m_clients[id] << endl;
 	return 0;
 }
 
 void CMYIOCPServer::showClients(map<string, SOCKET> clts)
 {
-	cout << "--------µ±Ç°ÔÚÏßÁĞ±í--------" << endl;
+	cout << "--------å½“å‰åœ¨çº¿åˆ—è¡¨--------" << endl;
 	for (map<string, SOCKET>::iterator item = clts.begin(); item != clts.end(); item++) {
 		cout << "[" << item->first << "," << item->second << "]" << endl;
 	}
@@ -450,105 +480,105 @@ void CMYIOCPServer::showClients(map<string, SOCKET> clts)
 
 /**************************
 
-·¢ËÍÏûÏ¢¸øÖÆ¶¨¿Í»§¶Ë
+å‘é€æ¶ˆæ¯ç»™åˆ¶å®šå®¢æˆ·ç«¯
 **************************/
 void CMYIOCPServer::SendMessage(SOCKET &tSOCKET, char MessAge[MessMaxLen])
 {
-	// ¿ªÊ¼Êı¾İ´¦Àí£¬½ÓÊÕÀ´×Ô¿Í»§¶ËµÄÊı¾İ   
+	// å¼€å§‹æ•°æ®å¤„ç†ï¼Œæ¥æ”¶æ¥è‡ªå®¢æˆ·ç«¯çš„æ•°æ®   
 	WaitForSingleObject(m_hMutex, INFINITE);
-	send(tSOCKET, MessAge, MessMaxLen, 0);  // ·¢ËÍĞÅÏ¢    
+	send(tSOCKET, MessAge, MessMaxLen, 0);  // å‘é€ä¿¡æ¯    
 	ReleaseMutex(m_hMutex);
 }
 
 /**************************
-³õÊ¼»¯SOCKET¶ÔÏó£¬´´½¨¶Ë¿Ú
-ºÍÏß³ÌÊı×é
+åˆå§‹åŒ–SOCKETå¯¹è±¡ï¼Œåˆ›å»ºç«¯å£
+å’Œçº¿ç¨‹æ•°ç»„
 **************************/
 bool  CMYIOCPServer::LoadWindowsSocket()
 {
-	// ¼ÓÔØsocket¶¯Ì¬Á´½Ó¿â   
-	WORD wVersionRequested = MAKEWORD(2, 2); // ÇëÇó2.2°æ±¾µÄWinSock¿â   
-	WSADATA wsaData;    // ½ÓÊÕWindows SocketµÄ½á¹¹ĞÅÏ¢   
+	// åŠ è½½socketåŠ¨æ€é“¾æ¥åº“   
+	WORD wVersionRequested = MAKEWORD(2, 2); // è¯·æ±‚2.2ç‰ˆæœ¬çš„WinSockåº“   
+	WSADATA wsaData;    // æ¥æ”¶Windows Socketçš„ç»“æ„ä¿¡æ¯   
 	DWORD err = WSAStartup(wVersionRequested, &wsaData);
 
-	if (0 != err) {  // ¼ì²éÌ×½Ó×Ö¿âÊÇ·ñÉêÇë³É¹¦   
-		m_sError = "ÇëÇó Windows Socket ¿â ´íÎó...\n";
+	if (0 != err) {  // æ£€æŸ¥å¥—æ¥å­—åº“æ˜¯å¦ç”³è¯·æˆåŠŸ   
+		m_sError = "è¯·æ±‚ Windows Socket åº“ é”™è¯¯...\n";
 		return false;
 	}
-	if (LOBYTE(wsaData.wVersion) != 2 || HIBYTE(wsaData.wVersion) != 2) {// ¼ì²éÊÇ·ñÉêÇëÁËËùĞè°æ±¾µÄÌ×½Ó×Ö¿â   
+	if (LOBYTE(wsaData.wVersion) != 2 || HIBYTE(wsaData.wVersion) != 2) {// æ£€æŸ¥æ˜¯å¦ç”³è¯·äº†æ‰€éœ€ç‰ˆæœ¬çš„å¥—æ¥å­—åº“   
 		WSACleanup();
-		m_sError = "ÒªÇó Windows Socket Îª 2.2 °æ±¾...\n";
+		m_sError = "è¦æ±‚ Windows Socket ä¸º 2.2 ç‰ˆæœ¬...\n";
 		system("pause");
 		return false;
 	}
 
-	// ´´½¨IOCPµÄÄÚºË¶ÔÏó   
+	// åˆ›å»ºIOCPçš„å†…æ ¸å¯¹è±¡   
 	/**
-	* ĞèÒªÓÃµ½µÄº¯ÊıµÄÔ­ĞÍ£º
+	* éœ€è¦ç”¨åˆ°çš„å‡½æ•°çš„åŸå‹ï¼š
 	* HANDLE WINAPI CreateIoCompletionPort(
-	*    __in   HANDLE FileHandle,     // ÒÑ¾­´ò¿ªµÄÎÄ¼ş¾ä±ú»òÕß¿Õ¾ä±ú£¬Ò»°ãÊÇ¿Í»§¶ËµÄ¾ä±ú
-	*    __in   HANDLE ExistingCompletionPort, // ÒÑ¾­´æÔÚµÄIOCP¾ä±ú
-	*    __in   ULONG_PTR CompletionKey,   // Íê³É¼ü£¬°üº¬ÁËÖ¸¶¨I/OÍê³É°üµÄÖ¸¶¨ÎÄ¼ş
-	*    __in   DWORD NumberOfConcurrentThreads // ÕæÕı²¢·¢Í¬Ê±Ö´ĞĞ×î´óÏß³ÌÊı£¬Ò»°ãÍÆ½éÊÇCPUºËĞÄÊı*2
+	*    __in   HANDLE FileHandle,     // å·²ç»æ‰“å¼€çš„æ–‡ä»¶å¥æŸ„æˆ–è€…ç©ºå¥æŸ„ï¼Œä¸€èˆ¬æ˜¯å®¢æˆ·ç«¯çš„å¥æŸ„
+	*    __in   HANDLE ExistingCompletionPort, // å·²ç»å­˜åœ¨çš„IOCPå¥æŸ„
+	*    __in   ULONG_PTR CompletionKey,   // å®Œæˆé”®ï¼ŒåŒ…å«äº†æŒ‡å®šI/Oå®ŒæˆåŒ…çš„æŒ‡å®šæ–‡ä»¶
+	*    __in   DWORD NumberOfConcurrentThreads // çœŸæ­£å¹¶å‘åŒæ—¶æ‰§è¡Œæœ€å¤§çº¿ç¨‹æ•°ï¼Œä¸€èˆ¬æ¨ä»‹æ˜¯CPUæ ¸å¿ƒæ•°*2
 	* );
 	**/
 	m_completionPort = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
-	if (NULL == m_completionPort) {    // ´´½¨IOÄÚºË¶ÔÏóÊ§°Ü   
-		m_sError = "´´½¨Íê³É¶Ë¿ÚÊ§°Ü...\n";
+	if (NULL == m_completionPort) {    // åˆ›å»ºIOå†…æ ¸å¯¹è±¡å¤±è´¥   
+		m_sError = "åˆ›å»ºå®Œæˆç«¯å£å¤±è´¥...\n";
 		return false;
 	}
 
-	// ´´½¨IOCPÏß³Ì--Ïß³ÌÀïÃæ´´½¨Ïß³Ì³Ø    
-	// È·¶¨´¦ÀíÆ÷µÄºËĞÄÊıÁ¿   
+	// åˆ›å»ºIOCPçº¿ç¨‹--çº¿ç¨‹é‡Œé¢åˆ›å»ºçº¿ç¨‹æ±     
+	// ç¡®å®šå¤„ç†å™¨çš„æ ¸å¿ƒæ•°é‡   
 	SYSTEM_INFO mySysInfo;
 	GetSystemInfo(&mySysInfo);
 
-	// »ùÓÚ´¦ÀíÆ÷µÄºËĞÄÊıÁ¿´´½¨Ïß³Ì   
+	// åŸºäºå¤„ç†å™¨çš„æ ¸å¿ƒæ•°é‡åˆ›å»ºçº¿ç¨‹   
 	for (DWORD i = 0; i < (mySysInfo.dwNumberOfProcessors * 2); ++i) {
-		// ´´½¨·şÎñÆ÷¹¤×÷Æ÷Ïß³Ì£¬²¢½«Íê³É¶Ë¿Ú´«µİµ½¸ÃÏß³Ì   
+		// åˆ›å»ºæœåŠ¡å™¨å·¥ä½œå™¨çº¿ç¨‹ï¼Œå¹¶å°†å®Œæˆç«¯å£ä¼ é€’åˆ°è¯¥çº¿ç¨‹   
 		HANDLE ThreadHandle = CreateThread(NULL, 0, &CMYIOCPServer::ServerWorkThread, m_completionPort, 0, NULL);
 		if (NULL == ThreadHandle) {
-			m_sError = "´´½¨Ïß³Ì¾ä±úÊ§°Ü...\n";
+			m_sError = "åˆ›å»ºçº¿ç¨‹å¥æŸ„å¤±è´¥...\n";
 		}
 		CloseHandle(ThreadHandle);
 	}
 	return true;
 }
 /*************************
-³õÊ¼»¯·şÎñÆ÷SOCKETĞÅÏ¢
+åˆå§‹åŒ–æœåŠ¡å™¨SOCKETä¿¡æ¯
 *************************/
 bool CMYIOCPServer::InitServerSocket()
 {
-	// ½¨Á¢Á÷Ê½Ì×½Ó×Ö   
+	// å»ºç«‹æµå¼å¥—æ¥å­—   
 	m_srvSocket = socket(AF_INET, SOCK_STREAM, 0);
 
-	// °ó¶¨SOCKETµ½±¾»ú   
+	// ç»‘å®šSOCKETåˆ°æœ¬æœº   
 	SOCKADDR_IN srvAddr;
 	srvAddr.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
 	srvAddr.sin_family = AF_INET;
 	srvAddr.sin_port = htons(m_iLisenPoint);
 	int bindResult = bind(m_srvSocket, (SOCKADDR*)&srvAddr, sizeof(SOCKADDR));
 	if (SOCKET_ERROR == bindResult) {
-		m_sError = "°ó¶¨Ê§°Ü...\n";
+		m_sError = "ç»‘å®šå¤±è´¥...\n";
 		return false;
 	}
 	return true;
 }
 /**************************
-´´½¨·şÎñÆ÷¶ËµÄ¼àÌıĞÅÏ¢
+åˆ›å»ºæœåŠ¡å™¨ç«¯çš„ç›‘å¬ä¿¡æ¯
 **************************/
 bool CMYIOCPServer::CreateServerSocker()
 {
 
-	// ½«SOCKETÉèÖÃÎª¼àÌıÄ£Ê½   
+	// å°†SOCKETè®¾ç½®ä¸ºç›‘å¬æ¨¡å¼   
 	int listenResult = listen(m_srvSocket, 10);
 	if (SOCKET_ERROR == listenResult) {
-		m_sError = "¼àÌıÊ§°Ü...\n";
+		m_sError = "ç›‘å¬å¤±è´¥...\n";
 		return false;
 	}
 
-	// ¿ªÊ¼´¦ÀíIOÊı¾İ   
-	cout << "[" << CMYIOCPServer::now() << "] " << "±¾·şÎñÆ÷ÒÑ×¼±¸¾ÍĞ÷£¬ÕıÔÚµÈ´ı¿Í»§¶ËµÄ½ÓÈë...\n";
+	// å¼€å§‹å¤„ç†IOæ•°æ®   
+	cout << "[" << CMYIOCPServer::now() << "] " << "æœ¬æœåŠ¡å™¨å·²å‡†å¤‡å°±ç»ªï¼Œæ­£åœ¨ç­‰å¾…å®¢æˆ·ç«¯çš„æ¥å…¥...\n";
 	int icount = 0;
 	while (true) {
 		PER_HANDLE_DATA * PerHandleData = NULL;
@@ -556,13 +586,13 @@ bool CMYIOCPServer::CreateServerSocker()
 		int RemoteLen;
 		SOCKET acceptSocket;
 
-		// ½ÓÊÕÁ¬½Ó£¬²¢·ÖÅäÍê³É¶Ë£¬Õâ¶ù¿ÉÒÔÓÃAcceptEx()   
+		// æ¥æ”¶è¿æ¥ï¼Œå¹¶åˆ†é…å®Œæˆç«¯ï¼Œè¿™å„¿å¯ä»¥ç”¨AcceptEx()   
 		RemoteLen = sizeof(saRemote);
 		acceptSocket = accept(m_srvSocket, (SOCKADDR*)&saRemote, &RemoteLen);
 
-		if (SOCKET_ERROR == acceptSocket) {   // ½ÓÊÕ¿Í»§¶ËÊ§°Ü   
-			cerr << "½ÓÊÜ socket ´íÎó " << GetLastError() << endl;
-			m_sError = "½ÓÊÜ socket ´íÎó ...\n";
+		if (SOCKET_ERROR == acceptSocket) {   // æ¥æ”¶å®¢æˆ·ç«¯å¤±è´¥   
+			cerr << "æ¥å— socket é”™è¯¯ " << GetLastError() << endl;
+			m_sError = "æ¥å— socket é”™è¯¯ ...\n";
 			icount++;
 			cout << "icount : " << icount << endl;
 			if (icount > 50)
@@ -573,20 +603,20 @@ bool CMYIOCPServer::CreateServerSocker()
 		}
 		icount = 0;
 
-		// ´´½¨ÓÃÀ´ºÍÌ×½Ó×Ö¹ØÁªµÄµ¥¾ä±úÊı¾İĞÅÏ¢½á¹¹   
-		PerHandleData = (LPPER_HANDLE_DATA)GlobalAlloc(GPTR, sizeof(PER_HANDLE_DATA));  // ÔÚ¶ÑÖĞÎªÕâ¸öPerHandleDataÉêÇëÖ¸¶¨´óĞ¡µÄÄÚ´æ   
+		// åˆ›å»ºç”¨æ¥å’Œå¥—æ¥å­—å…³è”çš„å•å¥æŸ„æ•°æ®ä¿¡æ¯ç»“æ„   
+		PerHandleData = (LPPER_HANDLE_DATA)GlobalAlloc(GPTR, sizeof(PER_HANDLE_DATA));  // åœ¨å †ä¸­ä¸ºè¿™ä¸ªPerHandleDataç”³è¯·æŒ‡å®šå¤§å°çš„å†…å­˜   
 		PerHandleData->socket = acceptSocket;
 		memcpy(&PerHandleData->ClientAddr, &saRemote, RemoteLen);
-		m_vclientGroup.push_back(PerHandleData);       // ½«µ¥¸ö¿Í»§¶ËÊı¾İÖ¸Õë·Åµ½¿Í»§¶Ë×éÖĞ   
+		m_vclientGroup.push_back(PerHandleData);       // å°†å•ä¸ªå®¢æˆ·ç«¯æ•°æ®æŒ‡é’ˆæ”¾åˆ°å®¢æˆ·ç«¯ç»„ä¸­   
 
-													   // ½«½ÓÊÜÌ×½Ó×ÖºÍÍê³É¶Ë¿Ú¹ØÁª   
+													   // å°†æ¥å—å¥—æ¥å­—å’Œå®Œæˆç«¯å£å…³è”   
 		CreateIoCompletionPort((HANDLE)(PerHandleData->socket), m_completionPort, (DWORD)PerHandleData, 0);
 
 
-		// ¿ªÊ¼ÔÚ½ÓÊÜÌ×½Ó×ÖÉÏ´¦ÀíI/OÊ¹ÓÃÖØµşI/O»úÖÆ   
-		// ÔÚĞÂ½¨µÄÌ×½Ó×ÖÉÏÍ¶µİÒ»¸ö»ò¶à¸öÒì²½   
-		// WSARecv»òWSASendÇëÇó£¬ÕâĞ©I/OÇëÇóÍê³Éºó£¬¹¤×÷ÕßÏß³Ì»áÎªI/OÇëÇóÌá¹©·şÎñ       
-		// µ¥I/O²Ù×÷Êı¾İ(I/OÖØµş)   
+		// å¼€å§‹åœ¨æ¥å—å¥—æ¥å­—ä¸Šå¤„ç†I/Oä½¿ç”¨é‡å I/Oæœºåˆ¶   
+		// åœ¨æ–°å»ºçš„å¥—æ¥å­—ä¸ŠæŠ•é€’ä¸€ä¸ªæˆ–å¤šä¸ªå¼‚æ­¥   
+		// WSARecvæˆ–WSASendè¯·æ±‚ï¼Œè¿™äº›I/Oè¯·æ±‚å®Œæˆåï¼Œå·¥ä½œè€…çº¿ç¨‹ä¼šä¸ºI/Oè¯·æ±‚æä¾›æœåŠ¡       
+		// å•I/Oæ“ä½œæ•°æ®(I/Oé‡å )   
 		LPPER_IO_OPERATION_DATA PerIoData = NULL;
 		PerIoData = (LPPER_IO_OPERATION_DATA)GlobalAlloc(GPTR, sizeof(PER_IO_OPERATEION_DATA));
 		ZeroMemory(&(PerIoData->overlapped), sizeof(OVERLAPPED));
@@ -598,7 +628,7 @@ bool CMYIOCPServer::CreateServerSocker()
 		DWORD Flags = 0;
 		WSARecv(PerHandleData->socket, &(PerIoData->databuff), 1, &RecvBytes, &Flags, &(PerIoData->overlapped), NULL);
 	}
-	//Ïú»Ù×ÊÔ´ 
+	//é”€æ¯èµ„æº 
 	DWORD dwByteTrans;
 	PostQueuedCompletionStatus(m_completionPort, dwByteTrans, 0, 0);
 	closesocket(listenResult);
@@ -613,7 +643,7 @@ char * CMYIOCPServer::getIpAddr(SOCKADDR_STORAGE saddr)
 }
 
 /*********************
-Æô¶¯·şÎñÆ÷
+å¯åŠ¨æœåŠ¡å™¨
 *********************/
 bool CMYIOCPServer::ServerSetUp()
 {
@@ -629,6 +659,6 @@ bool CMYIOCPServer::ServerSetUp()
 	{
 		return false;
 	}
-	//cout << "[" << CMYIOCPServer::now() << "] " << " ·şÎñÆô¶¯..." << endl;
+	//cout << "[" << CMYIOCPServer::now() << "] " << " æœåŠ¡å¯åŠ¨..." << endl;
 	return true;
 }

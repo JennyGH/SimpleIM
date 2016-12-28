@@ -2,7 +2,8 @@ import QtQuick 2.5
 import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
-import "../js/generic.js" as GEN
+import "generic.js" as GEN
+import "fontawesome.js" as FA
 
 Window {
     id:details_fatherWindow
@@ -10,7 +11,7 @@ Window {
     width:350
     color : "transparent"
     flags: Qt.FramelessWindowHint
-    visible:false
+    visible:true
     property string userid : ""
     property int friendindex: 0
     property Alert alertwindow: null
@@ -39,8 +40,9 @@ Window {
             id:_detailswindowheader
             movetarget: details_fatherWindow
             minable:false
-            marginRight:5
-            title : userid
+            marginRight:10
+            title : "详细信息"
+            isVerticalCenter: true
         }
         Item{
             id:_detailscontent
@@ -48,6 +50,7 @@ Window {
             width: _detailswindowbakg.width - 50
             anchors {
                 top : _detailswindowheader.bottom
+                topMargin: 10
                 horizontalCenter: parent.horizontalCenter
             }
 
@@ -93,27 +96,27 @@ Window {
                                 change = true;
                             }
                         }
-                        ImgButton{
+                        MyButton{
                             id:btneditname
-                            source:"qrc:/src/src/pen.png"
                             height: 20
                             width:20
-                            enter_img: source
-                            exit_img: source
+                            usingFA : true
+                            title : FA.icons.Pencil
+                            font_size: 20
                             anchors {verticalCenter: parent.verticalCenter}
                             property bool editting: false
                             onClick: {
                                 if(editting){
-                                    btneditname.source = "qrc:/src/src/pen.png"
+                                    btneditname.title = FA.icons.Pencil;
                                     editting = !editting
                                     txtname.readOnly = true;
                                     if(txtname.change){
-                                        client.sendmessage(txtname.text,userid,6); //消息6：修改好友备注
+                                        client.sendmessage(txtname.text,userid,editMessage); //消息6：修改好友备注
                                     }
                                     fatherWindow.rename(friendindex,txtname.text);
                                     txtname.change = false;
                                 }else{
-                                    btneditname.source = "qrc:/src/src/check.png"
+                                    btneditname.title = FA.icons.Ok;
                                     editting = !editting
                                     txtname.readOnly = false;
                                     txtname.change = false;
@@ -135,7 +138,6 @@ Window {
                             id:txtid
                             anchors {verticalCenter: parent.verticalCenter}
                             width: 100
-                            //                            height: 30
                             text : userid
                         }
                     }
@@ -144,56 +146,6 @@ Window {
 
             }
         }
-
-        GradientButton{
-            id:btndelete
-            width: parent.width - 20
-            height: 40
-            radius: 5
-            enter_gradient:Gradient{
-                GradientStop{position: 0.0;color : Qt.lighter("red",1.3)}
-                GradientStop{position: 1.0;color : Qt.darker("red",1)}
-            }
-            exit_gradient : Gradient{
-                GradientStop{position: 0.0;color : "red"}
-                GradientStop{position: 1.0;color : Qt.darker("red",1.3)}
-            }
-
-            title : "<b>删除</b>"
-            exit_font_color: "#fff"
-            border_color: hasShadow ? "transparent" : "#e2e2e2"
-            enter_font_color: "#fff"
-            anchors {
-                horizontalCenter: parent.horizontalCenter
-                bottom : parent.bottom
-                bottomMargin: 10
-            }
-            onClick: {
-                if(!alertwindow){
-                    alertwindow = GEN.createWindow("Alert",_detailswindowbakg);
-                    alertwindow.alertHeight = 130;
-                    alertwindow.alertWidth = 220;
-                    alertwindow.content = "确定删除?";
-                }
-            }
-            Connections{
-                target: alertwindow
-                onOk:{
-//                    console.log("确认删除...")
-                    client.sendmessage("",userid,7);
-                    fatherWindow.remove(friendindex);
-                    details_fatherWindow.close();
-                    details_fatherWindow.destroy();
-                }
-                onCancel:{
-                    alertwindow.closeAlert();
-                }
-                onClose:{
-                    alertwindow = null;
-                }
-            }
-        }
-
     }
 
     function setName(e){

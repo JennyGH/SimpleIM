@@ -2,7 +2,7 @@ import QtQuick 2.5
 import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
-import "../js/generic.js" as GEN
+import "generic.js" as GEN
 
 Window{
     id:_signinwindow
@@ -208,7 +208,7 @@ Window{
                             _loginwindow.isConnect = true;
                         }
                     }
-                    client.sendmessage(txtpsw.text,txtname.text,8);
+                    client.sendmessage(txtpsw.text,txtname.text,signinMessage);
                     busy = GEN.createWindow("Busy",_signinwindowbakg);
                     busy.start();
                 }

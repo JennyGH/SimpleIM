@@ -1,4 +1,5 @@
 import QtQuick 2.0
+import "fontawesome.js" as FA
 
 Rectangle {
     id:father
@@ -12,14 +13,21 @@ Rectangle {
     anchors {
         top : topObject.bottom
     }
-
-    MyText{
+    Row{
         anchors {
             verticalCenter: parent.verticalCenter
             left: parent.left
             leftMargin: 10
         }
-        text : father.tips
+        spacing : 5
+        MyText{
+            text : FA.icons.WarningSign
+            fa : true
+            font_size: 20
+        }
+        MyText{
+            text : father.tips
+        }
     }
 
     MyButton{
@@ -30,9 +38,12 @@ Rectangle {
         }
         height: 20
         width: 20
-        title :"×"
-        border_color: "#ddd"
-        enter_color: "#bbb"
+        usingFA : true
+        title :FA.icons.Times.Circle
+        exit_font_color:"#fff"
+        font_size: 20
+        exit_color: "transparent"
+        enter_color : "transparent"
         onClick: {
             father.state = "hide"
         }

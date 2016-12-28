@@ -1,4 +1,4 @@
-#include "client.h"
+ï»¿#include "client.h"
 
 Client* Client::m_client = NULL;
 
@@ -12,7 +12,7 @@ Client::Client(QObject *parent) : QObject(parent)
     //    memset(buff,0,sizeof(buff));
     ifstream fin("setting.ini");
     if(!fin){
-        debug("¶ÁÈ¡setting.iniÊ§°Ü£¬½«Ê¹ÓÃÄ¬ÈÏÉèÖÃ..");
+        debug("è¯»å–setting.iniå¤±è´¥ï¼Œå°†ä½¿ç”¨é»˜è®¤è®¾ç½®..");
         m_ip = defaultIP;
         m_port = defaultPort;
     }else{
@@ -29,14 +29,14 @@ bool Client::initSocket()
 {
     if(sk == NULL){
         if ((p_ret = WSAStartup(MAKEWORD(2, 2), &wsadata)) != 0) {
-            debug( "³õÊ¼»¯Ê§°Ü£¬´íÎó´úÂë " + p_ret);
+            debug( "åˆå§‹åŒ–å¤±è´¥ï¼Œé”™è¯¯ä»£ç  " + p_ret);
             closesocket(sk);
             sk = NULL;
             return false;
         }
 
         if ((sk = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == INVALID_SOCKET) {
-            debug("´´½¨socketÊ§°Ü£¬´íÎó´úÂë " + WSAGetLastError());
+            debug("åˆ›å»ºsocketå¤±è´¥ï¼Œé”™è¯¯ä»£ç  " + WSAGetLastError());
             closesocket(sk);
             sk = NULL;
             WSACleanup();
@@ -46,8 +46,8 @@ bool Client::initSocket()
         m_addr.sin_family = AF_INET;
         m_addr.sin_port = htons(m_port);
         m_addr.sin_addr.S_un.S_addr = inet_addr(m_ip.c_str());
-        debug ("ÕıÔÚ³¢ÊÔÁ¬½Ó·şÎñ¶Ë...");
-        connect(this,recvmessage,this,getMessage);
+        debug ("æ­£åœ¨å°è¯•è¿æ¥æœåŠ¡ç«¯...");
+        connect(this,SIGNAL(recvmessage),this,SIGNAL(getMessage));
         return _connect();
     }
     return true;
@@ -57,7 +57,7 @@ bool Client::reconnect()
 {
     closesocket(sk);
     WSACleanup();
-    initSocket();
+    return initSocket();
 }
 
 template<typename T>
@@ -80,49 +80,11 @@ string Client::getSettingValue(string val)
     return val.substr(val.find('=') + 1);
 }
 
-bool Client::sendmessage(QString msg,QString fid,unsigned int type = 2)
+bool Client::sendmessage(QString msg,QString fid,Message *type)
 {
     msgpakage = new MessagePakag;
     string temp;
-    switch (type) {
-    case 1:
-        msgpakage->m_type = LOGIN_MSG;
-        break;
-    case 2:
-        if(fid.isEmpty() || fid.isNull()){
-            debug("½ÓÊÕ·½id²»ÄÜÎª¿Õ...");
-            return false;
-        }
-        debug ("·¢ËÍ¸ø " + fid.toLocal8Bit().toStdString());
-        msgpakage->m_type = CHAT_MSG;
-        break;
-    case 3:
-        if(fid.isEmpty() || fid.isNull()){
-            debug("¹Ø¼ü×Ö²»ÄÜÎª¿Õ...");
-            return false;
-        }
-        debug ("²éÕÒ " + fid.toLocal8Bit().toStdString());
-        msgpakage->m_type = SEARCH_MSG;
-        break;
-    case 4:
-        msgpakage->m_type = UPDATE_LIST;
-        break;
-    case 5:
-        msgpakage->m_type = ADD;
-        break;
-    case 6:
-        msgpakage->m_type = EDIT;
-        break;
-    case 7 :
-        msgpakage->m_type = DEL;
-        break;
-    case 8:
-        msgpakage->m_type = SIGNIN;
-        break;
-    default:
-        msgpakage->m_type = "0";
-        break;
-    }
+    msgpakage->m_type = type->getType();
     msgpakage->friend_id = fid.toLocal8Bit().toStdString();
     msgpakage->myID = m_id;
     msgpakage->m_message = msg.toLocal8Bit().toStdString();
@@ -133,7 +95,7 @@ bool Client::sendmessage(QString msg,QString fid,unsigned int type = 2)
             "\"message\":" + "\"" + msgpakage->m_message + "\"" +
             "}";
     if ((p_ret = send(sk, temp.c_str(), temp.length(), 0)) == SOCKET_ERROR) {
-        debug("·¢ËÍÊ§°Ü");
+        debug("å‘é€å¤±è´¥");
         closesocket(sk);
         WSACleanup();
         delete msgpakage;
@@ -146,38 +108,53 @@ bool Client::sendmessage(QString msg,QString fid,unsigned int type = 2)
     return true;
 }
 
-bool Client::saveSetting(QString vip, QString vport)
+bool Client::saveSetting(QString jsonstr)
 {
-    ofstream fout("setting.ini");
-    if(!fout){
-        debug ("´ò¿ªsetting.iniÊ§°Ü...");
-        return false;
+    QJsonParseError json_error;
+    QJsonDocument parse_doucment = QJsonDocument::fromJson(jsonstr.toLocal8Bit(), &json_error);
+    if(json_error.error == QJsonParseError::NoError)
+    {
+        QVariantMap result = parse_doucment.toVariant().toMap();
+        if(parse_doucment.isObject())
+        {
+            ofstream fout("setting.ini");
+            if(!fout){
+                debug ("æ‰“å¼€setting.iniå¤±è´¥...");
+                return false;
+            }
+            string temp;
+            for(QString item : result.keys()){
+                temp = result[item].toString().toLocal8Bit().toStdString();
+                fout << item.toStdString() << "=" << temp << endl;
+            }
+            fout.close();
+            return true;
+        }
+    }else{
+        debug("json parse has error");
     }
-    fout << "ip=" << vip.toLocal8Bit().toStdString() << endl
-         << "port=" << vport.toLocal8Bit().toStdString() << endl;
-    fout.close();
-    return true;
+    return false;
 }
 
 bool Client::login(QString id, QString psw)
 {
     cout << "login" << endl;
     if(id.isEmpty() || id.isNull() || psw.isEmpty() || psw.isNull()){
-        debug ("ÓÃ»§ÃûÓëÃÜÂë²»ÄÜÎª¿Õ...");
+        debug ("ç”¨æˆ·åä¸å¯†ç ä¸èƒ½ä¸ºç©º...");
         return false;
     }
-    //Èç¹ûÒÑ¾­Á¬½ÓÉÏ·şÎñÆ÷...
+    //å¦‚æœå·²ç»è¿æ¥ä¸ŠæœåŠ¡å™¨...
     m_id = id.toStdString();
-    return sendmessage(psw,NULL,1);
-    //·ñÔò
-    //debug("Á¬½Ó·şÎñÆ÷Ê§°Ü£¬Çë¼ì²éÍøÂçÉèÖÃ...");
+    return sendmessage(psw,NULL,new LoginMessage());
+    //å¦åˆ™
+    //debug("è¿æ¥æœåŠ¡å™¨å¤±è´¥ï¼Œè¯·æ£€æŸ¥ç½‘ç»œè®¾ç½®...");
     //return false
 }
 
 bool Client::searchNewFriend(QString idOrName)
 {
-    // type:3 ²éÕÒĞÂºÃÓÑ
-    return sendmessage("",idOrName,3);
+    // type:3 æŸ¥æ‰¾æ–°å¥½å‹
+    return sendmessage("",idOrName,new SearchMessage());
 }
 
 unsigned int Client::keepMessage(QString userid, QString msg)
@@ -192,11 +169,11 @@ unsigned int Client::keepMessage(QString userid, QString msg)
     }
     catch(exception &err){
 
-        cout << "keepMessage²¶»ñÒì³££º" << err.what() << endl;
+        cout << "keepMessageæ•è·å¼‚å¸¸ï¼š" << err.what() << endl;
     }
     catch(...){
 
-        debug ("keepMessageÎ´ÖªÒì³£...");
+        debug ("keepMessageæœªçŸ¥å¼‚å¸¸...");
 
     }
     return m_msgcount;
@@ -221,13 +198,13 @@ QString Client::alreadyRead(QString userid)
         }
         catch(exception &err){
 
-            cout << "alreadyRead³öÏÖÒì³££º" << err.what() << endl;
+            cout << "alreadyReadå‡ºç°å¼‚å¸¸ï¼š" << err.what() << endl;
             return "";
 
         }
         catch(...){
 
-            debug("alreadyReadÎ´ÖªÒì³£...");
+            debug("alreadyReadæœªçŸ¥å¼‚å¸¸...");
             return "";
         }
 
@@ -235,6 +212,13 @@ QString Client::alreadyRead(QString userid)
         return QString::fromLocal8Bit(json.c_str());
     }
     return "";
+}
+
+void Client::destroyWindow(QObject *w)
+{
+//    w->~QObject();
+    delete w;
+//    w = NULL;
 }
 
 QString Client::getMessage()
@@ -249,7 +233,7 @@ DWORD WINAPI Client::recvThread(Client *clt)
     while(1){
         ret = recv(m_client->sk,m_client->buff,sizeof(m_client->buff),0);
         if (ret == SOCKET_ERROR) {
-            debug("½ÓÊÕÊ§°Ü...");
+            debug("æ¥æ”¶å¤±è´¥...");
             closesocket(m_client->sk);
             WSACleanup();
             m_client->sk = NULL;
@@ -258,8 +242,8 @@ DWORD WINAPI Client::recvThread(Client *clt)
             emit m_client->loseConnect();
             break;
         }
-        //³É¹¦½ÓÊÕÊı¾İºó
-        m_client->buff[ret] = '\0';//ÓÉÓÚ½ÓÊÕµÄÊı¾İÄ©Î²²»´ø½áÊø·û\0£¬ÒªÊÖ¶¯¼ÓÉÏ¡£
+        //æˆåŠŸæ¥æ”¶æ•°æ®å
+        m_client->buff[ret] = '\0';//ç”±äºæ¥æ”¶çš„æ•°æ®æœ«å°¾ä¸å¸¦ç»“æŸç¬¦\0ï¼Œè¦æ‰‹åŠ¨åŠ ä¸Šã€‚
         cout << "emit:" << m_client->buff << ",current thread:" << GetCurrentThreadId() << ",client:" << m_client << endl;
         emit m_client->recvmessage();
     }
@@ -273,7 +257,7 @@ DWORD Client::updateThread(Client *clt)
     while(1){
         ret = recv(m_client->sk,m_client->buff,sizeof(m_client->buff),0);
         if (ret == SOCKET_ERROR) {
-            debug("½ÓÊÕÊ§°Ü...");
+            debug("æ¥æ”¶å¤±è´¥...");
             closesocket(m_client->sk);
             WSACleanup();
             m_client->sk = NULL;
@@ -282,8 +266,8 @@ DWORD Client::updateThread(Client *clt)
             emit m_client->loseConnect();
             break;
         }
-        //³É¹¦½ÓÊÕÊı¾İºó
-        m_client->buff[ret] = '\0';//ÓÉÓÚ½ÓÊÕµÄÊı¾İÄ©Î²²»´ø½áÊø·û\0£¬ÒªÊÖ¶¯¼ÓÉÏ¡£
+        //æˆåŠŸæ¥æ”¶æ•°æ®å
+        m_client->buff[ret] = '\0';//ç”±äºæ¥æ”¶çš„æ•°æ®æœ«å°¾ä¸å¸¦ç»“æŸç¬¦\0ï¼Œè¦æ‰‹åŠ¨åŠ ä¸Šã€‚
         cout << "emit:" << m_client->buff << ",current thread:" << GetCurrentThreadId() << ",client:" << m_client << endl;
         emit m_client->recvmessage();
     }
@@ -334,7 +318,7 @@ int Client::Ret() const
 bool Client::_connect()
 {
     if (::connect(sk, (SOCKADDR*)&m_addr, sizeof(m_addr)) == SOCKET_ERROR) {
-        debug("Á¬½ÓÊ§°Ü£¬´íÎó´úÂë " + WSAGetLastError());
+        debug("è¿æ¥å¤±è´¥ï¼Œé”™è¯¯ä»£ç  " + WSAGetLastError());
         closesocket(sk);
         sk = NULL;
         WSACleanup();
@@ -349,24 +333,24 @@ bool Client::_recv()
     {
         thread_map["recv"] = ::CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Client::recvThread, (LPVOID)this, 0, NULL);
         if(thread_map["recv"] == NULL){
-            debug ("´´½¨Ïß³ÌÊ§°Ü...");
+            debug ("åˆ›å»ºçº¿ç¨‹å¤±è´¥...");
             return false;
         }
-        debug("Ïß³Ì´´½¨³É¹¦...");
+        debug("çº¿ç¨‹åˆ›å»ºæˆåŠŸ...");
         CloseHandle(thread_map["recv"]);
     }else{
-        cout << "ÒÑ´æÔÚ½ÓÊÕÏß³Ì " << thread_map["recv"] << endl;
+        cout << "å·²å­˜åœ¨æ¥æ”¶çº¿ç¨‹ " << thread_map["recv"] << endl;
     }
 //    if(thread_map["update"] == NULL){
 //        thread_map["update"] = ::CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Client::updateThread, (LPVOID)this, 0, NULL);
 //        if(thread_map["update"] == NULL){
-//            debug ("´´½¨Ïß³ÌÊ§°Ü...");
+//            debug ("åˆ›å»ºçº¿ç¨‹å¤±è´¥...");
 //            return false;
 //        }
-//        debug("Ïß³Ì´´½¨³É¹¦...");
+//        debug("çº¿ç¨‹åˆ›å»ºæˆåŠŸ...");
 //        CloseHandle(thread_map["update"]);
 //    }else{
-//        cout << "ÒÑ´æÔÚ¸üĞÂÏß³Ì " << thread_map["update"] << endl;
+//        cout << "å·²å­˜åœ¨æ›´æ–°çº¿ç¨‹ " << thread_map["update"] << endl;
 //    }
     return true;
 }

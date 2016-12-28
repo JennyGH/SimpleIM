@@ -2,5 +2,5 @@
 
 ChatMessage::ChatMessage()
 {
-
+    type = "2";
 }

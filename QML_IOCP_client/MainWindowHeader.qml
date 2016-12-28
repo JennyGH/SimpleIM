@@ -2,7 +2,7 @@ import QtQuick 2.0
 
 Rectangle{
     id:father
-    height: 40
+    height: 30
     width: parent.width
     property var movetarget: fatherWindow
     property var closebtn: _row//(min.enabled ? min : (max.enabled ? max : close))
@@ -29,15 +29,38 @@ Rectangle{
         top:parent.top
         horizontalCenter: parent.horizontalCenter
     }
+    clip : true
+    smooth: true
+
+//    gradient: Gradient{
+//        GradientStop{position: 0.0;color : "transparent"/*Qt.lighter(father.parent.color,1.5)*/}
+//        GradientStop{position: 1.0;color : "transparent"}
+//    }
 
     gradient: Gradient{
-        GradientStop{position: 0.0;color : Qt.lighter(father.parent.color,1.5)}
-        GradientStop{position: 1.0;color : "transparent"}
+        GradientStop{position: 0.0;color : "#eee"/*Qt.lighter(father.parent.color,1.5)*/}
+        GradientStop{position: 1.0;color : "#dcdcdd"}
+    }
+
+
+    Rectangle{
+        anchors.bottom: parent.bottom
+        width : parent.width
+        height: parent.height - parent.radius
+        z : 0
+        gradient: Gradient{
+            GradientStop{position: 0.0;color : "transparent"}
+            GradientStop{position: 1.0;color : "#dcdcdd"}
+        }
+        clip : true
+        Border{
+            pos : "bottom"
+        }
     }
 
     MouseArea{
         property point clickPos: "0,0"
-        anchors.fill: parent;
+        anchors.fill: parent
         enabled: moveable
         onPressed: {
             clickPos = Qt.point(mouse.x,mouse.y)
@@ -61,13 +84,15 @@ Rectangle{
     MyText{
         text : father.title
         anchors {
-            verticalCenter: parent.verticalCenter
-//            top : parent.top
-//            topMargin: 5
-            left: parent.left
-            leftMargin: 10
+//            verticalCenter: parent.verticalCenter
+//            left: parent.left
+//            leftMargin: 10
+            centerIn: parent
         }
         font_size: font_size
+        style: Text.Raised
+        styleColor: "#fff"
+        font.weight: Font.DemiBold
     }
 
     Row{
@@ -96,8 +121,8 @@ Rectangle{
             }
             enter_color: "yellow"
 //            color : "#f0d765"
-            exit_color: "#f0d765"
-            border_color: "#c0a630"
+            exit_color: "#FFBB2E"
+            border_color: "#eee"
             onClick: {
                 movetarget.showMinimized();
             }
@@ -138,8 +163,8 @@ Rectangle{
             height: btnHeight
             width: btnWidth
             enter_color: "red"
-            exit_color: "#f5544d"
-            border_color: "#bc1b14"
+            exit_color: "#FC615C"
+            border_color: "#eee"
             title : ""
             font_size : 20
             enabled: visible

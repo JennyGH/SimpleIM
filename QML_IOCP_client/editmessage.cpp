@@ -2,5 +2,5 @@
 
 EditMessage::EditMessage()
 {
-
+    type = "6";
 }

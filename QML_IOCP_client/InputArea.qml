@@ -6,7 +6,7 @@ Rectangle{
 
     //---------样式----------
 
-    property color border_color: "#eee"
+    property color border_color: "#ccc"
     property int border_width: 1
     signal ctrl_Enter();
     signal enter();
@@ -19,7 +19,7 @@ Rectangle{
     //        bottom: parent.bottom
     //        horizontalCenter: parent.horizontalCenter
     //    }
-    border.color: father.border_color
+    border.color: content != null ? (content.activeFocus ? "#50c3f8" : father.border_color) : "transparent"
     border.width: father.border_width
     //    color: "red"
 
@@ -31,8 +31,21 @@ Rectangle{
             centerIn: parent
             fill: parent
         }
+        layer.enabled: content != null ? (content.activeFocus ? true : false) : false
+        layer.effect: OuterShadow{
+            target:content
+            color: "#50c3f8"
+            radius: 10
+            samples: 20
+            opacity: content != null && content.activeFocus ? 1 : 0
+            Behavior on opacity {
+                NumberAnimation{
+                    duration : 200
+                }
+            }
+        }
         font.family: "微软雅黑"
-        font.pixelSize: 18
+        font.pixelSize: 12
         wrapMode : TextEdit.Wrap
         selectByMouse: true
 
@@ -54,6 +67,26 @@ Rectangle{
 
             event.accepted = true;
         }
+    }
+
+    Border{
+        pos : "top"
+        color : father.border.color
+    }
+
+    Border{
+        pos : "bottom"
+        color : father.border.color
+    }
+
+    Border{
+        pos : "left"
+        color : father.border.color
+    }
+
+    Border{
+        pos : "right"
+        color : father.border.color
     }
 
     function text(){

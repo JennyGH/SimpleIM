@@ -2,5 +2,5 @@
 
 SearchMessage::SearchMessage()
 {
-
+    type = "3";
 }

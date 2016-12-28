@@ -1,6 +1,6 @@
-#include "deletemessagemessag.h"
+#include "deletemessagemessage.h"
 
-DeletemessageMessag::DeletemessageMessag()
+DeletemessageMessage::DeletemessageMessage()
 {
-
+    type = "10";
 }

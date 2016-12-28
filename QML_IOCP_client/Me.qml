@@ -8,8 +8,8 @@ Rectangle{
     property bool conn: false
     property string myName: "Me"
     width:parent.width
-    height: 80
-    color: "#f5f5f5"
+    height: 60
+    color: mainform.color
     state:"exit"
 
     signal click()
@@ -28,9 +28,9 @@ Rectangle{
 
         Head{
             id:my_head
-            height: 60
-            width: 60
-            radius:60
+            height: 40
+            width: 40
+            radius:40
             anchors{
                 verticalCenter: parent.verticalCenter
             }
@@ -81,7 +81,7 @@ Rectangle{
             name: "exit"
             PropertyChanges {
                 target: myself
-                color: "#f5f5f5"
+                color: mainform.color
             }
         }
     ]

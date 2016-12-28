@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #pragma comment(lib,"libmysql.lib") 
 #pragma comment(lib, "Ws2_32.lib")
 #include <WinSock2.h> 
@@ -10,50 +10,50 @@
 #include <iostream>
 using namespace std;
 
-typedef string cstr;
+typedef const string cstr;
 #define UNKNOWN_ERR -1
 
 class CMYSQL
 {
 public:
 
-	//»ñÈ¡ÊµÀı
+	//è·å–å®ä¾‹
 	static CMYSQL* GetInstance();
 	
-	//³õÊ¼»¯
+	//åˆå§‹åŒ–
 	string InitSQL(cstr host, cstr username, cstr pswd, cstr database, unsigned int port,cstr chara);
 	
-	//²é
+	//æŸ¥
 	string Search(cstr database,cstr table,cstr col,cstr whr,cstr like);
 
-	//Ôö
+	//å¢
 	string Add(cstr database, cstr table, cstr keys, cstr values);
 
-	//É¾:DELETE FROM `jennychat`.`account` WHERE `id`='14';
+	//åˆ :DELETE FROM `jennychat`.`account` WHERE `id`='14';
 	string Del(cstr database,cstr table,cstr key,cstr value,cstr extra);
 
-	//¸Ä:UPDATE `jennychat`.`account` SET `username`='ddd' WHERE `id`='13';
+	//æ”¹:UPDATE `jennychat`.`account` SET `username`='ddd' WHERE `id`='13';
 	string Update(cstr database, cstr table, cstr set, cstr whr);
 
-	//¼ì²éÁ¬½Ó
+	//æ£€æŸ¥è¿æ¥
 	bool CheckConnect();
 
-	//¹Ø±ÕÊı¾İ¿â
+	//å…³é—­æ•°æ®åº“
 	void CloseSQL();
 
 	~CMYSQL();
 
-private://Ë½ÓĞº¯Êı
+private://ç§æœ‰å‡½æ•°
 
-	//»ñÈ¡JSON¸ñÊ½½á¹û¼¯
+	//è·å–JSONæ ¼å¼ç»“æœé›†
 	string getJSONResult(MYSQL_RES *res);
 
-	//»ñÈ¡±í¸ñ×Ö¶ÎÊı
+	//è·å–è¡¨æ ¼å­—æ®µæ•°
 	unsigned int getColCount();
 
 	CMYSQL();
 
-private://Ë½ÓĞÊôĞÔ
+private://ç§æœ‰å±æ€§
 	MYSQL m_sql;
 	static CMYSQL* m_Instance;
 };

@@ -2,7 +2,9 @@ import QtQuick 2.4
 import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
-import "../js/generic.js" as GEN
+import QtGraphicalEffects 1.0
+import "generic.js" as GEN
+import "fontawesome.js" as FA
 //import Client 1.0
 
 Window {
@@ -18,6 +20,7 @@ Window {
     property SearchFriend searchwindow: null
     property SettingWindow newsettingwindow: null
     property Window loginwindow: null
+    property Toast m_toast: null
     flags: Qt.FramelessWindowHint | Qt.Window
     color: Qt.rgba(0,0,0,0)
 
@@ -31,27 +34,15 @@ Window {
 
     onVisibleChanged: {
         if(!fatherWindow.visible){
-            GEN.clearWindow(mainform.chatwindows);
+//            GEN.clearWindow(mainform.chatwindows);
             GEN.clearWindow(mainform.detailswindows);
         }else{
             fadeout.start();
-            client.sendmessage("","",4);    //消息4：更新好友列表
+            client.sendmessage("","",updateMessage);    //消息4：更新好友列表
         }
     }
 
     Component.onCompleted: {}
-
-    onActiveChanged: {
-        if(!fatherWindow.active){
-            if(!ishide && canhide){
-                senseArea.run();
-//                hideWindow.start();
-            }
-
-//            ishide = true;
-//            canhide = true;
-        }
-    }
 
     onCanhideChanged: {
         senseArea.canhide = fatherWindow.canhide
@@ -70,15 +61,23 @@ Window {
             switch(parseInt(obj.type)){
             case 2:
                 var currentwindow = GEN.isExistWindow(mainform.chatwindows,obj.friend);
+                var currendtWindowIndex = GEN.isExistWindow(mainform.chatwindows,obj.friend,_tabbar);
                 if(currentwindow){
-                    console.log("新消息...",currentwindow);
+                    //已经打开对话窗口
+                    if(currendtWindowIndex != _tabbar.currentIndex){
+                        //焦点不在此窗口
+//                        console.log(_tabbar.getTab(currendtWindowIndex).style);
+//                        _tabbar.requestFocus(currendtWindowIndex);
+                        _tabbar.tabs[currendtWindowIndex].shining = true;
+                    }
                     currentwindow.recv(currentwindow.name,obj.message);
                 }else{
+                    //未打开对话窗口
                     //好友列表显示消息气泡
                     console.log("你有未读留言...");
                     for(var i = 0;i<friendmodel.count;i++){
                         if(friendmodel.get(i).ID === obj.friend){
-                            friendList.itemAt(0,50*(i+1)).shine();
+                            friendList.itemAt(0,mainform.itemHeight*(i)).shine();
                             break;
                         }
                     }
@@ -89,12 +88,13 @@ Window {
             case 4:
                 //返回好友列表信息
                 refresh(obj);
+                client.sendmessage("","",leavingmessageMessage);    //更新完好友列表后开始获取留言信息
                 myName = obj.myName;
                 break;
             case 5:
                 if(obj.message !== 0){
                     if(obj.message.SqlMsgType === 0){
-                        client.sendmessage("","",4);
+                        client.sendmessage("","",updateMessage);
                     }else{
                         console.log("添加好友发生错误：",obj.message.Result);
                     }
@@ -102,18 +102,29 @@ Window {
                     console.log("好友已存在...");
                 }
                 break;
-            case 6:
-                //修改好友备注
-//                console.log(obj.message.ID);
-                break;
-            case 7 :
-//                console.log(obj.message.Result);
-                if(obj.message.SqlMsgType == 0){
-//                    client.sendmessage("","",4);    //消息4：更新好友列表
-//                    refresh(obj);
-//                    friendList.remove();
+            case 9:
+
+                //接收留言信息
+                 console.log("接收到的留言：");
+                var res = obj.message.Result;
+                for(var item in res){
+                    if(parseInt(res[item][2])){
+                        //是好友
+                        for(var i = 0;i<friendmodel.count;i++){
+                            if(friendmodel.get(i).ID === res[item][1]){
+                                friendList.itemAt(0,mainform.itemHeight*(i)).shine();
+                                break;
+                            }
+                        }
+                        //内存中暂存留言
+                        client.keepMessage(res[item][1],res[item][0]);
+                    }else{
+                        console.log(res[item][1] + " 请求添加你为好友");
+                    }
                 }
+
                 break;
+
             default:
                 break;
             }
@@ -129,73 +140,41 @@ Window {
         }
     }
 
-    ResizeBar {
-        id:senseArea
-//        target: _loginwindow
-        barwidth: 15    //鼠标有效区域的宽度
-        enabled: false  //设为true后可调整窗口大小
-        ishide : fatherWindow.ishide
-        canhide : fatherWindow.canhide
-        z:999
-        onMouseIn: {
-            console.log("mouse in")
-            run();
-        }
-        onTimeout: {
-            if(ishide){
-                //显示
-                hideWindow.stop();
-                showWindow.start();
-            }else{
-                //隐藏
-                showWindow.stop();
-                hideWindow.start();
-            }
-        }
-    }
-
     MainForm {
         id:mainform
         property color font_color: "#444"
         property var chatwindows : new Array
         property var detailswindows: new Array
-        height: 600
-        width: 280
+        property int itemHeight: 40
+        property Alert alert: null
+        height: 700
+        width: _side.width + _chatarea.width
         anchors {
             centerIn: parent
         }
-        border.color: "#fff"//"#88888888"
-        color : "#f5f5f5"
+//        border.color: "#fff"
+        color : "#f0f0f0"
         radius: 5
         opacity: 0
+        smooth: true
+
+//        Alert{
+//            id : alert;
+//        }
 
         MainWindowHeader {
             id:header
             title : "JennyChat"
-            marginRight:5//mainform.border.width
+            marginRight:10//mainform.border.width
             marginTop: marginRight
-//            anchors {
-//                topMargin:header.marginRight
-//            }
             onCloseClick:{
-                console.log(searchwindow);
                 if(searchwindow){
                     searchwindow.close();
                 }
             }
-            onMove:{
-//                console.log(fatherWindow.y)
-                if(fatherWindow.y <= -15){
-                    //到达屏幕边缘
-                    canhide = true;
-                    fatherWindow.y = -15
-                    senseArea.enabled = true;
-                }else{
-                    //未到屏幕边缘
-                    canhide = false;
-                    senseArea.enabled = false;
-                }
-            }
+            height: 40
+            isVerticalCenter: true
+            onMove:{}
         }
 
         MessageBox{
@@ -207,191 +186,359 @@ Window {
             }
         }
 
-        Me{
-            id:me
-            conn : fatherWindow.conn
-            myName : fatherWindow.myName
-            width: parent.width - mainform.border.width * 2
+        Column{
+            id:_side
+            spacing : 0
+            width: 250
             anchors{
                 top:tishi.bottom
-                horizontalCenter: parent.horizontalCenter
+                left: parent.left
+                bottom: footer.top
             }
-        }
-
-        Rectangle{
-            id:mainformbody
-            height: mainform.height - me.height - header.height - tishi.height - mainformfooter.height - mainform.border.width*2 - 10
-            width: mainform.width - mainform.border.width * 2 - 10
-            anchors{
-                top:me.bottom
-                topMargin: 5
-                horizontalCenter: parent.horizontalCenter
+            Me{
+                id:me
+                conn : fatherWindow.conn
+                myName : fatherWindow.myName
+                width: parent.width
+                color : mainform.color
+//                anchors{
+//                    top:tishi.bottom
+//                    horizontalCenter: parent.horizontalCenter
+//                }
             }
-            color : "transparent"
-            border.color: "#fff"
-            radius:3
-            ScrollView {
-                id:mainformbodyscroll
-                height: parent.height - parent.radius*2
-                width: parent.width - parent.radius*2
-                horizontalScrollBarPolicy:Qt.ScrollBarAlwaysOff
-                verticalScrollBarPolicy:Qt.ScrollBarAsNeeded
-                style: ScrollViewStyle{transientScrollBars:true}
-                anchors.centerIn: parent
-//                visible: false
-                ListView{
-                    id:friendList
-                    anchors {
-                        fill : parent
-                    }
-                    highlightFollowsCurrentItem : true
 
-                    model: FriendModel{
-                        id:friendmodel
-                        onCountChanged: {
-    //                        if(oldcount < count){
-    //                            friendListArray.push(ID);
-    //                        }else if(oldcount < count){
-    //                            console.log("删除某人");
-    ////                            friendListArray.splice(,1);
-    //                        }
-    //                        oldcount = count;
+            Rectangle{
+                id:mainformbody
+                height: mainform.height - me.height - header.height - tishi.height - mainformfooter.height - mainform.border.width*2 - footer.height
+                width : parent.width //- mainform.border.width * 2 - 10
+                anchors {
+                    horizontalCenter: parent.horizontalCenter
+                }
+
+                color : "#fff"
+
+//                border.color: "#ccc"
+
+                smooth: true
+
+//                radius:3
+                ScrollView {
+                    id:mainformbodyscroll
+                    height: parent.height - parent.radius*2
+                    width: parent.width - parent.radius*2
+                    horizontalScrollBarPolicy:Qt.ScrollBarAlwaysOff
+                    verticalScrollBarPolicy:Qt.ScrollBarAsNeeded
+                    style: ScrollViewStyle{transientScrollBars:true}
+                    anchors.centerIn: parent
+    //                visible: false
+                    ListView{
+                        id:friendList
+                        anchors {
+                            fill : parent
                         }
-                    }
-                    delegate: Friend{
-                        id:friend
-                        height: 60
-//                        color : mainformbody.color
-//                        background_color : mainformbody.color
-                        onDbclick: {
-                            var existwindow;
-                            if((existwindow = GEN.isExistWindow(mainform.chatwindows,ID))){
+                        highlightFollowsCurrentItem : true
 
-                                existwindow.requestActivate();
-
-                                return existwindow;
-                            }else{
-
-                                var newchatwindow = GEN.createSingleWindow(mainform.chatwindows,"ChatWindow",null);
-                                newchatwindow.userid = ID;
-                                newchatwindow.name = name;
-                                newchatwindow.address= address;
-                                newchatwindow.online = onLine;
-                                newchatwindow.getHeader().clientname = name;
-                                newchatwindow.getHeader().online = onLine;
+                        model: FriendModel{
+                            id:friendmodel
+                            onCountChanged: {
                             }
+                        }
+                        delegate: Friend{
+                            id:friend
+                            normal_color : mainformbody.color
+                            enter_font_color : "#fff"
+                            enter_color: "#1b83fb"
+//                            radius : mainform.radius
+                            onDbclick: {
+                                var existwindow;
+                                if((existwindow = GEN.isExistWindow(mainform.chatwindows,ID,_tabbar))){
 
-                            if(friend.msgcount){
-                                var jsonstr = client.alreadyRead(ID);
-                                if(jsonstr.trim() !== ""){
-                                    console.log(jsonstr);
-                                    var json = JSON.parse(jsonstr);
-                                    for(var i = 0;i<json.message.length;i++){
-                                        newchatwindow.recv(newchatwindow.name,json.message[i]);
+                                    _tabbar.currentIndex = existwindow;  //如果存在窗口，该窗口获得焦点
+
+                                    return existwindow;
+                                }else{
+                                    var newchatwindow = GEN.createSingleComponent("ChatWindow");
+                                    _tabbar.addTab(name,newchatwindow);
+                                    _tabbar.currentIndex = _tabbar.count - 1;
+                                    var object = _tabbar.getTab(_tabbar.currentIndex).item;
+//                                    object.handle = newchatwindow;
+                                    object.userid = ID;
+                                    object.name = name;
+                                    object.address= address;
+                                    object.online = onLine;
+                                    object.tabIndex = index;
+                                    object.getHeader().clientname = name;
+                                    object.getHeader().online = onLine;
+                                    mainform.chatwindows.push(object);
+                                    if(_tabbar.count > 0 && _chatarea.width == 0){
+                                        _chatarea.width = 1000;
+//                                        _chatarea.show();
                                     }
-                                    friend.msgcount = 0;
+                                }
+
+                                if(friend.msgcount){
+                                    var jsonstr = client.alreadyRead(ID);
+                                    if(jsonstr.trim() !== ""){
+                                        var json = JSON.parse(jsonstr);
+                                        newchatwindow = _tabbar.getTab(_tabbar.currentIndex).item;
+                                        for(var i = 0;i<json.message.length;i++){
+                                            newchatwindow.recv(newchatwindow.name,json.message[i]);
+                                        }
+                                        client.sendmessage(1,ID,deletemessageMessage); //清除已读好友留言消息
+                                        friend.msgcount = 0;
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+
+            Rectangle{
+                id:mainformfooter
+                height: 20
+                width: parent.width
+                color : Qt.rgba(0,0,0,0)
+                anchors {
+                    horizontalCenter: parent.horizontalCenter
+                }
+
+                Row{
+
+                    spacing: 0
+
+                    anchors {
+                        fill: parent
+                    }
+                    property int radius: 0
+                    property int btnHeight: 25
+                    property int btnWidth: width/btnCount
+                    property int btnFontsize: Math.min(btnWidth,btnHeight) - 10
+                    property int btnCount: 3
+
+                    MyButton{
+                        id:setting
+                        usingFA: true
+                        title : FA.icons.Gear
+                        height: parent.btnHeight
+                        width: parent.btnWidth
+                        enter_color: "#bbb"
+                        radius:parent.radius
+                        font_size: parent.btnFontsize
+                        anchors {
+                            verticalCenter: parent.verticalCenter
+                        }
+                        onClick: {
+                            if(!newsettingwindow){
+                                newsettingwindow = GEN.createWindow("SettingWindow",mainform);
+                                if(newsettingwindow){
+                                    newsettingwindow.setTxtIp(client.ip);
+                                    newsettingwindow.setTxtPort(client.port);
+                                    newsettingwindow._tishi = tishi;
+                                    GEN.showWindow(newsettingwindow);
+                                }else{
+                                    console.error("SettingWindow 未创建...");
+                                }
+                            }
+                        }
+                    }
+
+                    MyButton{
+                        id:add
+                        title:FA.icons.Search
+                        usingFA: true
+                        height: parent.btnHeight
+                        width: parent.btnWidth
+                        enter_color: "#bbb"
+                        radius:parent.radius
+                        font_size: parent.btnFontsize
+                        anchors {
+                            verticalCenter: parent.verticalCenter
+                        }
+                        Border{
+                            pos : "left"
+                            color: "#ccc"
+                        }
+                        Border{
+                            pos : "right"
+                            color: "#ccc"
+                        }
+
+                        onClick: {
+
+                            if(!searchwindow){
+                                searchwindow = GEN.createWindow("SearchFriend",null);
+                                if(searchwindow){
+                                    GEN.showWindow(searchwindow);
+                                }
+                            }else{
+                                searchwindow.raise()
+                            }
+                        }
+                    }
+
+                    MyButton{
+                        id:btn_addreq
+                        title:FA.icons.OkCircle
+                        height: parent.btnHeight
+                        width: parent.btnWidth
+                        enter_color: "#bbb"
+                        radius:parent.radius
+                        font_size: parent.btnFontsize
+                        usingFA: true
+                        anchors {
+                            verticalCenter: parent.verticalCenter
+                        }
+                        onClick: {
+
+                            if(!searchwindow){
+                                searchwindow = GEN.createWindow("SearchFriend",null);
+                                if(searchwindow){
+                                    GEN.showWindow(searchwindow);
+                                }
+                            }else{
+                                searchwindow.raise()
+                            }
+                        }
+                    }
+                }
+            }
+
         }
-//        InnerShadow {
-//            anchors.fill: mainformbody
-//            horizontalOffset: 1
-//            verticalOffset: 1
-//            radius: 4.0
-//            samples: 8
-//            color: "#dddddddd"
-//            source: mainformbody
-//        }
 
         Rectangle{
-            id:mainformfooter
-            height: 40
-            width: parent.width - parent.border.width*2
-            color : Qt.rgba(0,0,0,0)
-//            gradient: Gradient {
-//                GradientStop { position: 0.0; color: "#fff" }
-//                GradientStop { position: 1.0; color: "#eee" }
-//            }
-            anchors {
-                horizontalCenter: parent.horizontalCenter
-                bottom:parent.bottom
-                bottomMargin: parent.border.width
+            id:_chatarea
+            width:0
+//            height:parent.height - header.height - tishi.height
+            opacity: width > 0 ? 1 : 0
+            anchors{
+                left:_side.right
+                top : _side.top
+                bottom : footer.top
             }
 
-            Row{
+            Border{pos : "left"; color : "#ccc"}
 
-                spacing: 5
-
-                anchors {
-                    left: parent.left
-                    verticalCenter: parent.verticalCenter
-                    leftMargin: spacing
+            radius: mainform.radius
+            color : mainform.color
+            TabView{
+                id:_tabbar
+                property color tab_border_color: "#ADADAD"
+                property var tabs: new Array
+                signal requestFocus(var currentWindowIndex);
+                anchors{
+                    centerIn: parent
                 }
+                height : parent.height
+                width : parent.width
+                style: TabViewStyle {
+                          frameOverlap: 1
+                          tab: Rectangle {
+                              id : tabstyle
+                              property bool shining: false
+                              color: shining ? (styleData.selected ? "#dcdcdd" : "#70caf4"):(styleData.selected ? "#dcdcdd" : "#c0bfc0")
+                              smooth: true
+                              border.color:  _tabbar.tab_border_color
+                              implicitWidth: width
+                              implicitHeight: height
+                              height: 25
+                              width : ((_chatarea.width) / _tabbar.count) + 1//text.width + close.width + 30
+                              clip : true
+                              layer.enabled: !styleData.selected
+                              layer.effect: InnerShadow{
+                                  anchors.fill: tabstyle
+                                  radius: 6.0
+                                  samples: 6
+                                  horizontalOffset: 0
+                                  verticalOffset: 2
+                                  color: Qt.rgba(0,0,0,0.1)
+                                  source: tabstyle
+                              }
 
-                MyButton{
-                    id:setting
-                    title : ""
-                    height: 30
-                    width: 30
-                    enter_color: "#bbb"
-                    radius:40
-                    anchors {
-                        verticalCenter: parent.verticalCenter
-                    }
-                    Image{
-                        //                        anchors.fill: parent
-                        source : "qrc:/src/src/setting.png"
-                        height: parent.height * 0.5
-                        width: height
-                        sourceSize.height: height
-                        sourceSize.width: width
-                        anchors.centerIn: parent
-                    }
+                              onColorChanged: {
+                                  if(color == "#dcdcdd"){
+                                      shining = false;
+                                  }
+                              }
 
-                    onClick: {
-                        if(!newsettingwindow){
-                            newsettingwindow = GEN.createWindow("SettingWindow",mainform);
-                            if(newsettingwindow){
-                                newsettingwindow.setTxtIp(client.ip);
-                                newsettingwindow.setTxtPort(client.port);
-                                newsettingwindow._tishi = tishi;
-                                GEN.showWindow(newsettingwindow);
-                            }else{
-                                console.error("SettingWindow 未创建...");
-                            }
-                        }
-                    }
-                }
+                              Component.onCompleted: {
+                                  _tabbar.tabs.push(this);
+                              }
+                              Component.onDestruction: {
+                              }
+                              Behavior on color{
+                                  ColorAnimation{
+                                      duration: 200
+                                  }
+                              }
 
-                MyButton{
-                    id:add
-                    title:"<b>+</b>"
-                    font_size: 20
-                    height: 30
-                    width: 30
-                    radius:30
-                    anchors {
-                        verticalCenter: parent.verticalCenter
-                    }
-                    enter_color: "#bbb"
-                    onClick: {
+                              Border{
+                                  pos : "top"
+                                  color : parent.color
+                                  width: parent.width - parent.border.width*2
+                              }
 
-                        if(!searchwindow){
-                            searchwindow = GEN.createWindow("SearchFriend",null);
-                            if(searchwindow){
-                                GEN.showWindow(searchwindow);
-                            }
-                        }else{
-                            searchwindow.raise()
-                        }
-                    }
+                              MyText {
+                                  id: text
+                                  text: styleData.title
+                                  color: styleData.selected ? "#2A2A2A" : "#6B6B6B"
+                                  anchors {
+                                      verticalCenter: parent.verticalCenter
+                                      left: parent.left
+                                      leftMargin: 5
+                                      right: close.left
+                                      rightMargin: 5
+                                  }
+                                  font_size: 13
+//                                  width: contentWidth + 20
+                                  wrapMode: Text.WordWrap
+                                  elide : Text.ElideRight
+                                  verticalAlignment:Text.AlignVCenter
+                                  horizontalAlignment: Text.AlignHCenter
+                              }
+                              MyText{
+                                  id : close
+                                  color: "#ADADAD"
+                                  width : contentWidth + 2
+                                  fa : true
+                                  font_size: 15
+                                  text : FA.icons.Times.Circle
+                                  Behavior on color{ ColorAnimation{duration: 200}}
+                                  anchors{
+                                      verticalCenter: parent.verticalCenter
+                                      right: parent.right
+                                      rightMargin: 10
+                                  }
+                                  MouseArea{
+                                      anchors.fill: parent
+                                      hoverEnabled: true
+                                      onClicked: {
+                                          GEN.removeWindowFromArray(mainform.chatwindows,null,index);//删除某个窗口的指针
+                                          GEN.removeWindowFromArray(_tabbar.tabs,null,index);//删除某个tab的指针
+                                          _tabbar.removeTab(index);
+                                          if(_tabbar.count == 0){
+                                              _chatarea.width = 0;
+                                          }
+                                      }
+                                      onEntered: {
+                                          close.color = "black";
+                                      }
+                                      onExited: {
+                                          close.color = "#ADADAD";
+                                      }
+                                  }
+                              }
+                          }
+                          frame: Item { }
                 }
             }
         }
+
+        MainWindowFooter{
+            id :footer
+            height: 30
+        }
+
     }
     OuterShadow {
         id:_shadow
@@ -439,37 +586,6 @@ Window {
             senseArea.setTime(300);
         }
     }
-
-//    states: [
-//        State {
-//            name: "hide"
-//            PropertyChanges {
-//                target: fatherWindow
-//                y: -fatherWindow.height - 15
-//            }
-//        },
-//        State {
-//            name: "show"
-//            PropertyChanges {
-//                target: fatherWindow
-//                y: -15
-//            }
-//        }
-//    ]
-
-//    transitions: [
-//        Transition {
-//            from: "*"
-//            to: "*"
-
-//            NumberAnimation {
-//                target: fatherWindow
-//                property: "y"
-//                duration: 200
-//                easing.type: Easing.InOutQuad
-//            }
-//        }
-//    ]
 
     function addFriend(id,name,ol,addr){
         friendmodel.append({"ID":id,"name":name,"onLine":ol,"address":addr});

@@ -37,7 +37,7 @@ Rectangle{
 
         MyText{
             id:client_name
-            text : father.clientname
+            text : father.clientname + "(" + chatwindow.userid + ")"
             anchors {
                 verticalCenter: parent.verticalCenter
             }

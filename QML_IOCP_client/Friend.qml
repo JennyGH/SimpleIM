@@ -2,15 +2,17 @@ import QtQuick 2.0
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import QtGraphicalEffects 1.0
-import "../js/generic.js" as GEN
+import "generic.js" as GEN
+import "fontawesome.js" as FontAwesome
 
-Rectangle{
+Item{
     id:father
-    property color background_color: mainform.color
-    property color background_hover_color: "#eee"
+    property color normal_color: mainform.color
+    property color enter_color: "#eee"
     property color border_color: "#aaa"
-    property color border_hover_color: "#aaa"
+    property color enter_border_color: "#aaa"
     property color font_color: mainform.font_color
+    property color enter_font_color: mainform.font_color
     property color shine_color: Qt.lighter("#3399ff",1.5)
     property int marginleft: 10
     property int msgcount: 0
@@ -20,96 +22,73 @@ Rectangle{
     width: parent.width
     signal click()
     signal dbclick()
-    height: 50
+    height: mainform.itemHeight + bottombar.height
+    smooth: true
+    GradientBorder{
+        z: 2
+        pos : "bottom"
+        color_middle : "#eee"
+    }
 
-//    border.color: father.border_color
+    Rectangle{
+        id : itembakg
+        z : 1
+        color:father.normal_color
+        height: father.height - bottombar.height
+        width: parent.width
+        anchors {
+            horizontalCenter: parent.horizontalCenter
+            top : parent.top
+        }
 
-    //-----样式-------------
-
-//    source: "qrc:/"       //Image时用source属性加载背景图片
-
-    color:father.background_color
-
-    //----------------------
-
-//    PopMenu{
-//        id:rightmenu
-////        visible:(mousearea.pressedButtons & Qt.RightButton)
-//        enabled:visible
-//        z:999
-//        parent: father.parent
-
-//        onVisibleChanged: {
-//            if(visible){
-//                forceActiveFocus();
-//            }
-//        }
-
-//        onActiveFocusChanged: {
-//            if(!activeFocus){
-//                console.log("un active");
-//                visible = false;
-//            }
-//        }
-//    }
-
-    MouseArea{
-        id:mousearea
-        anchors.fill: parent
-        hoverEnabled: true
-        acceptedButtons: Qt.LeftButton | Qt.RightButton
-        onClicked:{
-            if(mouse.button === Qt.RightButton){
-//                edit.width = 60
-                if(edit.x >= edit.hidex){
-                    showdetailsbtn.start();
+        MouseArea{
+            id:mousearea
+            anchors.fill: parent
+            hoverEnabled: true
+            acceptedButtons: Qt.LeftButton | Qt.RightButton
+            onClicked:{
+                if(mouse.button === Qt.RightButton){
+                    showAnimation.start();
+                }else{
+                    forceActiveFocus();
+                    hideAnimation.start();
                 }
-            }else{
-                forceActiveFocus();
-//                edit.width = 0;
-                if(edit.x <= edit.showx){
-                    hidedetailsbtn.start();
-                }
+                father.click();
             }
-            father.click();
-        }
-        onEntered: {
-            head.state = "ACTIVE";
-            father.state = "in";
-        }
-        onExited: {
-            head.state = "NEGTIVE";
-            father.state = "out";
-        }
-        onPressed: {
-//            row.scale = 0.9
-        }
-        onReleased: {
-//            row.scale = 1
-        }
-        onDoubleClicked: {
-            if(mousearea.pressedButtons & Qt.LeftButton)
-                dbclick();
+            onEntered: {
+                head.state = "ACTIVE";
+                father.state = "in";
+            }
+            onExited: {
+                head.state = "NEGTIVE";
+                father.state = "out";
+            }
+            onDoubleClicked: {
+                if(mousearea.pressedButtons & Qt.LeftButton)
+                    dbclick();
+            }
         }
     }
 
-
-    Row{
+    Row {
         id:row
+        z: 1
         spacing: father.marginleft
         width: father.width
 
         anchors{
-            verticalCenter: parent.verticalCenter
+            verticalCenter: bottombar.visible ? undefined : parent.verticalCenter
+            bottom: bottombar.visible ? bottombar.top : undefined
+            bottomMargin: bottombar.visible ? 5 : undefined
             leftMargin: father.marginleft
             left: parent.left
         }
 
         Head{
             id:head
-            height: 40
-            width:40
-            radius:40
+            height: 30
+            width:30
+            radius:30
             anchors{
                 verticalCenter: parent.verticalCenter
             }
@@ -117,21 +96,26 @@ Rectangle{
                 id:circlemsgcount
                 visible: (msgcount > 0)
                 height: lblmsgcount.contentHeight
-                color: "red"
+//                color: "red"
+                gradient : Gradient{
+                    GradientStop{position: 0;color : "#e00f00"}
+                    GradientStop{position: 1;color : "#960200"}
+                }
+
                 width: lblmsgcount.contentWidth + 10
                 radius: height
                 MyText{
                     id:lblmsgcount
                     anchors.centerIn: parent
-                    font_size: 15
+                    font_size: 12
                     color: "#fff"
                     text: "<b>" + (msgcount > 99 ? "99+" : msgcount) + "</b>"
                 }
                 anchors {
                     top:parent.top
                     right: parent.right
-                    rightMargin: -width/2
-                    topMargin: -height/2
+                    rightMargin: -width/3
+                    topMargin: -height/3
                 }
             }
         }
@@ -144,131 +128,176 @@ Rectangle{
             }
         }
 
-        Row{
-            spacing : 1
+        MyText{
+            id:txt
+            color:father.font_color
+            font_size: 13
             anchors{
                 verticalCenter: parent.verticalCenter
             }
-
-            MyText{
-                id:txt
-                color:father.font_color
-                anchors{
-                    verticalCenter: parent.verticalCenter
-                }
-                text:name
-            }
+            text:name
         }
     }
-    MyButton{
-        id:edit
-        height: parent.height
-        width:60
-        title:"查看"
-        state:"hide"
-        enter_color: "#5aa7f8"
-        enter_font_color: "#fff"
-//        radius:5
-        font_size: 12
-//        border_color: "#e2e2e2"
-        property int showx: 202
-        property int hidex: 262
-        x : 262
-        color : Qt.lighter("#5aa7f8",1.2)
-        exit_color: Qt.lighter("#5aa7f8",1.2)
-        anchors{
-            verticalCenter: parent.verticalCenter
-//            right:parent.right
-//            left : father.right
-//            rightMargin: 10
+
+    Item{
+        id : bottombar
+        width: parent.width
+        height: 0
+        anchors {
+            horizontalCenter: parent.horizontalCenter
+            bottom : parent.bottom
         }
-        onClick: {
-            var newdetailswindow;
-            if((newdetailswindow = GEN.isExistWindow(mainform.detailswindows,ID))){
-
-                newdetailswindow.requestActivate();
-
-                return newdetailswindow;
-            }else{
-                newdetailswindow = GEN.createSingleWindow(mainform.detailswindows,"DetailsWindow",mainform);
-                newdetailswindow.userid = ID;
-                newdetailswindow.friendindex = index;
-                newdetailswindow.setName(name);
+        enabled: visible && opacity
+        visible: height > 0
+        Behavior on height {
+            NumberAnimation {
+                duration: 200
+                easing.type: Easing.InOutExpo
             }
-//            newdetailswindow.visible = true;
-        }
-        Component.onCompleted: {
-//            console.log(x)
         }
         onActiveFocusChanged: {
             if(!activeFocus){
-                if(edit.x <= edit.showx){
-                    hidedetailsbtn.start();
-                }
+                hideAnimation.start();
             }
         }
+        layer.enabled: true
+        layer.effect: InnerShadow{
+            anchors.fill: bottombar
+            radius: 6.0
+            samples: 6
+            horizontalOffset: 0
+            verticalOffset: 2
+            color: Qt.rgba(0,0,0,0.1)
+            source: bottombar
+        }
+
+        Row{
+            spacing: 0
+            property int btnHeight: height
+            property int btnFontsize: Math.max(12,btnHeight - 15)
+            property int buttonCount: 2
+            anchors.fill: parent
+            MyButton{
+                id : edit
+                width: parent.width/parent.buttonCount
+                height: parent.btnHeight
+                usingFA: true
+                title : FontAwesome.icons.ListAlt
+                font_size: parent.btnFontsize
+                enter_color: father.enter_color
+                enter_font_color: father.enter_font_color
+                onClick: {
+                    var newdetailswindow;
+                    if((newdetailswindow = GEN.isExistWindow(mainform.detailswindows,ID))){
+
+                        newdetailswindow.requestActivate();
+
+                        return newdetailswindow;
+                    }else{
+                        newdetailswindow = GEN.createSingleWindow(mainform.detailswindows,"DetailsWindow",mainform);
+                        newdetailswindow.userid = ID;
+//                        newdetailswindow.friendindex = index;
+                        newdetailswindow.setName(name);
+                    }
+                    //            newdetailswindow.visible = true;
+                }
+            }
+            MyButton{
+                id : btnDelete
+                width: parent.width/parent.buttonCount
+                height: parent.btnHeight
+                usingFA: true
+                title : FontAwesome.icons.Trash
+                font_size: parent.btnFontsize
+                enter_color: "red"
+                enter_font_color: father.enter_font_color
+                onClick: {
+                    var _alert = GEN.alert({
+                                               height :130,
+                                               width : 220,
+                                               text : "确定删除吗？",
+                                               parent : mainform,
+                                               onOk : function(){
+                                                   client.sendmessage("",ID,deleteMessage);
+                                                   fatherWindow.remove(index);
+                                               },
+                                               onClose : function(){
+                                                   _alert.destroy();
+                                               }
+                                           });
+                }
+            }
+
+        }
+
     }
 
     states: [
         State {
             name: "in"
             PropertyChanges {
-                target: father
-                color : background_hover_color
+                target: itembakg
+                color : enter_color
+            }
+            PropertyChanges {
+                target: txt
+                color : enter_font_color
             }
         },
         State {
             name: "out"
             PropertyChanges {
-                target: father
-                color : background_color
+                target: itembakg
+                color : normal_color
+            }
+            PropertyChanges {
+                target: txt
+                color : font_color
             }
         }
-//        State {
-//            name: "active"
-//            PropertyChanges {
-//                target: txt
-//                scale : 0.9
-//            }
-//        },
-//        State {
-//            name: "nagative"
-//            PropertyChanges {
-//                target: txt
-//                scale : 1
-//            }
-//        }
     ]
     transitions: Transition {
         ParallelAnimation {
             ColorAnimation { property: "color"; duration: 200 ;}
         }
     }
-    PropertyAnimation {
-        id: showdetailsbtn
-        target: edit
-        duration: 150
-        easing.type: Easing.OutExpo
-        property: 'x'
-        from: edit.hidex
-        to: edit.showx
-        onStarted: {
-            edit.enabled = true;
-            edit.forceActiveFocus();
+
+    ParallelAnimation{
+        id : showAnimation
+        NumberAnimation {
+            target: bottombar
+            property: "opacity"
+            to : 1
+            duration: 200
+            easing.type: Easing.InOutQuad
+        }
+        NumberAnimation {
+            target: bottombar
+            property: "height"
+            to : 30
+            duration: 200
+            easing.type: Easing.InOutQuad
         }
     }
-    PropertyAnimation {
-        id: hidedetailsbtn
-        target: edit
-        duration: 150
-        easing.type: Easing.OutExpo
-        property: 'x'
-        from: edit.showx
-        to: edit.hidex
-        onStarted: {
-            edit.enabled = false;
+
+    ParallelAnimation{
+        id : hideAnimation
+        NumberAnimation {
+            target: bottombar
+            property: "opacity"
+            to : 0
+            duration: 200
+            easing.type: Easing.InOutQuad
+        }
+        NumberAnimation {
+            target: bottombar
+            property: "height"
+            to : 0
+            duration: 200
+            easing.type: Easing.InOutQuad
         }
     }
+
     function shine(){
         msgcount++;
     }

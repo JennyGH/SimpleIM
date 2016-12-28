@@ -5,21 +5,13 @@
 using namespace std;
 
 #define MESG_LENGTH 1024
-#define LOGIN_MSG "1"
-#define CHAT_MSG "2"
-#define SEARCH_MSG "3"
-#define UPDATE_LIST "4"
-#define ADD "5"
-#define EDIT "6"
-#define DEL "7"
-#define SIGNIN "8"
 
-struct MessagePakag{    //ÏûÏ¢°ü
-    string friend_id;  //ºÃÓÑID
-    unsigned char m_online;      //ÊÇ·ñÔÚÏß
-    string myID;        //×Ô¼ºµÄIDºÅ
-    string m_message;   //ÏûÏ¢£¬µ±m_type=1Ê±´æ·ÅÃÜÂë£¬=2Ê±´æ·ÅÁÄÌìÏûÏ¢
-    string m_type;   //1:µÇÂ½ÏûÏ¢£¬2:ÁÄÌìÏûÏ¢
+struct MessagePakag{    //æ¶ˆæ¯åŒ…
+    string friend_id;  //å¥½å‹ID
+    unsigned char m_online;      //æ˜¯å¦åœ¨çº¿
+    string myID;        //è‡ªå·±çš„IDå·
+    string m_message;   //æ¶ˆæ¯ï¼Œå½“m_type=1æ—¶å­˜æ”¾å¯†ç ï¼Œ=2æ—¶å­˜æ”¾èŠå¤©æ¶ˆæ¯
+    string m_type;   //1:ç™»é™†æ¶ˆæ¯ï¼Œ2:èŠå¤©æ¶ˆæ¯
 };
 
 

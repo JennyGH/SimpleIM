@@ -1,5 +1,5 @@
 import QtQuick 2.0
-import "../js/generic.js" as GEN
+import "generic.js" as GEN
 
 Rectangle{
     id:btn
@@ -9,25 +9,27 @@ Rectangle{
 
     //------样式-------
     property Gradient enter_gradient :Gradient{
-        GradientStop{position: 0.0;color : "#6bb2f7"}
-        GradientStop{position: 1.0;color : "#1f85fb"}
+        GradientStop{position: 0.0;color : "#6cb2f7"}
+        GradientStop{position: 1.0;color : "#1b83fb"}
     }// Qt.rgba(0,0,0,0)
     property Gradient exit_gradient : Gradient{
         GradientStop{position: 0.0;color : "#fff"}
         GradientStop{position: 1.0;color : "#f9f9f9"}
     }
-    property color enter_font_color : "#444"
+    property color enter_font_color : "#fff"
     property color exit_font_color : "#444"
     property int enter_border_width: 1
     property int exit_border_width: 0
-    property color enter_border_color : border_color
+    property color enter_border_color : "#1365fb"
     property color exit_border_color : border_color
-    property color border_color : "transparent"
+    property color border_color : "#bbb"
     property int border_width: 1
     property string title : "Button"
     property int font_size: 15
+    property bool usingFA: false
     property int contentwidth: btn_title.contentWidth + 20
     property bool hasShadow: false
+    radius : mainform.radius
     state : "out"
     border.color: border_color
     border.width: border_width
@@ -36,10 +38,11 @@ Rectangle{
     layer.effect:OuterShadow {
         target : btn
         radius: 1.0
-        samples: 2
+        samples: 1
         verticalOffset: 1
         color : "#aaa"
     }
+    smooth: true
     //---------------------
 
     MyText {
@@ -50,6 +53,7 @@ Rectangle{
         enter_color : enter_font_color
         exit_color : exit_font_color
         textFormat: Text.RichText
+        fa : usingFA
     }
 
     MouseArea{

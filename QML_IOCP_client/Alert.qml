@@ -14,10 +14,72 @@ Rectangle {
     property string content: ""
     property bool isComfirm: true
 
+    Component.onCompleted: {show();}
+    Component.onDestruction: {}
+
+    enabled: opacity == 1
+
+    state : "hide"
+
+    onOpacityChanged: {
+        if(opacity == 0){
+            close();
+            if(alert.okClicked){
+                alert.okClicked = false;
+                ok();
+            }else{
+                cancel();
+            }
+//            mask.destroy();
+        }
+    }
+
+    states: [
+        State {
+            name: "hide"
+            PropertyChanges {
+                target: mask
+                opacity : 0
+            }
+            PropertyChanges {
+                target: alert
+                scale : 1.2
+            }
+        },
+
+        State {
+            name: "show"
+            PropertyChanges {
+                target: mask
+                opacity : 1
+            }
+        }
+    ]
+
+    transitions: [
+        Transition {
+            from: "*"
+            to: "*"
+            NumberAnimation {
+                target: mask
+                property: "opacity"
+                duration: 200
+                easing.type: Easing.InOutQuad
+            }
+            NumberAnimation {
+                target: alert
+                property: "scale"
+                duration: 200
+                easing.type: Easing.InOutQuad
+            }
+        }
+    ]
+
     MouseArea {
         //蒙板
+        enabled: mask.enabled
         anchors.fill: parent
-        hoverEnabled: true
+        hoverEnabled: mask.enabled
         onClicked: {
             return false;
         }
@@ -38,11 +100,18 @@ Rectangle {
     Rectangle {
         id : alert
         anchors.centerIn: parent
-        color : "#ededef"
+        color : "#f0f0f0"
 //        x : (parent.width - alert.width) / 2
 //        y : (parent.height - alert.height) / 2
+        property bool okClicked: false
         height: alertHeight
         width: alertWidth
+        border{
+            color: "#fff"
+            width : 1
+        }
+        smooth: true
+
         radius: 5
         z : 999
 
@@ -67,7 +136,7 @@ Rectangle {
             isWindow: false
             onCloseClick: {
                 close();
-                mask.destroy();
+//                mask.destroy();
             }
         }
 
@@ -93,9 +162,9 @@ Rectangle {
             }
             spacing : 10
             height: _alertOK.height + 2*spacing
-            GradientButton{
+            GradientButton {
                 id : _alertOK
-                height: 25
+                height: 23
                 width: 60
                 title : "确定"
                 border_color: "#ccc"
@@ -106,13 +175,13 @@ Rectangle {
                 font_size: 13
                 anchors.verticalCenter: parent.verticalCenter
                 onClick: {
-                    ok();
-                    mask.destroy();
+                    alert.okClicked = true;
+                    mask.hide();
                 }
             }
             GradientButton{
                 id : _alertCancel
-                height: 25
+                height: 23
                 width: 60
                 title : "取消"
                 border_color: "#ccc"
@@ -125,13 +194,23 @@ Rectangle {
                 visible: isComfirm
                 enabled: visible
                 onClick: {
-                    cancel();
-                    mask.destroy();
+                    mask.hide();
                 }
             }
         }
     }
-    function closeAlert(){
-        mask.destroy();
+
+    OuterShadow {
+        id:_shadow
+        target :alert
+        radius: 16.0
+        samples: 32
+    }
+
+    function hide(){
+        mask.state = "hide";
+    }
+    function show(){
+        mask.state = "show";
     }
 }

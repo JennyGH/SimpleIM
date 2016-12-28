@@ -2,5 +2,5 @@
 
 DeleteMessage::DeleteMessage()
 {
-
+    type = "7";
 }

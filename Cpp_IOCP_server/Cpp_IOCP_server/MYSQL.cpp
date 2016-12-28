@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "MYSQL.h"
 
 CMYSQL* CMYSQL::m_Instance = nullptr;
@@ -23,27 +23,27 @@ CMYSQL* CMYSQL::GetInstance()
 	return m_Instance;
 }
 
-string CMYSQL::InitSQL(cstr host, cstr username, cstr pswd, cstr database,unsigned int port,cstr chara = "GBK")
+string CMYSQL::InitSQL(cstr host, cstr username, cstr pswd, cstr database,unsigned int port,cstr chara = "GB2312")
 {
 	try {
 
 		if (!mysql_init(&m_sql)) {
 
-			cout << "Êý¾Ý¿â³õÊ¼»¯Ê§°Ü" << endl;
+			cout << "æ•°æ®åº“åˆå§‹åŒ–å¤±è´¥" << endl;
 
 			return "{\"SqlMsgType\":1,\"Result\":\"Fail to initialize MySQL...\"}";
 
 		}
 		if (!mysql_real_connect(&m_sql, host.c_str(), username.c_str(), pswd.c_str(), database.c_str(), port, NULL, 0)) {
 			
-			cout << "Á¬½ÓÊý¾Ý¿âÊ§°Ü..." << mysql_error(&m_sql) << endl;
+			cout << "è¿žæŽ¥æ•°æ®åº“å¤±è´¥..." << mysql_error(&m_sql) << endl;
 
 			return "{\"SqlMsgType\":2,\"Result\":\"Fail to connect to MySQL...\"}";
 
 		}
 		if (mysql_set_character_set(&m_sql, chara.c_str()) != 0) {
 
-			cout << "ÉèÖÃ±àÂëÊ§°Ü..." << endl;
+			cout << "è®¾ç½®ç¼–ç å¤±è´¥..." << endl;
 
 			return "{\"SqlMsgType\":3,\"Result\":\"Fail to set the character of MySQL...\"}";
 		}
@@ -51,20 +51,20 @@ string CMYSQL::InitSQL(cstr host, cstr username, cstr pswd, cstr database,unsign
 	}
 	catch (exception &err) {
 
-		cout << "³õÊ¼»¯Êý¾Ý¿âÊ±·¢ÉúÒì³££º" << err.what() << endl;
+		cout << "åˆå§‹åŒ–æ•°æ®åº“æ—¶å‘ç”Ÿå¼‚å¸¸ï¼š" << err.what() << endl;
 
 		return "{\"SqlMsgType\":-1,\"Result\":\"Initialize Exception...\"}";
 
 	}
 	catch (...) {
 
-		cout << "³õÊ¼»¯Êý¾Ý¿âÊ±·¢ÉúÎ´Öª´íÎó..." << endl;
+		cout << "åˆå§‹åŒ–æ•°æ®åº“æ—¶å‘ç”ŸæœªçŸ¥é”™è¯¯..." << endl;
 
 		return "{\"SqlMsgType\":5,\"Result\":\"Unknown Exception...\"}";
 	
 	}
 
-	cout << "Êý¾Ý¿â³õÊ¼»¯Íê³É..." << endl;
+	cout << "æ•°æ®åº“åˆå§‹åŒ–å®Œæˆ..." << endl;
 
 	return "{\"SqlMsgType\":0,\"Result\":\"Initialize MySQL success...\"}";
 }
@@ -75,7 +75,7 @@ string CMYSQL::Search(cstr database, cstr table, cstr col = "*", cstr whr = "", 
 
 		if (mysql_select_db(&m_sql,database.c_str())) {
 
-			cout << "×ªÈëÊý¾Ý¿â´íÎó..." << mysql_error(&m_sql) << endl;
+			cout << "è½¬å…¥æ•°æ®åº“é”™è¯¯..." << mysql_error(&m_sql) << endl;
 
 			return "{\"SqlMsgType\":1,\"Result\":\"Fail to use database\"}";
 
@@ -90,23 +90,23 @@ string CMYSQL::Search(cstr database, cstr table, cstr col = "*", cstr whr = "", 
 
 		if (mysql_real_query(&m_sql, query.c_str(),(unsigned int)query.length())) {
 
-			cout << "²éÑ¯Ê§°Ü..." << mysql_error(&m_sql) << endl;
+			cout << "æŸ¥è¯¢å¤±è´¥..." << mysql_error(&m_sql) << endl;
 
 			return "{\"SqlMsgType\":2,\"Result\":\"Fail to search...\"}";
 
 		}
 
 	}catch(exception &err){
-		cout << "²éÑ¯Ê±³öÏÖÒì³££º" << err.what() << endl;
+		cout << "æŸ¥è¯¢æ—¶å‡ºçŽ°å¼‚å¸¸ï¼š" << err.what() << endl;
 		return "{\"SqlMsgType\":3,\"Result\":\"Search Exception...\"}";
 	}
 	catch (...) {
-		cout << "²éÑ¯Ê±³öÏÖÎ´ÖªÒì³£..." << endl;
+		cout << "æŸ¥è¯¢æ—¶å‡ºçŽ°æœªçŸ¥å¼‚å¸¸..." << endl;
 		return "{\"SqlMsgType\":-1,\"Result\":\"Unknown Exception...\"}";
 	}
-	MYSQL_RES *res = mysql_store_result(&m_sql);//¼ìË÷Ò»¸öÍêÕûµÄ½á¹û¼¯ºÏ¸ø¿Í»§
+	MYSQL_RES *res = mysql_store_result(&m_sql);//æ£€ç´¢ä¸€ä¸ªå®Œæ•´çš„ç»“æžœé›†åˆç»™å®¢æˆ·
 
-	return getJSONResult(res);//½«½á¹û¼¯´¦Àí³ÉJSON¸ñÊ½
+	return getJSONResult(res);//å°†ç»“æžœé›†å¤„ç†æˆJSONæ ¼å¼
 }
 
 string CMYSQL::Add(cstr database, cstr table,cstr keys,cstr values)
@@ -117,7 +117,7 @@ string CMYSQL::Add(cstr database, cstr table,cstr keys,cstr values)
 
 		if (mysql_real_query(&m_sql, query.c_str(), (unsigned int)query.length())) {
 
-			cout << "²åÈëÊ§°Ü..." << mysql_error(&m_sql) << endl;
+			cout << "æ’å…¥å¤±è´¥..." << mysql_error(&m_sql) << endl;
 
 			return "{\"SqlMsgType\":1,\"Result\":\"Fail to insert...\"}";
 
@@ -126,14 +126,14 @@ string CMYSQL::Add(cstr database, cstr table,cstr keys,cstr values)
 	}
 	catch (exception &err) {
 
-		cout << "ÐÂÔöÊ±³öÏÖÒì³££º" << err.what() << endl;
+		cout << "æ–°å¢žæ—¶å‡ºçŽ°å¼‚å¸¸ï¼š" << err.what() << endl;
 
 		return "{\"SqlMsgType\":2,\"Result\":\"Insert Exception...\"}";
 
 	}
 	catch (...) {
 
-		cout << "ÐÂÔöÊ±³öÏÖÎ´ÖªÒì³£..." << endl;
+		cout << "æ–°å¢žæ—¶å‡ºçŽ°æœªçŸ¥å¼‚å¸¸..." << endl;
 
 		return "{\"SqlMsgType\":-1,\"Result\":\"Unknown Exception...\"}";
 
@@ -150,7 +150,7 @@ string CMYSQL::Del(cstr database, cstr table, cstr key, cstr value,cstr extra)
 
 		if (mysql_real_query(&m_sql, query.c_str(), (unsigned int)query.length())) {
 
-			cout << "É¾³ýÊ§°Ü..." << mysql_error(&m_sql) << endl;
+			cout << "åˆ é™¤å¤±è´¥..." << mysql_error(&m_sql) << endl;
 
 			return "{\"SqlMsgType\":1,\"Result\":\"Fail to delete...\"}";
 
@@ -159,14 +159,14 @@ string CMYSQL::Del(cstr database, cstr table, cstr key, cstr value,cstr extra)
 	}
 	catch (exception &err) {
 
-		cout << "É¾³ýÊ±³öÏÖÒì³££º" << err.what() << endl;
+		cout << "åˆ é™¤æ—¶å‡ºçŽ°å¼‚å¸¸ï¼š" << err.what() << endl;
 
 		return "{\"SqlMsgType\":2,\"Result\":\"Delete Exception...\"}";
 
 	}
 	catch (...) {
 
-		cout << "É¾³ýÊ±³öÏÖÎ´ÖªÒì³£..." << endl;
+		cout << "åˆ é™¤æ—¶å‡ºçŽ°æœªçŸ¥å¼‚å¸¸..." << endl;
 
 		return "{\"SqlMsgType\":-1,\"Result\":\"Unknown Exception...\"}";
 
@@ -183,7 +183,7 @@ string CMYSQL::Update(cstr database, cstr table, cstr set, cstr whr)
 
 		if (mysql_real_query(&m_sql, query.c_str(), (unsigned int)query.length())) {
 
-			cout << "ÐÞ¸ÄÊ§°Ü..." << mysql_error(&m_sql) << endl;
+			cout << "ä¿®æ”¹å¤±è´¥..." << mysql_error(&m_sql) << endl;
 
 			return "{\"SqlMsgType\":1,\"Result\":\"Fail to update...\"}";
 
@@ -192,14 +192,14 @@ string CMYSQL::Update(cstr database, cstr table, cstr set, cstr whr)
 	}
 	catch (exception &err) {
 
-		cout << "ÐÞ¸ÄÊ±³öÏÖÒì³££º" << err.what() << endl;
+		cout << "ä¿®æ”¹æ—¶å‡ºçŽ°å¼‚å¸¸ï¼š" << err.what() << endl;
 
 		return "{\"SqlMsgType\":2,\"Result\":\"Update Exception...\"}";
 
 	}
 	catch (...) {
 
-		cout << "ÐÞ¸ÄÊ±³öÏÖÎ´ÖªÒì³£..." << endl;
+		cout << "ä¿®æ”¹æ—¶å‡ºçŽ°æœªçŸ¥å¼‚å¸¸..." << endl;
 
 		return "{\"SqlMsgType\":-1,\"Result\":\"Unknown Exception...\"}";
 
@@ -233,7 +233,7 @@ string CMYSQL::getJSONResult(MYSQL_RES *r)
 
 	unsigned int colcount = mysql_num_fields(res);
 
-	while ((row = mysql_fetch_row(res)) != NULL) {	//»ñÈ¡½á¹û¼¯Êý×érow
+	while ((row = mysql_fetch_row(res)) != NULL) {	//èŽ·å–ç»“æžœé›†æ•°ç»„row
 		json += "[";
 		for (int i = 0; i < colcount; i++) {
 			json += "\"";
@@ -250,11 +250,11 @@ string CMYSQL::getJSONResult(MYSQL_RES *r)
 	//for (int j = 0; j < fields->catalog_length; j++) {
 	//	cout << fields->name << endl;
 	//}
-	json = json.substr(0, json.length() - 1);	//°Ñ×îºó¶àÓàµÄ¶ººÅÈ¥µô
+	json = json.substr(0, json.length() - 1);	//æŠŠæœ€åŽå¤šä½™çš„é€—å·åŽ»æŽ‰
 
-	json += "]}";	//JSON¸ñÊ½ÊÕÎ²
+	json += "]}";	//JSONæ ¼å¼æ”¶å°¾
 
-	mysql_free_result(res);	//ÊÍ·Å½á¹û¼¯Ê¹ÓÃµÄÄÚ´æ
+	mysql_free_result(res);	//é‡Šæ”¾ç»“æžœé›†ä½¿ç”¨çš„å†…å­˜
 
 	return json;
 }

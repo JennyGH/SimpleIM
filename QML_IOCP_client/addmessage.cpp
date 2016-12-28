@@ -2,5 +2,5 @@
 
 AddMessage::AddMessage()
 {
-
+    type = "5";
 }

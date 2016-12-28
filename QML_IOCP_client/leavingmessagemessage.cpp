@@ -2,5 +2,5 @@
 
 LeavingmessageMessage::LeavingmessageMessage()
 {
-
+    type = "9";
 }

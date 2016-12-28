@@ -2,5 +2,5 @@
 
 LoginMessage::LoginMessage()
 {
-
+    type = "1";
 }

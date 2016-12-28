@@ -1,31 +1,37 @@
 /****************************************************************************
 **
-** Copyright (C) 2015 The Qt Company Ltd.
-** Contact: http://www.qt.io/licensing/
+** Copyright (C) 2016 The Qt Company Ltd.
+** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the test suite of the Qt Toolkit.
 **
-** $QT_BEGIN_LICENSE:LGPL21$
+** $QT_BEGIN_LICENSE:LGPL$
 ** Commercial License Usage
 ** Licensees holding valid commercial Qt licenses may use this file in
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
 ** a written agreement between you and The Qt Company. For licensing terms
-** and conditions see http://www.qt.io/terms-conditions. For further
-** information use the contact form at http://www.qt.io/contact-us.
+** and conditions see https://www.qt.io/terms-conditions. For further
+** information use the contact form at https://www.qt.io/contact-us.
 **
 ** GNU Lesser General Public License Usage
 ** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 or version 3 as published by the Free
-** Software Foundation and appearing in the file LICENSE.LGPLv21 and
-** LICENSE.LGPLv3 included in the packaging of this file. Please review the
-** following information to ensure the GNU Lesser General Public License
-** requirements will be met: https://www.gnu.org/licenses/lgpl.html and
-** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** General Public License version 3 as published by the Free Software
+** Foundation and appearing in the file LICENSE.LGPL3 included in the
+** packaging of this file. Please review the following information to
+** ensure the GNU Lesser General Public License version 3 requirements
+** will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
 **
-** As a special exception, The Qt Company gives you certain additional
-** rights. These rights are described in The Qt Company LGPL Exception
-** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
+** GNU General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU
+** General Public License version 2.0 or (at your option) the GNU General
+** Public license version 3 or any later version approved by the KDE Free
+** Qt Foundation. The licenses are as published by the Free Software
+** Foundation and appearing in the file LICENSE.GPL2 and LICENSE.GPL3
+** included in the packaging of this file. Please review the following
+** information to ensure the GNU General Public License requirements will
+** be met: https://www.gnu.org/licenses/gpl-2.0.html and
+** https://www.gnu.org/licenses/gpl-3.0.html.
 **
 ** $QT_END_LICENSE$
 **
@@ -966,6 +972,9 @@ Item {
         \sa mouseRelease(), mouseClick(), mouseDoubleClick(), mouseDoubleClickSequence(), mouseMove(), mouseDrag(), mouseWheel()
     */
     function mousePress(item, x, y, button, modifiers, delay) {
+        if (!item)
+            qtest_fail("No item given to mousePress", 1)
+
         if (button === undefined)
             button = Qt.LeftButton
         if (modifiers === undefined)
@@ -997,6 +1006,9 @@ Item {
         \sa mousePress(), mouseClick(), mouseDoubleClick(), mouseDoubleClickSequence(), mouseMove(), mouseDrag(), mouseWheel()
     */
     function mouseRelease(item, x, y, button, modifiers, delay) {
+        if (!item)
+            qtest_fail("No item given to mouseRelease", 1)
+
         if (button === undefined)
             button = Qt.LeftButton
         if (modifiers === undefined)
@@ -1030,6 +1042,9 @@ Item {
         \sa mousePress(), mouseClick(), mouseDoubleClick(), mouseDoubleClickSequence(), mouseMove(), mouseRelease(), mouseWheel()
     */
     function mouseDrag(item, x, y, dx, dy, button, modifiers, delay) {
+        if (!item)
+            qtest_fail("No item given to mouseDrag", 1)
+
         if (item.x === undefined || item.y === undefined)
             return
         if (button === undefined)
@@ -1038,6 +1053,7 @@ Item {
             modifiers = Qt.NoModifier
         if (delay == undefined)
             delay = -1
+        var moveDelay = Math.max(1, delay === -1 ? qtest_events.defaultMouseDelay : delay)
 
         // Divide dx and dy to have intermediate mouseMove while dragging
         // Fractions of dx/dy need be superior to the dragThreshold
@@ -1051,12 +1067,12 @@ Item {
 
         mousePress(item, x, y, button, modifiers, delay)
         //trigger dragging
-        mouseMove(item, x + util.dragThreshold + 1, y + util.dragThreshold + 1, delay, button)
+        mouseMove(item, x + util.dragThreshold + 1, y + util.dragThreshold + 1, moveDelay, button)
         if (ddx > 0 || ddy > 0) {
-            mouseMove(item, x + ddx, y + ddy, delay, button)
-            mouseMove(item, x + 2*ddx, y + 2*ddy, delay, button)
+            mouseMove(item, x + ddx, y + ddy, moveDelay, button)
+            mouseMove(item, x + 2*ddx, y + 2*ddy, moveDelay, button)
         }
-        mouseMove(item, x + dx, y + dy, delay, button)
+        mouseMove(item, x + dx, y + dy, moveDelay, button)
         mouseRelease(item, x + dx, y + dy, button, modifiers, delay)
     }
 
@@ -1077,6 +1093,9 @@ Item {
         \sa mousePress(), mouseRelease(), mouseDoubleClick(), mouseDoubleClickSequence(), mouseMove(), mouseDrag(), mouseWheel()
     */
     function mouseClick(item, x, y, button, modifiers, delay) {
+        if (!item)
+            qtest_fail("No item given to mouseClick", 1)
+
         if (button === undefined)
             button = Qt.LeftButton
         if (modifiers === undefined)
@@ -1108,6 +1127,9 @@ Item {
         \sa mouseDoubleClickSequence(), mousePress(), mouseRelease(), mouseClick(), mouseMove(), mouseDrag(), mouseWheel()
     */
     function mouseDoubleClick(item, x, y, button, modifiers, delay) {
+        if (!item)
+            qtest_fail("No item given to mouseDoubleClick", 1)
+
         if (button === undefined)
             button = Qt.LeftButton
         if (modifiers === undefined)
@@ -1146,6 +1168,9 @@ Item {
         \sa mouseDoubleClick(), mousePress(), mouseRelease(), mouseClick(), mouseMove(), mouseDrag(), mouseWheel()
     */
     function mouseDoubleClickSequence(item, x, y, button, modifiers, delay) {
+        if (!item)
+            qtest_fail("No item given to mouseDoubleClickSequence", 1)
+
         if (button === undefined)
             button = Qt.LeftButton
         if (modifiers === undefined)
@@ -1175,6 +1200,9 @@ Item {
         \sa mousePress(), mouseRelease(), mouseClick(), mouseDoubleClick(), mouseDoubleClickSequence(), mouseDrag(), mouseWheel()
     */
     function mouseMove(item, x, y, delay, buttons) {
+        if (!item)
+            qtest_fail("No item given to mouseMove", 1)
+
         if (delay == undefined)
             delay = -1
         if (buttons == undefined)
@@ -1200,6 +1228,9 @@ Item {
         \sa mousePress(), mouseClick(), mouseDoubleClick(), mouseDoubleClickSequence(), mouseMove(), mouseRelease(), mouseDrag(), QWheelEvent::angleDelta()
     */
     function mouseWheel(item, x, y, xDelta, yDelta, buttons, modifiers, delay) {
+        if (!item)
+            qtest_fail("No item given to mouseWheel", 1)
+
         if (delay == undefined)
             delay = -1
         if (buttons == undefined)

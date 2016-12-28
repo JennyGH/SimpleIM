@@ -5,12 +5,12 @@ function createWindow(src,parent){
 //    console.log("create window");
     try{
         var newwidnow;
-        var component = Qt.createComponent("../" + src + ".qml");
+        var component = Qt.createComponent(src + ".qml");
         if (component.status === Component.Ready) {
             newwidnow = component.createObject(parent);
         }
     }catch(ex){
-        console.log(ex);
+        console.log("createWindow异常：",ex);
     }
     return newwidnow;
 }
@@ -22,25 +22,44 @@ function createSingleWindow(array,src,pare) {
 
         if (component.status === Component.Ready) {
             var _chatwindow = component.createObject(pare);
-
-//            windowArray.push(_chatwindow);
-//            mainform.chatwindows = windowArray; //传出到mainform以不被初始化
-//            console.log(mainform.chatwindows);
             array.push(_chatwindow);
             console.log(array);
-
-//            setWindowSize(_chatwindow,300,300);
             showWindow(_chatwindow);
         }
     }catch(ex){
-        console.log("异常：",ex);
+        console.log("createSingleWindow异常：",ex);
     }
     return _chatwindow;
+}
+function createSingleComponent(src) {
+
+    try{
+        var component = Qt.createComponent(src + ".qml");
+    }catch(ex){
+        console.log("createSingleComponent异常：",ex);
+    }
+    return component;
+}
+
+function toast(str,pare){
+    var _toast;
+    if(fatherWindow.m_toast == null){
+        var component = Qt.createComponent("Toast.qml");
+        if(component.status === Component.Ready){
+            _toast = component.createObject(pare ? pare : fatherWindow);
+            fatherWindow.m_toast = _toast;
+        }
+    }else{
+        _toast = fatherWindow.m_toast;
+    }
+    _toast.text = str;
+    _toast.start();
+    return _toast;
 }
 
 function showWindow(window){
 
-    window.visible = (window.visible === false);
+    window.visible = true;
 
 }
 
@@ -51,31 +70,40 @@ function setWindowSize(window,height,width){
 
 function releaseWindow(array,window){
     try{
-        console.log("释放窗口：",array);
-        removeWindowFromArray(array,window);
+//        console.log("释放窗口：",array);
+        removeWindowFromArray(array,window,null);
         window.destroy();
     }catch(ex){
         console.log(ex);
     }
 }
 
-function isExistWindow(array,userid){
+function isExistWindow(array,userid,tabbar){
     for(var i in array){
-        if(array[i].userid === userid) return array[i];
+        if(array[i].userid === userid){
+            if(tabbar == null){
+                return array[i];
+            }else{
+                return i;
+            }
+        }
     }
 }
 
-function removeWindowFromArray(array,window){
+function removeWindowFromArray(array,window,tabindex){
 
 //    windowArray = mainform.chatwindows;
+    if(tabindex == null){
+        for(var i in array){
 
-    for(var i in array){
+            if(window === array[i]){
 
-        if(window === array[i]){
+                array.splice(i,1);
 
-            array.splice(i,1);
-
+            }
         }
+    }else{
+        array.splice(tabindex,1);
     }
 }
 
@@ -98,7 +126,7 @@ function send(userid,name,msg){
     msg = msg.replace(/\\/gi, "&s;");
     msg = msg.replace(/(\n)+|(\r\n)+/g, "&r;");
     msg = msg.replace(/\"/gi,"&q;");
-    if(client.sendmessage(msg,userid,2)){
+    if(client.sendmessage(msg,userid,chatMessage)){
         chatmessagelistmodel.append({"name": name , "message": orginmsg , "me" : true});
     }
 }
@@ -127,7 +155,20 @@ function limitNumber(txt){
 }
 
 function formatMessage(msg){
+    console.log(msg);
     if(msg.trim() !== ""){
         return JSON.parse(msg);
     }
+}
+
+function alert(obj){
+    var _alert = createWindow("Alert",obj.parent);
+    _alert.alertHeight = obj.height;
+    _alert.alertWidth = obj.width;
+    _alert.content = obj.text;
+    _alert.ok.connect(obj.onOk || function(){});
+    _alert.cancel.connect(obj.onCancel || function(){});
+    _alert.close.connect(obj.onClose || function(){});
+    _alert.show();
+    return _alert;
 }

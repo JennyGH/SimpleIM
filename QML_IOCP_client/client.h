@@ -1,16 +1,20 @@
-#ifndef CLIENT_H
+Ôªø#ifndef CLIENT_H
 #define CLIENT_H
 
 #include <QObject>
 #include "datapakage.h"
-#include <windows.h>
-#include <winsock2.h>
+#pragma comment(lib,"ws2_32.lib")
+#include <WinSock2.h>
+#include <Windows.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <map>
 #include <list>
 #include <QDebug>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include "headfiles.h"
 using namespace std;
 
 #define defaultIP "127.0.0.1"
@@ -26,8 +30,8 @@ class Client : public QObject
 public:
     Q_INVOKABLE bool initSocket();
     Q_INVOKABLE bool reconnect();
-    Q_INVOKABLE bool sendmessage(QString msg,QString fid,unsigned int type);
-    Q_INVOKABLE bool saveSetting(QString vip,QString vport);
+    Q_INVOKABLE bool sendmessage(QString msg,QString fid,Message *type);
+    Q_INVOKABLE bool saveSetting(QString values);
     Q_INVOKABLE bool login(QString id,QString psw);
     Q_INVOKABLE bool searchNewFriend(QString idOrName);
     int port() const;
@@ -46,7 +50,8 @@ public slots:
     QString getMessage();
     unsigned int keepMessage(QString userid,QString msg);
     QString alreadyRead(QString userid);
-private ://ÀΩ”–∑Ω∑®
+    void destroyWindow(QObject *w);
+private ://ÁßÅÊúâÊñπÊ≥ï
 
     explicit Client(QObject *parent = 0);
 
@@ -57,7 +62,7 @@ private ://ÀΩ”–∑Ω∑®
     static string getSettingValue(string val);
     bool _connect();
     bool _recv();
-private : //ÀΩ”– Ù–‘
+private : //ÁßÅÊúâÂ±ûÊÄß
     string m_ip;
     string m_id;
     int m_port;

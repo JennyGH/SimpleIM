@@ -1,4 +1,4 @@
-// Cpp_IOCP_server.cpp : ¶¨Òå¿ØÖÆÌ¨Ó¦ÓÃ³ÌĞòµÄÈë¿Úµã¡£
+ï»¿// Cpp_IOCP_server.cpp : å®šä¹‰æ§åˆ¶å°åº”ç”¨ç¨‹åºçš„å…¥å£ç‚¹ã€‚
 //
 
 #include "stdafx.h"
@@ -10,7 +10,7 @@ int main(int argc, char **argv)
 {
 #if SERVER
 	if (argc <= 1) {
-		CMYIOCPServer::setPswd("");
+		CMYIOCPServer::setPswd("123456");
 		//cout << sqlpswd << endl;
 	}
 	else {
@@ -19,21 +19,21 @@ int main(int argc, char **argv)
 	}
 	CMYIOCPServer* server = CMYIOCPServer::GetInstance();
 	if (argc <= 2) {
-		server->SetPortW(5150);
-		cout << "using port: 5150" << endl;
+		server->SetPort(9527);
+		cout << "using port: 9527" << endl;
 	}
 	else {
 		stringstream ss;
 		ss << argv[2];
 		int p;
 		ss >> p;
-		server->SetPortW(p);
+		server->SetPort(p);
 		cout << "using port: " << p << endl;
 	}
 	server->ServerSetUp();
 #else
 	CMYSQL *sql = CMYSQL::GetInstance();
-	sql->InitSQL("localhost", "root", "", "JennyChat", 3306, "utf8");
+	sql->InitSQL("localhost", "root", "123456", "JennyChat", 3306, "utf8");
 	//cout << sql->Search("JennyChat", "account", "id,username", "userid=1", "") << endl;
 	//for (int i = 0; i < 10; i++) {
 	//	stringstream ss;

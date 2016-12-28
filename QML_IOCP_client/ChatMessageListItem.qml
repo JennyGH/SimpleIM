@@ -7,18 +7,6 @@ Rectangle {
 
     height: messagepop.height + client_name.height + 30
     width: parent.width
-//    color : "#e2e2e2"
-//    border.color: "#000"
-
-//    property Gradient meballooncolor: Gradient {
-//        GradientStop{position: 0.0;color : "#69b2f8"}
-//        GradientStop{position: 1.0;color : "#1f85fb"}
-//    }
-//    property Gradient friendballooncolor: Gradient {
-//        GradientStop{position: 0.0;color : "#fff"}
-//        GradientStop{position: 1.0;color : "#f9f9f9"}
-//    }
-
     anchors {
         horizontalCenter: parent.horizontalCenter
     }
@@ -27,12 +15,7 @@ Rectangle {
         spacing: 10
         width: parent.width
         anchors {
-//            left: (me ? undefined : parent.left);
-//            right:(me ? parent.right : undefined);
-//            leftMargin: (me ? undefined : 10);
-//            rightMargin: (me ? 10 : undefined);
             verticalCenter: parent.verticalCenter
-//            fill : parent
         }
 
 

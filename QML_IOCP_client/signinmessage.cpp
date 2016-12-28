@@ -2,5 +2,5 @@
 
 SignInMessage::SignInMessage()
 {
-
+    type = "8";
 }

@@ -2,18 +2,21 @@ import QtQuick 2.5
 import QtQuick.Window 2.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
-import "../js/generic.js" as GEN
+import "generic.js" as GEN
+import "fontawesome.js" as FA
 //import Client 1.0
 
 Window {
     id:_loginwindow
-    height: 330
+    height: 300
+//    height: _loginwindowbakg.height + 30
     width: 380
 
     minimumHeight: 280
     minimumWidth: 380
     visible: true
-    flags: Qt.FramelessWindowHint | Qt.Window
+//    flags: Qt.CustomizeWindowHint | Qt.CoverWindow
+    flags: Qt.FramelessWindowHint | Qt.WindowSystemMenuHint | Qt.WindowMinimizeButtonHint | Qt.Window
     property string userID
     property string psw
     property ChatMainWindow temp_chatwindow: null
@@ -22,23 +25,11 @@ Window {
     property bool isConnect: false
     color: Qt.rgba(0,0,0,0)
 
-    onVisibleChanged: {
-        if(!visible){
-            //
-        }else{
-//            animBig.start();
-        }
-    }
-//    onClosing:{
-//        console.log("closing")
-//    }
-
     Connections {
         target: client
         onRecvmessage: {
             var returnmsg = client.getMessage();
             var obj = GEN.formatMessage(returnmsg);
-            console.log(returnmsg)
             if(parseInt(returnmsg) === 0){
                 try{
                     if(!temp_chatwindow){
@@ -57,24 +48,26 @@ Window {
                     console.log(ex);
                 }
             }else{
-                switch(parseInt(obj.type)){
-                case 1:
-                    //系统消息
-                    switch(parseInt(obj.message)){
+                if(obj !== undefined){
+                    switch(parseInt(obj.type)){
                     case 1:
-                        GEN.showMessageBox(_logintips,"用户名不存在...");
-                        txtID.forceActiveFocus();
-                        break;
-                    case 2:
-                        GEN.showMessageBox(_logintips,"密码错误...");
-                        txtpsw.forceActiveFocus();
+                        //系统消息
+                        switch(parseInt(obj.message)){
+                        case 1:
+                            GEN.showMessageBox(_logintips,"用户名不存在...");
+                            txtID.forceActiveFocus();
+                            break;
+                        case 2:
+                            GEN.showMessageBox(_logintips,"密码错误...");
+                            txtpsw.forceActiveFocus();
+                            break;
+                        default:
+                            break;
+                        }
                         break;
                     default:
                         break;
                     }
-                    break;
-                default:
-                    break;
                 }
             }
 
@@ -84,13 +77,12 @@ Window {
     Rectangle{
         id:_loginwindowbakg
         color : "#f5f5f5"
-//        border.color: "#88888888"
         border.color: "#fff"
         scale:0
         border.width: 1
         radius:5
-//        anchors.fill: parent
         height: parent.height - 30
+//        height: _loginwindowheader.height + _bakg.height + row.height + _loginwindowfooter.height + 10
         width: parent.width - 30
         layer.enabled: true
         layer.effect: OuterShadow {
@@ -98,7 +90,6 @@ Window {
             transparentBorder: true
             verticalOffset : 4
         }
-//        scale:0
         anchors {
             centerIn: parent
         }
@@ -127,44 +118,6 @@ Window {
             marginTop: marginRight
             title : "JennyChat"
             isVerticalCenter: true
-            MyButton{
-                id:setting
-                title : ""
-                anchors {
-                    right: _loginwindowheader.closebtn.left
-                    rightMargin: 1
-                    topMargin: parent.marginRight
-                    top :parent.top
-                }
-                height: 25
-                width: height
-                radius: _loginwindowbakg.radius * 100
-                visible: false
-                enabled: visible
-                Image{
-//                        anchors.fill: parent
-                    source : "qrc:/src/src/settings.png"
-                    height: parent.height * 0.6
-                    width: height
-                    sourceSize.height: height
-                    sourceSize.width: width
-                    anchors.centerIn: parent
-                }
-                enter_color: "#bbb"
-                onClick: {
-                    if(!newsettingwindow){
-                        newsettingwindow = GEN.createWindow("SettingWindow",_loginwindow);
-                        if(newsettingwindow){
-                            newsettingwindow.setTxtIp(client.ip);
-                            newsettingwindow.setTxtPort(client.port);
-                            newsettingwindow._tishi = _logintips;
-                            GEN.showWindow(newsettingwindow);
-                        }else{
-                            console.error("SettingWindow 未创建...");
-                        }
-                    }
-                }
-            }
         }
 
         MessageBox{
@@ -195,46 +148,46 @@ Window {
 
         Item{
             id:row
-//            spacing : 10
-//            color : "blue"
-//            height: _loginwindowbakg.height - _loginwindowheader.height - _logintips.height - btnlogin.height - _loginwindowheadicon.height
-            width: _loginwindowbakg.width - 50
+            width: _loginwindowbakg.width - 20
             anchors {
-//                fill : parent
                 top : _bakg.bottom
-                topMargin: 10
                 horizontalCenter: _loginwindowbakg.horizontalCenter
-                bottom:btnlogin.top
-//                bottomMargin: 10
+                bottom : _loginwindowfooter.top
             }
 
             Column{
                 spacing: 10
-                width: _loginwindowbakg.width - 20
-//                anchors.centerIn: parent
-                anchors.verticalCenter: parent.verticalCenter
+                width: parent.width
+                anchors {
+                    centerIn : parent
+                }
 
                 Row{
                     anchors {
                         horizontalCenter: parent.horizontalCenter
                     }
-                    spacing: 10
+                    spacing: 0
                     width : parent.width
 
-                    MyText{
+                    Span{
                         id:lblID
-                        text : "用户ID:"
+                        height: txtID.height
+                        usingFA : true
+                        text : FA.icons.User
                         anchors {
                             verticalCenter: parent.verticalCenter
                         }
                     }
+
                     MyTextInput{
                         id:txtID
-                        width: parent.width - lblID.contentWidth - 50 - _signin.width
+                        width: parent.width - lblID.width// - _signin.width
                         validator: RegExpValidator {
                             regExp:/[1-9][0-9]{1,10}/
                         }
                         radius : 0
+
+                        height: 30
 
                         onTextChanged: {
 //                            GEN.limitNumber(txtID);
@@ -244,131 +197,187 @@ Window {
                             txtpsw.forceActiveFocus();
                         }
                     }
-
-                    MyButton{
-                        id:_signin
-                        title:"注册"
-                        width: 40
-                        height: 30
-                        enter_font_color: "#000"
-                        border_color: "#ddd"
-                        font_size: 12
-                        radius: _loginwindowbakg.radius
-                        exit_border_color:"transparent"
-                        enter_border_color: "transparent"
-                        anchors.verticalCenter: parent.verticalCenter
-                        onClick: {
-                            if(!newsigninwindow){
-                                //如果 newsigninwindow 为空则创建新的注册窗口
-                                newsigninwindow = GEN.createWindow("SignInWindow",_loginwindow);
-                            }
-                        }
-                    }
                 }
 
                 Row{
                     anchors {
                         horizontalCenter: parent.horizontalCenter
                     }
-                    spacing: 10
+                    spacing: 0
                     width: parent.width
-
-                    MyText{
+                    Span{
                         id:lblpsw
-                        text : "密码:    "
+                        height: txtpsw.height
+                        usingFA : true
+                        text : FA.icons.Key
                         anchors {
                             verticalCenter: parent.verticalCenter
                         }
                     }
+
                     MyTextInput{
                         id:txtpsw
-                        width: parent.width - lblpsw.contentWidth - 50 - _forget.width
+                        width: parent.width - lblpsw.width - btnlogin.width// - _forget.width
                         validator:  RegExpValidator {
                             regExp:/[0-9a-zA-z\.\*]{1,16}/  //只允许输入0-9,a-z,A-Z,*,.
                         }
+                        height: 30
                         isPassword: true
                         radius : 0
+                        z : 10
                         onEnterPressed: {
                             btnlogin.click();
                         }
                     }
 
-                    MyButton{
-                        id:_forget
-                        title:"忘记密码"
-                        width: 40
-                        height: 30
-                        enter_font_color: "#000"
-                        border_color: "#ddd"
-                        font_size: 12
-                        radius: _loginwindowbakg.radius
-                        exit_border_color:"transparent"
-                        enter_border_color: "transparent"
-                        anchors.verticalCenter: parent.verticalCenter
+
+                    GradientButton{
+                        id:btnlogin
+                        height: txtpsw.height
+                        width: height + 10
+                        title:FA.icons.CircleArrowRight
+                        font_size: 20
+                        usingFA: true
+                        enter_font_color: "#fff"
+                        exit_font_color: "#333"
+                        radius:_loginwindowbakg.radius
+                        anchors {
+                            verticalCenter: parent.verticalCenter
+                        }
+                        onEnter : {
+                            zhezhao.gradient = btnlogin.gradient;
+                            zhezhaoborder_top.color = btnlogin.enter_border_color;
+                            zhezhaoborder_bottom.color = btnlogin.enter_border_color;
+                        }
+                        onExit : {
+                            zhezhao.gradient = btnlogin.gradient;
+                            zhezhaoborder_top.color = btnlogin.exit_border_color;
+                            zhezhaoborder_bottom.color = btnlogin.exit_border_color;
+                        }
+
+                        Rectangle{
+                            id : zhezhao
+                            height: parent.height
+                            smooth : true
+                            width: parent.radius
+                            color : parent.color
+                            gradient: parent.gradient
+                            anchors {
+                                left: parent.left
+                                verticalCenter: parent.verticalCenter
+                            }
+                            Border{id:zhezhaoborder_top;pos : "top"}
+                            Border{id:zhezhaoborder_bottom;pos : "bottom"}
+                        }
+                        onClick: {
+                            _loginwindowbakg.state = "hide"
+                            _loginwindow.userID = txtID.text;
+                            _loginwindow.psw = txtpsw.text;
+                            if(userID.trim() == ""){
+                                GEN.showMessageBox(_logintips,"用户名不能为空...");
+                                txtID.forceActiveFocus();
+                                return false;
+                            }
+                            if(psw.trim() == ""){
+                                GEN.showMessageBox(_logintips,"密码不能为空...");
+                                txtpsw.forceActiveFocus();
+                                return false;
+                            }
+                            if(!isConnect){
+                                if(!client.initSocket()){
+                                    GEN.showMessageBox(_logintips,"连接服务器失败...");
+                                    return false;
+                                }else{
+                                    isConnect = true;
+                                }
+                            }
+                            client.login(userID,psw);
+                        }
                     }
+//                    MyButton{
+//                        id:_forget
+//                        title:"忘记密码"
+//                        width: 40
+//                        height: 30
+//                        enter_font_color: "#000"
+//                        border_color: "#ddd"
+//                        font_size: 12
+//                        radius: _loginwindowbakg.radius
+//                        exit_border_color:"transparent"
+//                        enter_border_color: "transparent"
+//                        anchors.verticalCenter: parent.verticalCenter
+//                    }
                 }
             }
 
         }
-        GradientButton{
-            id:btnlogin
-            height: 40
-            width: _loginwindowbakg.width * 0.9
-            title:"<b>登录</b>"
-            font_size: 16
-            hasShadow:true
-            border_color : Qt.darker("#1f85fb",1.2)
-//            exit_color: Qt.lighter("green",1.2)//"#3399ff"
-//            enter_color: Qt.lighter("green",1.5)//Qt.lighter("#3399ff",1.2)
-            exit_gradient:Gradient{
-//                GradientStop{position: 0.0;color : Qt.lighter("#1bbf2e",1.3)}
-//                GradientStop{position: 1.0;color : "#1bbf2e"}
-                GradientStop{position: 0.0;color : "#6bb2f7"}
-                GradientStop{position: 1.0;color : "#1f85fb"}
-            }
-            enter_gradient : Gradient{
-//                GradientStop{position: 0.0;color : "#1bbf2e"}
-//                GradientStop{position: 1.0;color : Qt.darker("#1bbf2e",1.5)}
-                GradientStop{position: 0.0;color : Qt.lighter("#6bb2f7",1.1)}
-                GradientStop{position: 1.0;color : Qt.lighter("#1f85fb",1.1)}
-            }
 
-            enter_font_color: "#fff"
-            exit_font_color: "#fff"
-//            border_color: hasShadow ? "transparent" : "#fff" //Qt.darker("#3399ff",1.2)
-            radius:_loginwindowbakg.radius
-            anchors {
-                horizontalCenter: parent.horizontalCenter
-//                top :row.bottom
-                bottom:parent.bottom
-                bottomMargin: 10
-            }
-            onClick: {
-                _loginwindowbakg.state = "hide"
-                _loginwindow.userID = txtID.text;
-                _loginwindow.psw = txtpsw.text;
-                if(userID.trim() == ""){
-                    GEN.showMessageBox(_logintips,"用户名不能为空...");
-                    txtID.forceActiveFocus();
-                    return false;
+        MainWindowFooter{
+            id : _loginwindowfooter
+
+            Row{
+                spacing: 5
+
+                anchors {
+                    verticalCenter: parent.verticalCenter
+                    left: parent.left
+                    leftMargin: 5
                 }
-                if(psw.trim() == ""){
-                    GEN.showMessageBox(_logintips,"密码不能为空...");
-                    txtpsw.forceActiveFocus();
-                    return false;
-                }
-                if(!isConnect){
-                    if(!client.initSocket()){
-                        GEN.showMessageBox(_logintips,"连接服务器失败...");
-                        return false;
-                    }else{
-                        isConnect = true;
+
+                MyButton{
+                    id:_signin
+                    title:"注册"
+                    width: 40
+                    height: parent.height - 10
+                    enter_font_color: "#000"
+                    border_color: "#ddd"
+                    font_size: 12
+                    radius: _loginwindowbakg.radius
+                    exit_border_color:"transparent"
+                    enter_border_color: "transparent"
+                    anchors.verticalCenter: parent.verticalCenter
+                    onClick: {
+                        if(!newsigninwindow){
+                            //如果 newsigninwindow 为空则创建新的注册窗口
+                            newsigninwindow = GEN.createWindow("SignInWindow",_loginwindow);
+                        }
                     }
                 }
-                client.login(userID,psw);
+
+            }
+            GradientButton {
+                id:setting
+                title : FA.icons.Gear
+                anchors {
+                    verticalCenter: parent.verticalCenter
+                    right: parent.right
+                    rightMargin: 5
+                }
+                height: parent.height - 10
+                usingFA: true
+                width: height + 10
+                radius: _loginwindowbakg.radius
+                visible: true
+                enabled: visible
+                enter_font_color: "#fff"
+                onClick: {
+                    if(!newsettingwindow){
+                        newsettingwindow = GEN.createWindow("SettingWindow",_loginwindow);
+                        if(newsettingwindow){
+                            newsettingwindow.setTxtIp(client.ip);
+                            newsettingwindow.setTxtPort(client.port);
+                            newsettingwindow._tishi = _logintips;
+                            GEN.showWindow(newsettingwindow);
+                        }else{
+                            console.error("SettingWindow 未创建...");
+                        }
+                    }
+                }
             }
         }
+
     }
+
     PropertyAnimation {
         id: animBig
         target: _loginwindowbakg

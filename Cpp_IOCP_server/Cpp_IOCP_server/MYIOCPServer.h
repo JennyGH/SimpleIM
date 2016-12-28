@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #pragma comment(lib, "json_vc71_libmt.lib")
 #include <string>
 #include <winsock2.h>   
@@ -12,6 +12,8 @@
 //#include "CThreadPool.h" 
 #include <atlutil.h>
 #include <queue>
+#include <cctype>
+#include "Tools.h"
 #include "WorkQueue.h"
 #include "mysql\include\json\json.h"
 
@@ -24,7 +26,7 @@
 //#include "WorkA.h"
 //#include "WorkB.h"
 using namespace std;
-#pragma comment(lib, "Ws2_32.lib")      // Socket±à³ÌĞèÓÃµÄ¶¯Ì¬Á´½Ó¿â   
+#pragma comment(lib, "Ws2_32.lib")      // Socketç¼–ç¨‹éœ€ç”¨çš„åŠ¨æ€é“¾æ¥åº“   
 
 #define DefaultIP  "127.0.0.1"
 #define DefaultPort 9999
@@ -35,18 +37,18 @@ using namespace std;
 static map<string, SOCKET> m_clients;
 static string sqlpswd;
 
-//ÏûÏ¢°ü½á¹¹Ìå
-struct MessagePakag {    //ÏûÏ¢°ü
-	string recverID;  //ºÃÓÑID
-	bool m_online;      //ÊÇ·ñÔÚÏß
-	string senderID;        //×Ô¼ºµÄIDºÅ
-	string m_message;   //ÏûÏ¢£¬µ±m_type=1Ê±´æ·ÅÃÜÂë£¬=2Ê±´æ·ÅÁÄÌìÏûÏ¢
-	string m_type;   //1:µÇÂ½ÏûÏ¢£¬2:ÁÄÌìÏûÏ¢
+//æ¶ˆæ¯åŒ…ç»“æ„ä½“
+struct MessagePakag {    //æ¶ˆæ¯åŒ…
+	string recverID;  //å¥½å‹ID
+	bool m_online;      //æ˜¯å¦åœ¨çº¿
+	string senderID;        //è‡ªå·±çš„IDå·
+	string m_message;   //æ¶ˆæ¯ï¼Œå½“m_type=1æ—¶å­˜æ”¾å¯†ç ï¼Œ=2æ—¶å­˜æ”¾èŠå¤©æ¶ˆæ¯
+	string m_type;   //1:ç™»é™†æ¶ˆæ¯ï¼Œ2:èŠå¤©æ¶ˆæ¯
 };
 
 /**
-* ½á¹¹ÌåÃû³Æ£ºPER_IO_DATA
-* ½á¹¹Ìå¹¦ÄÜ£ºÖØµşI/OĞèÒªÓÃµ½µÄ½á¹¹Ìå£¬ÁÙÊ±¼ÇÂ¼IOÊı¾İ
+* ç»“æ„ä½“åç§°ï¼šPER_IO_DATA
+* ç»“æ„ä½“åŠŸèƒ½ï¼šé‡å I/Oéœ€è¦ç”¨åˆ°çš„ç»“æ„ä½“ï¼Œä¸´æ—¶è®°å½•IOæ•°æ®
 **/
 typedef struct
 {
@@ -59,9 +61,9 @@ typedef struct
 }PER_IO_OPERATEION_DATA, *LPPER_IO_OPERATION_DATA, *LPPER_IO_DATA, PER_IO_DATA;
 
 /**
-* ½á¹¹ÌåÃû³Æ£ºPER_HANDLE_DATA
-* ½á¹¹Ìå´æ´¢£º¼ÇÂ¼µ¥¸öÌ×½Ó×ÖµÄÊı¾İ£¬°üÀ¨ÁËÌ×½Ó×ÖµÄ±äÁ¿¼°Ì×½Ó×ÖµÄ¶ÔÓ¦µÄ¿Í»§¶ËµÄµØÖ·¡£
-* ½á¹¹Ìå×÷ÓÃ£ºµ±·şÎñÆ÷Á¬½ÓÉÏ¿Í»§¶ËÊ±£¬ĞÅÏ¢´æ´¢µ½¸Ã½á¹¹ÌåÖĞ£¬ÖªµÀ¿Í»§¶ËµÄµØÖ·ÒÔ±ãÓÚ»Ø·Ã¡£
+* ç»“æ„ä½“åç§°ï¼šPER_HANDLE_DATA
+* ç»“æ„ä½“å­˜å‚¨ï¼šè®°å½•å•ä¸ªå¥—æ¥å­—çš„æ•°æ®ï¼ŒåŒ…æ‹¬äº†å¥—æ¥å­—çš„å˜é‡åŠå¥—æ¥å­—çš„å¯¹åº”çš„å®¢æˆ·ç«¯çš„åœ°å€ã€‚
+* ç»“æ„ä½“ä½œç”¨ï¼šå½“æœåŠ¡å™¨è¿æ¥ä¸Šå®¢æˆ·ç«¯æ—¶ï¼Œä¿¡æ¯å­˜å‚¨åˆ°è¯¥ç»“æ„ä½“ä¸­ï¼ŒçŸ¥é“å®¢æˆ·ç«¯çš„åœ°å€ä»¥ä¾¿äºå›è®¿ã€‚
 **/
 typedef struct
 {
@@ -86,7 +88,7 @@ public:
 	static void setPswd(string pswd);
 	static string now();
 private:
-	//Ë½ÓĞ·½·¨
+	//ç§æœ‰æ–¹æ³•
 	CMYIOCPServer(void);
 	bool  LoadWindowsSocket();
 	bool InitServerSocket();
@@ -95,18 +97,18 @@ private:
 	static void HandleMessage();
 	static unsigned int login(string id,string psw, LPPER_HANDLE_DATA lhd);
 	static void showClients(map<string,SOCKET> clts);
-	//Ë½ÓĞÊı¾İ
+	//ç§æœ‰æ•°æ®
 	string m_sServerIP;
 	int m_iLisenPoint;
 	string m_sError;
 	int m_iMaxClientNum;
-	vector< PER_HANDLE_DATA* > m_vclientGroup;//±£³Ö¿Í»§¶ËµÄÁ¬½ÓĞÅÏ¢  
-	static HANDLE m_hMutex;//¶àÏß³Ì·ÃÎÊ»¥³â±äÁ¿ 
+	vector< PER_HANDLE_DATA* > m_vclientGroup;//ä¿æŒå®¢æˆ·ç«¯çš„è¿æ¥ä¿¡æ¯  
+	static HANDLE m_hMutex;//å¤šçº¿ç¨‹è®¿é—®äº’æ–¥å˜é‡ 
 	static HANDLE m_completionPort;
 	SOCKET m_srvSocket;
 	static CMYIOCPServer *m_pInstance;
 	static char m_byteMsg[MessMaxLen];
-	static CWorkQueue m_CWorkQueue;//Ïß³Ì³Ø
+	static CWorkQueue m_CWorkQueue;//çº¿ç¨‹æ± 
 #if SQLenable
 	static CMYSQL *m_sql;
 #endif

@@ -52,6 +52,8 @@ Rectangle{
         enter_color : enter_font_color
         exit_color : exit_font_color
         textFormat: Text.RichText
+        verticalAlignment: Text.AlignVCenter
+        horizontalAlignment: Text.AlignHCenter
     }
 
     MouseArea{

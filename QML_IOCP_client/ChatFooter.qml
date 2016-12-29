@@ -66,6 +66,7 @@ Rectangle{
                 _tabbar.removeTab(_tabbar.currentIndex);
                 if(_tabbar.count == 0){
                     _chatarea.width = 0;
+//                    header.maxable = false;
                 }
             }
             anchors {

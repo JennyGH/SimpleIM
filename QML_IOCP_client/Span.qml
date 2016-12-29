@@ -22,6 +22,8 @@ Rectangle{
         text : father.text
         fa : usingFA
         anchors.centerIn: parent
+        style: Text.Raised
+        styleColor: "#fff"
     }
     Rectangle{
         height: parent.height

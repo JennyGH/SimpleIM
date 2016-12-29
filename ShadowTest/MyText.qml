@@ -7,4 +7,5 @@ Text{
     font.family: "微软雅黑"
     font.pixelSize: font_size
     color: "#444"
+    width: 50
 }

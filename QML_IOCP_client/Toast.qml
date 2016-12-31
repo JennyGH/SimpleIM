@@ -49,7 +49,7 @@ Rectangle {
 
     Timer {
         id : timer
-        interval: 5 * 1000
+        interval: 2 * 1000
         onTriggered: {
             father.opacity = 0;
         }

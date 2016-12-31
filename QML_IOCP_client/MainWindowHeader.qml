@@ -119,7 +119,7 @@ Rectangle{
             anchors {
                 verticalCenter: parent.verticalCenter
             }
-            enter_color: "yellow"
+            enter_color: "#f0d765"
 //            color : "#f0d765"
             exit_color: "#FFBB2E"
             border_color: "#eee"
@@ -139,22 +139,12 @@ Rectangle{
             visible: maxable
             radius:btnraduis
             title : ""
-            font_size: 15
+            font_size: 11
             enter_color: "green"
             exit_color: "#97cd75"
-            border_color: "#599731"
+            border_color: "#eee"
             onClick: {
-                if(!movetarget.ismax){
-                    movetarget.showMaximized();
-                    movetarget.bakg.height = movetarget.height;
-                    movetarget.bakg.width = movetarget.width;
-                    movetarget.ismax = true;
-                }else{
-                    movetarget.showNormal();
-                    movetarget.bakg.height = movetarget.height - 30;
-                    movetarget.bakg.width = movetarget.width - 30;
-                    movetarget.ismax = false;
-                }
+                changeSizeAnimation.start();
             }
         }
 

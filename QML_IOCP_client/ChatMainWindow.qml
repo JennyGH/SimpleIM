@@ -10,8 +10,8 @@ import "fontawesome.js" as FA
 Window {
     id:fatherWindow
     visible: true
-    height: mainform.height + 30//630
-    width:mainform.width + 30//330
+    height: 730//mainform.height + 30//630
+    width:_side.width + _chatarea.width + 30//mainform.width + 30//330
     property bool conn: false
     property string myName : "null"
     property var friendListArray: new Array
@@ -21,20 +21,46 @@ Window {
     property SettingWindow newsettingwindow: null
     property Window loginwindow: null
     property Toast m_toast: null
+    property bool ismax: false
     flags: Qt.FramelessWindowHint | Qt.Window
     color: Qt.rgba(0,0,0,0)
 
-    //    flags:Qt.WindowModal | Qt.WindowMaximizeButtonHint
 
-    minimumWidth: width
-    minimumHeight: height
+    NumberAnimation {
+        id : showAnimation
+        target: fatherWindow
+        property: "opacity"
+        to : 1
+        duration: 200
+        easing.type: Easing.InOutQuad
+    }
 
-    maximumHeight: height + 120
-    maximumWidth: width + 300
+
+    NumberAnimation {
+        id : changeSizeAnimation
+        target: fatherWindow
+        property: "opacity"
+        to : 0
+        duration: 200
+        easing.type: Easing.InOutQuad
+        onStopped: {
+            if(!ismax){
+                ismax = true;
+                showMaximized();
+                mainform.height = mainform.parent.height;
+                mainform.width = mainform.parent.width;
+            }else{
+                showNormal();
+                mainform.height = mainform.parent.height - 30;
+                mainform.width = mainform.parent.width - 30;
+                ismax = false;
+            }
+            showAnimation.start();
+        }
+    }
 
     onVisibleChanged: {
         if(!fatherWindow.visible){
-//            GEN.clearWindow(mainform.chatwindows);
             GEN.clearWindow(mainform.detailswindows);
         }else{
             fadeout.start();
@@ -147,8 +173,8 @@ Window {
         property var detailswindows: new Array
         property int itemHeight: 40
         property Alert alert: null
-        height: 700
-        width: _side.width + _chatarea.width
+        height: parent.height - 30
+        width:parent.width - 30
         anchors {
             centerIn: parent
         }
@@ -167,6 +193,7 @@ Window {
             title : "JennyChat"
             marginRight:10//mainform.border.width
             marginTop: marginRight
+            maxable : false
             onCloseClick:{
                 if(searchwindow){
                     searchwindow.close();
@@ -272,7 +299,7 @@ Window {
                                     mainform.chatwindows.push(object);
                                     if(_tabbar.count > 0 && _chatarea.width == 0){
                                         _chatarea.width = 1000;
-//                                        _chatarea.show();
+//                                        header.maxable = true;
                                     }
                                 }
 
@@ -518,6 +545,7 @@ Window {
                                           _tabbar.removeTab(index);
                                           if(_tabbar.count == 0){
                                               _chatarea.width = 0;
+//                                              header.maxable = false
                                           }
                                       }
                                       onEntered: {

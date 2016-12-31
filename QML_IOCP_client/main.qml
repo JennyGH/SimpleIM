@@ -16,7 +16,7 @@ Window {
     minimumWidth: 380
     visible: true
 //    flags: Qt.CustomizeWindowHint | Qt.CoverWindow
-    flags: Qt.FramelessWindowHint | Qt.WindowSystemMenuHint | Qt.WindowMinimizeButtonHint | Qt.Window
+    flags: Qt.FramelessWindowHint | Qt.WindowSystemMenuHint | Qt.WindowMinimizeButtonHint | Qt.WindowActive
     property string userID
     property string psw
     property ChatMainWindow temp_chatwindow: null
@@ -88,7 +88,6 @@ Window {
         layer.effect: OuterShadow {
             target : _loginwindowbakg
             transparentBorder: true
-            verticalOffset : 4
         }
         anchors {
             centerIn: parent

@@ -5,8 +5,7 @@ Rectangle{
     height:120
     width:120
     radius: 100
-    border.width: 2
-    border.color: "#f5f5f5"
+    smooth: true
     property string headIconSource : "qrc:/src/src/userIcon.png"
     Image{
         id:icon

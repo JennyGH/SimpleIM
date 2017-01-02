@@ -21,6 +21,8 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("updateMessage", new UpdateMessage());
     engine.rootContext()->setContextProperty("client", Client::GetInstance());
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+//    engine.rootContext()->eventFilter(
+//    app.eventFilter()
 
     return app.exec();
 }

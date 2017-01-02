@@ -30,25 +30,24 @@ Window{
             switch(parseInt(obj.type)){
             case 8: //返回注册结果
                 busy.stop();
-                alertwindow = GEN.createWindow("Alert",_signinwindowbakg);
-                alertwindow.isComfirm = false;
-                alertwindow.alertHeight = 130;
-                alertwindow.alertWidth = 220;
-                alertwindow.content = obj.message;
+                var _alert = GEN.alert({
+                                           height :130,
+                                           width : 220,
+                                           text : obj.message,
+                                           parent : _signinwindowbakg,
+                                           confirm : false,
+                                           success : true,
+                                           onOk : function(){
+                                               _signinwindow.close();
+                                               _signinwindow.destroy();
+                                           },
+                                           onClose : function(){
+                                               _alert.destroy();
+                                           }
+                                       });
                 break;
             default:break;
             }
-        }
-    }
-
-    Connections{
-        target:alertwindow
-        onOk:{
-            _signinwindow.close();
-            _signinwindow.destroy();
-        }
-        onCancel:{
-            alertwindow.closeAlert();
         }
     }
 
@@ -76,13 +75,14 @@ Window{
             }
         }
 
-        Rectangle{
+        Rectangle {
             id:_signinwindowcontent
 //            height: _signinwindowbakg.height - _signinwindwheader.height - _signinwindowfooter.height - _signinwindowbakg.border.width - 10
             width: _signinwindowbakg.width - _signinwindowbakg.border.width*2 - 10
             anchors {
                 horizontalCenter: _signinwindowbakg.horizontalCenter
                 top : _signinwindwheader.bottom
+                topMargin: 5
                 bottom: _signinwindowfooter.top
             }
             radius:3
@@ -92,47 +92,58 @@ Window{
                 spacing: 10
                 anchors.centerIn: parent
                 Row{
-                    spacing: 10
+                    spacing: 0
                     anchors.horizontalCenter: parent.horizontalCenter
-                    MyText{
+                    Span{
                         id:lblname
-                        text:"昵称："
+                        text:"昵称"
                         anchors.verticalCenter: parent.verticalCenter
+                        height: txtname.height
+                        width: 70
                     }
                     MyTextInput{
                         id:txtname
                         width: _signinwindowcontent.width - lblname.contentWidth - 50
+                        radius : 0
                     }
                 }
                 Row{
-                    spacing: 10
+                    spacing: 0
                     anchors.horizontalCenter: parent.horizontalCenter
-                    MyText{
+                    Span{
                         id:lblpsw
-                        text:"密码："
+                        text:"密码"
                         anchors.verticalCenter: parent.verticalCenter
+                        height: txtpsw.height
+                        width: 70
                     }
                     MyTextInput{
                         id:txtpsw
                         width: _signinwindowcontent.width - lblpsw.contentWidth - 50
                         isPassword:true
+                        radius : 0
                     }
                 }
                 Row{
-                    spacing: 10
+                    spacing: 0
                     anchors.horizontalCenter: parent.horizontalCenter
-                    MyText{
+                    Span{
                         id:lblconfirmpsw
-                        text:"确认密码："
+                        text:"确认密码"
                         anchors.verticalCenter: parent.verticalCenter
+                        height: txtconfirmpsw.height
+                        width: 70
                     }
                     MyTextInput{
                         id:txtconfirmpsw
                         width: _signinwindowcontent.width - lblconfirmpsw.contentWidth - 50
                         isPassword:true
+                        radius : 0
                     }
                 }
             }
+
+
         }
 
         Row{
@@ -163,55 +174,65 @@ Window{
                 border_color: "#ccc"
                 onClick: {
                     //注册
+                    var _alert;
+                    var canreg = false;
+                    var warningStr;
                     if(txtname.text.trim() === ""){
-                        alertwindow = GEN.createWindow("Alert",_signinwindowbakg);
-                        alertwindow.isComfirm = false;
-                        alertwindow.alertHeight = 130;
-                        alertwindow.alertWidth = 220;
-                        alertwindow.content = "昵称不能为空...";
-                        return false;
+                        warningStr = "昵称不能为空...";
+                    }else if(txtpsw.text.trim() === ""){
+                        warningStr = "密码不能为空...";
+                    }else if(txtconfirmpsw.text.trim() === ""){
+                        warningStr = "请确认密码...";
+                    }else if(txtconfirmpsw.text.trim() !== txtpsw.text.trim()){
+                        warningStr = "两次密码不相同...";
+                    }else{
+                        canreg = true;
                     }
-                    if(txtpsw.text.trim() === ""){
-                        alertwindow = GEN.createWindow("Alert",_signinwindowbakg);
-                        alertwindow.isComfirm = false;
-                        alertwindow.alertHeight = 130;
-                        alertwindow.alertWidth = 220;
-                        alertwindow.content = "密码不能为空...";
-                        return false;
-                    }
-                    if(txtconfirmpsw.text.trim() === ""){
-                        alertwindow = GEN.createWindow("Alert",_signinwindowbakg);
-                        alertwindow.isComfirm = false;
-                        alertwindow.alertHeight = 130;
-                        alertwindow.alertWidth = 220;
-                        alertwindow.content = "请确认密码...";
-                        return false;
-                    }
-                    if(txtconfirmpsw.text.trim() !== txtpsw.text.trim()){
-                        alertwindow = GEN.createWindow("Alert",_signinwindowbakg);
-                        alertwindow.isComfirm = false;
-                        alertwindow.alertHeight = 130;
-                        alertwindow.alertWidth = 220;
-                        alertwindow.content = "两次密码不相同...";
-                        return false;
-                    }
-
-                    if(!_loginwindow.isConnect){
-                        if(!client.initSocket()){
-                            alertwindow = GEN.createWindow("Alert",_signinwindowbakg);
-                            alertwindow.isComfirm = false;
-                            alertwindow.alertHeight = 130;
-                            alertwindow.alertWidth = 220;
-                            alertwindow.content = "连接服务器失败...";
-                            return false;
-                        }else{
-                            _loginwindow.isConnect = true;
+                    if(canreg){
+//                        console.log("can reg...");
+                        if(!_loginwindow.isConnect){
+                            if(!client.initSocket()){
+                                _alert = GEN.alert({
+                                                       height :130,
+                                                       width : 220,
+                                                       text : "连接服务器失败...",
+                                                       parent : _signinwindowbakg,
+                                                       success : false,
+                                                       confirm : false,
+                                                       onOk : function(){
+        //                                                   _signinwindow.close();
+        //                                                   _signinwindow.destroy();
+                                                       },
+                                                       onClose : function(){
+                                                           _alert.destroy();
+                                                       }
+                                                   });
+                                return false;
+                            }else{
+                                _loginwindow.isConnect = true;
+                            }
                         }
+                        client.sendmessage(txtpsw.text,txtname.text,signinMessage);
+                        busy = GEN.createWindow("Busy",_signinwindowbakg);
+                        busy.start();
+                    }else{
+                        _alert = GEN.alert({
+                                               height :130,
+                                               width : 220,
+                                               text : warningStr,
+                                               parent : _signinwindowbakg,
+                                               confirm : false,
+                                               onOk : function(){
+//                                                   _signinwindow.close();
+//                                                   _signinwindow.destroy();
+                                               },
+                                               onClose : function(){
+                                                   _alert.destroy();
+                                               }
+                                           });
                     }
-                    client.sendmessage(txtpsw.text,txtname.text,signinMessage);
-                    busy = GEN.createWindow("Busy",_signinwindowbakg);
-                    busy.start();
                 }
+
             }
         }
     }

@@ -6,7 +6,7 @@ Rectangle{
     anchors.fill: parent
     color : Qt.rgba(255,255,255,0.8)
     z : 990
-    radius:parent.radius
+    radius:parent.radius || 0
     MouseArea {
         //蒙板
         anchors.fill: parent

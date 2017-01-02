@@ -131,6 +131,8 @@ Window {
                     }
                 }
             }
+
+
         }
 
         MainWindowFooter{

@@ -8,6 +8,7 @@ var icons = {
         Circle : "\uf057",
         Circle_o : "\uf05c"
     },
+    Selector : "\uf0dc",
     Smile : "\uf118",
     Add : "\uf196",
     Glass : "\uf000",

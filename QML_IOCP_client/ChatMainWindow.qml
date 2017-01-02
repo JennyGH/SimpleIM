@@ -184,10 +184,6 @@ Window {
         opacity: 0
         smooth: true
 
-//        Alert{
-//            id : alert;
-//        }
-
         MainWindowHeader {
             id:header
             title : "JennyChat"

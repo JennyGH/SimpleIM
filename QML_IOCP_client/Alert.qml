@@ -1,4 +1,5 @@
 import QtQuick 2.0
+import "fontawesome.js" as FA
 
 Rectangle {
     id:mask
@@ -12,7 +13,8 @@ Rectangle {
     property int alertHeight: 100
     property int alertWidth: 100
     property string content: ""
-    property bool isComfirm: true
+    property bool isConfirm: true
+    property bool success: false
 
     Component.onCompleted: {show();}
     Component.onDestruction: {}
@@ -151,7 +153,18 @@ Rectangle {
             MyText{
                 anchors.centerIn: parent
                 text: content
-                font_size : 15
+                font_size : 13
+                MyText{
+                    fa : true
+                    font_size: 40
+                    text : success ? FA.icons.Ok : FA.icons.ExclamationSign
+                    color : success ? "green" : "#ffbb2e"
+                    anchors {
+                        verticalCenter: parent.verticalCenter
+                        right: parent.left
+                        rightMargin: 10
+                    }
+                }
             }
         }
         Row{
@@ -191,7 +204,7 @@ Rectangle {
                 enter_font_color: "#fff"
                 font_size: 13
                 anchors.verticalCenter: parent.verticalCenter
-                visible: isComfirm
+                visible: isConfirm
                 enabled: visible
                 onClick: {
                     mask.hide();

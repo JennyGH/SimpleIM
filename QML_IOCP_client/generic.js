@@ -169,6 +169,8 @@ function alert(obj){
     _alert.ok.connect(obj.onOk || function(){});
     _alert.cancel.connect(obj.onCancel || function(){});
     _alert.close.connect(obj.onClose || function(){});
+    _alert.isConfirm = obj.confirm || false;
+    _alert.success = obj.success || false;
     _alert.show();
     return _alert;
 }

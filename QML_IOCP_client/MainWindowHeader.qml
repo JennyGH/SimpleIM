@@ -19,11 +19,12 @@ Rectangle{
     property int btnraduis: btnHeight
     property int btnHeight: 15
     property int btnWidth: btnHeight
+    property bool transparent: false
     signal closeClick();
     signal move();
     signal dbclick();
     z: 10
-//    color: Qt.rgba(0,0,0,0)
+    color: Qt.rgba(0,0,0,0)
     radius:parent.radius
     anchors {
         top:parent.top
@@ -38,8 +39,8 @@ Rectangle{
 //    }
 
     gradient: Gradient{
-        GradientStop{position: 0.0;color : "#eee"/*Qt.lighter(father.parent.color,1.5)*/}
-        GradientStop{position: 1.0;color : "#dcdcdd"}
+        GradientStop{position: 0.0;color : transparent ? "transparent" : "#eee"/*Qt.lighter(father.parent.color,1.5)*/}
+        GradientStop{position: 1.0;color : transparent ? "transparent" : "#dcdcdd"}
     }
 
 
@@ -50,11 +51,12 @@ Rectangle{
         z : 0
         gradient: Gradient{
             GradientStop{position: 0.0;color : "transparent"}
-            GradientStop{position: 1.0;color : "#dcdcdd"}
+            GradientStop{position: 1.0;color : transparent ? "transparent" :  "#dcdcdd"}
         }
         clip : true
         Border{
             pos : "bottom"
+            color:  transparent ? "transparent" : "#aaa"
         }
     }
 
@@ -175,7 +177,7 @@ Rectangle{
                 closeClick();
                 if(isWindow){
                     movetarget.close();
-                    movetarget.destroy();
+//                    movetarget.destroy();
                 }
             }
         }

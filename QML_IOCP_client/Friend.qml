@@ -217,6 +217,7 @@ Item{
                                                width : 220,
                                                text : "确定删除吗？",
                                                parent : mainform,
+                                               confirm : true,
                                                onOk : function(){
                                                    client.sendmessage("",ID,deleteMessage);
                                                    fatherWindow.remove(index);

@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>MainForm.ui.qml</file>
+        <file>fontawesome.js</file>
+        <file>MyText.qml</file>
+        <file>MyTextInput.qml</file>
+        <file>OuterShadow.qml</file>
+        <file>fa/FontAwesome.otf</file>
+        <file>fa/fontawesome-webfont.eot</file>
+        <file>fa/fontawesome-webfont.svg</file>
+        <file>fa/fontawesome-webfont.ttf</file>
+        <file>fa/fontawesome-webfont.woff</file>
+        <file>fa/fontawesome-webfont.woff2</file>
+        <file>MyButton.qml</file>
+        <file>SelectionBox.qml</file>
+    </qresource>
+</RCC>

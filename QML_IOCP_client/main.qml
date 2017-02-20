@@ -103,8 +103,8 @@ Window {
         }
 
 //        border.color: "#fff"
-        scale:0
 //        border.width: 1
+        opacity : 0
         radius:3
         height: parent.height - 30
         width: parent.width - 30
@@ -119,8 +119,34 @@ Window {
         Component.onCompleted: {
     //        client.ip = "119.29.178.76"
             txtID.forceActiveFocus();
-            animBig.start();
+//            animBig.start();
+            _loginwindowbakg.state = "show";
         }
+
+
+        states: [
+            State {
+                name: "show"
+                PropertyChanges {
+                    target: _loginwindowbakg
+//                    scale : 1
+                    opacity : 1
+                }
+            }
+        ]
+        transitions: [
+            Transition {
+                from: "*"
+                to: "*"
+
+                NumberAnimation {
+                    target: _loginwindowbakg
+                    property: "opacity"
+                    duration: 200
+                    easing.type: Easing.InOutQuad
+                }
+            }
+        ]
 
         MainWindowHeader{
             id:_loginwindowheader
@@ -745,15 +771,17 @@ Window {
         }
     }
 
-    PropertyAnimation {
-        id: animBig
-        target: _loginwindowbakg
-        duration: 150
-        easing.type: Easing.OutExpo
-        property: 'scale'
-        from: 0
-        to: 1
-    }
+//    PropertyAnimation {
+//        id: animBig
+//        target: _loginwindowbakg
+//        duration: 150
+//        easing.type: Easing.OutExpo
+//        property: 'scale'
+//        from: 0
+//        to: 1
+//    }
+
+
     function showTips(msg){
         GEN.showMessageBox(_logintips,msg);
     }

@@ -26,7 +26,8 @@ Rectangle{
     }
 
     Component.onDestruction: {
-//        console.log("chat window was destoyed!");
+//        chatwindow.destroy();
+//        client.destroyWindow(chatwindow);
     }
 
     Rectangle{

@@ -3,3 +3,7 @@
 ################################################################################
 
 /Cpp_IOCP_server/Cpp_IOCP_server.VC.VC.opendb
+*.o
+release
+ipch
+build-*

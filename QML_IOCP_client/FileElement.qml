@@ -130,6 +130,7 @@ Item{
                 }
             }
         }
+
         states: [
             State {
                 name: "ready"

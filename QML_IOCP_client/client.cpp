@@ -217,7 +217,8 @@ QString Client::alreadyRead(QString userid)
 void Client::destroyWindow(QObject *w)
 {
 //    w->~QObject();
-    delete w;
+//    delete w;
+    w->deleteLater();
 //    w = NULL;
 }
 
